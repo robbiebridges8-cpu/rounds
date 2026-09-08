@@ -40,8 +40,8 @@ export async function offerWeeklyNudge(): Promise<void> {
     identifier: WEEKLY_ID,
     content: {
       title: 'Your week in pubs',
-      body: 'See who went where, and whether you are still ahead.',
-      data: { url: '/friends' },
+      body: 'Who went where, what was new, and whether you are still ahead.',
+      data: { url: '/feed' },
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.WEEKLY,

@@ -8,6 +8,114 @@ export type Database = {
   __InternalSupabase: { PostgrestVersion: '14.5' };
   public: {
     Tables: {
+      challenge_members: {
+        Row: { challenge_id: string; completed_at: string | null; joined_at: string; user_id: string };
+        Insert: { challenge_id: string; completed_at?: string | null; joined_at?: string; user_id: string };
+        Update: { challenge_id?: string; completed_at?: string | null; joined_at?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_members_challenge_id_fkey';
+            columns: ['challenge_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenges';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_pubs: {
+        Row: { added_by: string | null; challenge_id: string; created_at: string; pub_id: string };
+        Insert: { added_by?: string | null; challenge_id: string; created_at?: string; pub_id: string };
+        Update: { added_by?: string | null; challenge_id?: string; created_at?: string; pub_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_pubs_added_by_fkey';
+            columns: ['added_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_pubs_challenge_id_fkey';
+            columns: ['challenge_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenges';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_pubs_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: false;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenges: {
+        Row: {
+          color: string;
+          created_at: string;
+          creator_id: string | null;
+          description: string | null;
+          icon: string;
+          id: string;
+          title: string;
+        };
+        Insert: {
+          color?: string;
+          created_at?: string;
+          creator_id?: string | null;
+          description?: string | null;
+          icon?: string;
+          id?: string;
+          title: string;
+        };
+        Update: {
+          color?: string;
+          created_at?: string;
+          creator_id?: string | null;
+          description?: string | null;
+          icon?: string;
+          id?: string;
+          title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenges_creator_id_fkey';
+            columns: ['creator_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      checkin_comments: {
+        Row: { body: string; checkin_id: string; created_at: string; id: string; user_id: string };
+        Insert: { body: string; checkin_id: string; created_at?: string; id?: string; user_id: string };
+        Update: { body?: string; checkin_id?: string; created_at?: string; id?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'checkin_comments_checkin_id_fkey';
+            columns: ['checkin_id'];
+            isOneToOne: false;
+            referencedRelation: 'checkins';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'checkin_comments_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       checkin_photos: {
         Row: {
           checkin_id: string;
@@ -93,6 +201,27 @@ export type Database = {
           },
           {
             foreignKeyName: 'checkins_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      cheers: {
+        Row: { checkin_id: string; created_at: string; id: string; photo_path: string; user_id: string };
+        Insert: { checkin_id: string; created_at?: string; id?: string; photo_path: string; user_id: string };
+        Update: { checkin_id?: string; created_at?: string; id?: string; photo_path?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'cheers_checkin_id_fkey';
+            columns: ['checkin_id'];
+            isOneToOne: false;
+            referencedRelation: 'checkins';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'cheers_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -529,14 +658,47 @@ export type Database = {
         SetofOptions: { from: '*'; to: 'profiles'; isOneToOne: true; isSetofReturn: false };
       };
       are_friends: { Args: { a: string; b: string }; Returns: boolean };
+      challenge_list: {
+        Args: never;
+        Returns: {
+          color: string;
+          completed_at: string;
+          created_at: string;
+          creator_id: string;
+          creator_name: string;
+          description: string;
+          done_count: number;
+          icon: string;
+          id: string;
+          joined: boolean;
+          member_count: number;
+          pub_count: number;
+          title: string;
+        }[];
+      };
+      challenge_pub_status: {
+        Args: { challenge: string };
+        Returns: {
+          borough: string;
+          done: boolean;
+          friends_done: number;
+          lat: number;
+          lng: number;
+          name: string;
+          pub_id: string;
+        }[];
+      };
       friends_leaderboard: {
         Args: never;
         Returns: {
           avatar_url: string;
+          badge_count: number;
           borough_count: number;
           checkin_count: number;
           display_name: string;
           is_me: boolean;
+          month_checkins: number;
+          month_pubs: number;
           pub_count: number;
           user_id: string;
           username: string;
@@ -565,6 +727,16 @@ export type Database = {
           visited_by_me: boolean;
         }[];
       };
+      my_week: {
+        Args: never;
+        Returns: {
+          best_week: number;
+          best_week_start: string;
+          new_pubs: number;
+          this_week: number;
+          weeks_active: number;
+        }[];
+      };
       nearby_pubs: {
         Args: { in_lat: number; in_lng: number; max_rows?: number; radius_m?: number };
         Returns: {
@@ -581,6 +753,7 @@ export type Database = {
           visited_by_me: boolean;
         }[];
       };
+      refresh_challenge_completion: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
       refresh_pub_stats: { Args: { p: string }; Returns: undefined };
       request_friendship: {
         Args: { target_username: string };
@@ -593,6 +766,16 @@ export type Database = {
           user_low: string;
         };
         SetofOptions: { from: '*'; to: 'friendships'; isOneToOne: true; isSetofReturn: false };
+      };
+      user_badges: {
+        Args: { target: string };
+        Returns: {
+          challenge_id: string;
+          color: string;
+          completed_at: string;
+          icon: string;
+          title: string;
+        }[];
       };
       user_pub_map: {
         Args: { target: string };

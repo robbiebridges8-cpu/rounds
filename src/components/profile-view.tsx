@@ -4,9 +4,11 @@ import { useRef, useState } from 'react';
 import { Alert, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { BOROUGH_TOTAL, BoroughMap } from '@/components/borough-map';
+import { BadgeRow } from '@/components/challenge-card';
 import { ShareCard, shareCard } from '@/components/share-card';
 import { Avatar, Body, Button, Card, EmptyState, ListRow, SectionTitle, Stars, Stat } from '@/components/ui';
 import type { Profile } from '@/lib/auth';
+import { useBadges } from '@/lib/challenges';
 import { photoUrl, useUserCheckins, useUserPubs, useUserStats } from '@/lib/checkins';
 import { formatWhen, plural } from '@/lib/format';
 import { shareInvite, useInviteCode } from '@/lib/invites';
@@ -22,6 +24,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
   const pubs = useUserPubs(profile.id);
   const checkins = useUserCheckins(profile.id);
   const inviteCode = useInviteCode();
+  const badges = useBadges(profile.id);
   const cardRef = useRef<View>(null);
   const [sharing, setSharing] = useState(false);
 
@@ -111,6 +114,13 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
                 disabled={!inviteCode.data}
               />
             </View>
+          </View>
+        ) : null}
+
+        {badges.data && badges.data.length > 0 ? (
+          <View>
+            <SectionTitle>Badges</SectionTitle>
+            <BadgeRow badges={badges.data} />
           </View>
         ) : null}
 

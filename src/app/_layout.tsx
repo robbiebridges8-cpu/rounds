@@ -68,6 +68,26 @@ function RootNavigator() {
       <Stack.Screen name="pub/[id]" options={{ title: '' }} />
       <Stack.Screen name="user/[id]" options={{ title: '' }} />
       <Stack.Screen name="invite/[code]" options={{ headerShown: false }} />
+      <Stack.Screen name="post/[id]" options={{ title: '' }} />
+      <Stack.Screen name="challenge/[id]/index" options={{ title: '' }} />
+      <Stack.Screen
+        name="challenge/new"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.92, 1],
+          sheetGrabberVisible: true,
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="challenge/[id]/add"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.92, 1],
+          sheetGrabberVisible: true,
+          headerShown: false,
+        }}
+      />
       <Stack.Screen
         name="checkin/[pubId]"
         options={{

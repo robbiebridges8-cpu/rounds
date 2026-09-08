@@ -28,6 +28,28 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="feed"
+        options={{
+          title: 'Feed',
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              name={focused ? 'bubble.left.and.bubble.right.fill' : 'bubble.left.and.bubble.right'}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="challenges"
+        options={{
+          title: 'Challenges',
+          tabBarIcon: ({ color, focused }) => (
+            <Icon name={focused ? 'trophy.fill' : 'trophy'} size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="friends"
         options={{
           title: 'Friends',

@@ -185,3 +185,36 @@ differently everywhere, cannot be tinted, and read as placeholder.
 
 **One dark surface.** The "This week" card is the only stout-coloured
 element. Contrast is spent once, where it earns attention.
+
+## Feed and challenges
+
+**Cheers is a photo, and only on a photo.** The BeReal move: you answer a
+photo with a photo. No thumbs, no hearts. The rule that a check-in must have a
+photo to receive one lives in the INSERT policy on `cheers`, so no client can
+get it wrong. Replies are plain text and allowed on anything. One cheers per
+person per check-in; sending again replaces it.
+
+**Social rows inherit check-in visibility.** Cheers and replies have no
+friendship logic of their own. Their policies say "the check-in must be
+visible to you", and the check-in policy already says friends only. One rule,
+defined once, still.
+
+**Challenges are community made, creator curated.** Anyone can create one and
+anyone can join. Only the creator edits the pub list, because a list anyone
+can edit is a list nobody trusts. Progress is derived from check-ins by
+trigger; the app never writes `completed_at`. Removing a pub from a challenge
+can un-complete it, which is correct. Badges are completed memberships,
+nothing more, so there is no badge table to keep in sync.
+
+**The Wetherspoons challenge is seeded from OSM brand tags.** 104 pubs at
+import time. It exists so the tab is never empty on day one, and so the first
+thing a new user sees is a ridiculous, obviously shareable goal.
+
+**Overtakes are detected on the device.** The feed compares the leaderboard
+with the last one it saw and shows "Tom overtook you" if someone moved past.
+No history table, no server job, and it only fires for things that happened
+while you were away, which is when it matters.
+
+**Leaderboard columns, not leaderboards.** One function returns every metric
+for every friend; the app sorts. The monthly column resets, so a newcomer can
+win this month even if they will never catch up on boroughs.

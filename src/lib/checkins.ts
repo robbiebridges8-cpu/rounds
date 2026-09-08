@@ -87,6 +87,10 @@ export function useCreateCheckin() {
         ['user-stats'],
         ['user-pubs'],
         ['user-checkins'],
+        ['feed'],
+        ['challenges'],
+        ['leaderboard'],
+        ['my-week'],
       ]) {
         void queryClient.invalidateQueries({ queryKey: key });
       }

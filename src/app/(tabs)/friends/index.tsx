@@ -11,28 +11,26 @@ import {
   View,
 } from 'react-native';
 
-import { Leaderboard } from '@/components/leaderboard';
+import { Leaderboard, MetricPicker, type Metric } from '@/components/leaderboard';
 import { Avatar, Button, Card, EmptyState, Field, Icon, ListRow, SectionTitle } from '@/components/ui';
-import { WeekCard } from '@/components/week-card';
-import { useProfile, useSession, type Profile } from '@/lib/auth';
+import { useProfile, type Profile } from '@/lib/auth';
 import { useAcceptFriend, useFriendships, useRemoveFriend, useRequestFriend } from '@/lib/friends';
 import { shareInvite, useAcceptInvite, useInviteCode } from '@/lib/invites';
-import { useLeaderboard, useWeeklySummary } from '@/lib/social';
+import { useLeaderboard } from '@/lib/social';
 import { colors } from '@/theme';
 
 export default function FriendsScreen() {
   const router = useRouter();
-  const { session } = useSession();
   const { data: me } = useProfile();
   const friendships = useFriendships();
   const leaderboard = useLeaderboard();
-  const week = useWeeklySummary();
   const inviteCode = useInviteCode();
   const request = useRequestFriend();
   const acceptInvite = useAcceptInvite();
   const accept = useAcceptFriend();
   const remove = useRemoveFriend();
   const [username, setUsername] = useState('');
+  const [metric, setMetric] = useState<Metric>('borough_count');
 
   const invite = () => {
     if (!inviteCode.data || !me) return;
@@ -133,15 +131,13 @@ export default function FriendsScreen() {
             onRefresh={() => {
               void friendships.refetch();
               void leaderboard.refetch();
-              void week.refetch();
             }}
           />
         }>
-        <WeekCard summary={week.data ?? null} myId={session?.user.id} />
-
         <View>
-          <SectionTitle>Boroughs</SectionTitle>
-          <Leaderboard rows={leaderboard.data ?? []} />
+          <SectionTitle>Leaderboard</SectionTitle>
+          <MetricPicker value={metric} onChange={setMetric} />
+          <Leaderboard rows={leaderboard.data ?? []} metric={metric} />
         </View>
 
         {Platform.OS !== 'ios' ? (
