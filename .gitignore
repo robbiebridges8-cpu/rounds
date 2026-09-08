@@ -41,3 +41,10 @@ example
 # generated native folders
 /ios
 /android
+
+# local secrets
+.env
+.env.local
+
+# cached seed data
+scripts/data/*.geojson

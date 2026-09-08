@@ -1,0 +1,649 @@
+// Generated from the live schema (Supabase MCP `generate_typescript_types`).
+// Regenerate after any migration. The helper types at the bottom are ours: the
+// generated multi-schema versions are unnecessary here, we only use `public`.
+
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export type Database = {
+  __InternalSupabase: { PostgrestVersion: '14.5' };
+  public: {
+    Tables: {
+      checkin_photos: {
+        Row: {
+          checkin_id: string;
+          created_at: string;
+          height: number | null;
+          id: string;
+          storage_path: string;
+          width: number | null;
+        };
+        Insert: {
+          checkin_id: string;
+          created_at?: string;
+          height?: number | null;
+          id?: string;
+          storage_path: string;
+          width?: number | null;
+        };
+        Update: {
+          checkin_id?: string;
+          created_at?: string;
+          height?: number | null;
+          id?: string;
+          storage_path?: string;
+          width?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'checkin_photos_checkin_id_fkey';
+            columns: ['checkin_id'];
+            isOneToOne: false;
+            referencedRelation: 'checkins';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      checkins: {
+        Row: {
+          client_id: string;
+          created_at: string;
+          distance_m: number | null;
+          id: string;
+          lat: number | null;
+          lng: number | null;
+          note: string | null;
+          pub_id: string;
+          rating: number | null;
+          user_id: string;
+          verified: boolean;
+        };
+        Insert: {
+          client_id: string;
+          created_at?: string;
+          distance_m?: number | null;
+          id?: string;
+          lat?: number | null;
+          lng?: number | null;
+          note?: string | null;
+          pub_id: string;
+          rating?: number | null;
+          user_id: string;
+          verified?: boolean;
+        };
+        Update: {
+          client_id?: string;
+          created_at?: string;
+          distance_m?: number | null;
+          id?: string;
+          lat?: number | null;
+          lng?: number | null;
+          note?: string | null;
+          pub_id?: string;
+          rating?: number | null;
+          user_id?: string;
+          verified?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'checkins_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: false;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'checkins_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      friendships: {
+        Row: {
+          created_at: string;
+          requested_by: string;
+          responded_at: string | null;
+          status: string;
+          user_high: string;
+          user_low: string;
+        };
+        Insert: {
+          created_at?: string;
+          requested_by: string;
+          responded_at?: string | null;
+          status?: string;
+          user_high: string;
+          user_low: string;
+        };
+        Update: {
+          created_at?: string;
+          requested_by?: string;
+          responded_at?: string | null;
+          status?: string;
+          user_high?: string;
+          user_low?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'friendships_requested_by_fkey';
+            columns: ['requested_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'friendships_user_high_fkey';
+            columns: ['user_high'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'friendships_user_low_fkey';
+            columns: ['user_low'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      invite_codes: {
+        Row: { code: string; created_at: string; user_id: string };
+        Insert: { code: string; created_at?: string; user_id: string };
+        Update: { code?: string; created_at?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'invite_codes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      profiles: {
+        Row: {
+          avatar_url: string | null;
+          created_at: string;
+          display_name: string;
+          home_city: string | null;
+          id: string;
+          username: string;
+        };
+        Insert: {
+          avatar_url?: string | null;
+          created_at?: string;
+          display_name: string;
+          home_city?: string | null;
+          id: string;
+          username: string;
+        };
+        Update: {
+          avatar_url?: string | null;
+          created_at?: string;
+          display_name?: string;
+          home_city?: string | null;
+          id?: string;
+          username?: string;
+        };
+        Relationships: [];
+      };
+      pub_corrections: {
+        Row: {
+          created_at: string;
+          detail: string | null;
+          id: string;
+          pub_id: string;
+          status: string;
+          type: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          detail?: string | null;
+          id?: string;
+          pub_id: string;
+          status?: string;
+          type: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          detail?: string | null;
+          id?: string;
+          pub_id?: string;
+          status?: string;
+          type?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pub_corrections_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: false;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pub_corrections_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      pub_stats: {
+        Row: {
+          avg_rating: number | null;
+          checkin_count: number;
+          last_checkin_at: string | null;
+          pub_id: string;
+          rating_count: number;
+          rating_sum: number;
+          visitor_count: number;
+        };
+        Insert: {
+          avg_rating?: number | null;
+          checkin_count?: number;
+          last_checkin_at?: string | null;
+          pub_id: string;
+          rating_count?: number;
+          rating_sum?: number;
+          visitor_count?: number;
+        };
+        Update: {
+          avg_rating?: number | null;
+          checkin_count?: number;
+          last_checkin_at?: string | null;
+          pub_id?: string;
+          rating_count?: number;
+          rating_sum?: number;
+          visitor_count?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pub_stats_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: true;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      pub_tag_stats: {
+        Row: {
+          down_votes: number;
+          net_votes: number | null;
+          pub_id: string;
+          tag: string;
+          up_votes: number;
+        };
+        Insert: {
+          down_votes?: number;
+          net_votes?: number | null;
+          pub_id: string;
+          tag: string;
+          up_votes?: number;
+        };
+        Update: {
+          down_votes?: number;
+          net_votes?: number | null;
+          pub_id?: string;
+          tag?: string;
+          up_votes?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pub_tag_stats_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: false;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pub_tag_stats_tag_fkey';
+            columns: ['tag'];
+            isOneToOne: false;
+            referencedRelation: 'pub_tags';
+            referencedColumns: ['slug'];
+          },
+        ];
+      };
+      pub_tag_votes: {
+        Row: {
+          created_at: string;
+          pub_id: string;
+          tag: string;
+          updated_at: string;
+          user_id: string;
+          value: number;
+        };
+        Insert: {
+          created_at?: string;
+          pub_id: string;
+          tag: string;
+          updated_at?: string;
+          user_id: string;
+          value: number;
+        };
+        Update: {
+          created_at?: string;
+          pub_id?: string;
+          tag?: string;
+          updated_at?: string;
+          user_id?: string;
+          value?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pub_tag_votes_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: false;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pub_tag_votes_tag_fkey';
+            columns: ['tag'];
+            isOneToOne: false;
+            referencedRelation: 'pub_tags';
+            referencedColumns: ['slug'];
+          },
+          {
+            foreignKeyName: 'pub_tag_votes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      pub_tags: {
+        Row: { label: string; slug: string; sort_order: number };
+        Insert: { label: string; slug: string; sort_order?: number };
+        Update: { label?: string; slug?: string; sort_order?: number };
+        Relationships: [];
+      };
+      pubs: {
+        Row: {
+          address: string | null;
+          borough: string | null;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          lat: number;
+          lng: number;
+          location: unknown;
+          name: string;
+          osm_id: number | null;
+          osm_type: string | null;
+          status: string;
+        };
+        Insert: {
+          address?: string | null;
+          borough?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          lat: number;
+          lng: number;
+          location?: unknown;
+          name: string;
+          osm_id?: number | null;
+          osm_type?: string | null;
+          status?: string;
+        };
+        Update: {
+          address?: string | null;
+          borough?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          lat?: number;
+          lng?: number;
+          location?: unknown;
+          name?: string;
+          osm_id?: number | null;
+          osm_type?: string | null;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pubs_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pubs_osm_type_osm_id_fkey';
+            columns: ['osm_type', 'osm_id'];
+            isOneToOne: false;
+            referencedRelation: 'pubs_osm';
+            referencedColumns: ['osm_type', 'osm_id'];
+          },
+        ];
+      };
+      pubs_osm: {
+        Row: {
+          addr_city: string | null;
+          addr_housenumber: string | null;
+          addr_postcode: string | null;
+          addr_street: string | null;
+          imported_at: string;
+          lat: number;
+          lng: number;
+          name: string | null;
+          opening_hours: string | null;
+          osm_id: number;
+          osm_type: string;
+          tags: Json;
+          website: string | null;
+        };
+        Insert: {
+          addr_city?: string | null;
+          addr_housenumber?: string | null;
+          addr_postcode?: string | null;
+          addr_street?: string | null;
+          imported_at?: string;
+          lat: number;
+          lng: number;
+          name?: string | null;
+          opening_hours?: string | null;
+          osm_id: number;
+          osm_type: string;
+          tags?: Json;
+          website?: string | null;
+        };
+        Update: {
+          addr_city?: string | null;
+          addr_housenumber?: string | null;
+          addr_postcode?: string | null;
+          addr_street?: string | null;
+          imported_at?: string;
+          lat?: number;
+          lng?: number;
+          name?: string | null;
+          opening_hours?: string | null;
+          osm_id?: number;
+          osm_type?: string;
+          tags?: Json;
+          website?: string | null;
+        };
+        Relationships: [];
+      };
+      reports: {
+        Row: {
+          created_at: string;
+          id: string;
+          reason: string;
+          reporter_id: string;
+          status: string;
+          target_id: string;
+          target_type: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          reason: string;
+          reporter_id: string;
+          status?: string;
+          target_id: string;
+          target_type: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          reason?: string;
+          reporter_id?: string;
+          status?: string;
+          target_id?: string;
+          target_type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'reports_reporter_id_fkey';
+            columns: ['reporter_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+    };
+    Views: { [_ in never]: never };
+    Functions: {
+      accept_invite: {
+        Args: { invite: string };
+        Returns: {
+          avatar_url: string | null;
+          created_at: string;
+          display_name: string;
+          home_city: string | null;
+          id: string;
+          username: string;
+        };
+        SetofOptions: { from: '*'; to: 'profiles'; isOneToOne: true; isSetofReturn: false };
+      };
+      are_friends: { Args: { a: string; b: string }; Returns: boolean };
+      friends_leaderboard: {
+        Args: never;
+        Returns: {
+          avatar_url: string;
+          borough_count: number;
+          checkin_count: number;
+          display_name: string;
+          is_me: boolean;
+          pub_count: number;
+          user_id: string;
+          username: string;
+        }[];
+      };
+      generate_invite_code: { Args: never; Returns: string };
+      map_pubs: {
+        Args: {
+          max_lat: number;
+          max_lng: number;
+          max_rows?: number;
+          min_lat: number;
+          min_lng: number;
+        };
+        Returns: {
+          avg_rating: number;
+          checkin_count: number;
+          friend_avg_rating: number;
+          friend_visits: number;
+          id: string;
+          lat: number;
+          lng: number;
+          my_rating: number;
+          name: string;
+          status: string;
+          visited_by_me: boolean;
+        }[];
+      };
+      nearby_pubs: {
+        Args: { in_lat: number; in_lng: number; max_rows?: number; radius_m?: number };
+        Returns: {
+          address: string;
+          avg_rating: number;
+          checkin_count: number;
+          distance_m: number;
+          friend_visits: number;
+          id: string;
+          lat: number;
+          lng: number;
+          name: string;
+          status: string;
+          visited_by_me: boolean;
+        }[];
+      };
+      refresh_pub_stats: { Args: { p: string }; Returns: undefined };
+      request_friendship: {
+        Args: { target_username: string };
+        Returns: {
+          created_at: string;
+          requested_by: string;
+          responded_at: string | null;
+          status: string;
+          user_high: string;
+          user_low: string;
+        };
+        SetofOptions: { from: '*'; to: 'friendships'; isOneToOne: true; isSetofReturn: false };
+      };
+      user_pub_map: {
+        Args: { target: string };
+        Returns: {
+          borough: string;
+          last_visit: string;
+          lat: number;
+          latest_rating: number;
+          lng: number;
+          name: string;
+          pub_id: string;
+          visits: number;
+        }[];
+      };
+      user_stats: {
+        Args: { target: string };
+        Returns: {
+          avg_rating: number;
+          borough_count: number;
+          checkin_count: number;
+          pub_count: number;
+          rated_count: number;
+        }[];
+      };
+      weekly_summary: {
+        Args: never;
+        Returns: {
+          busiest_checkins: number;
+          busiest_display_name: string;
+          busiest_user_id: string;
+          checkin_count: number;
+          new_pub_count: number;
+          people_count: number;
+          top_pub_id: string;
+          top_pub_name: string;
+          top_pub_rating: number;
+          top_pub_visits: number;
+        }[];
+      };
+    };
+    Enums: { [_ in never]: never };
+    CompositeTypes: { [_ in never]: never };
+  };
+};
+
+type PublicSchema = Database['public'];
+
+export type Tables<T extends keyof PublicSchema['Tables']> = PublicSchema['Tables'][T]['Row'];
+export type TablesInsert<T extends keyof PublicSchema['Tables']> =
+  PublicSchema['Tables'][T]['Insert'];
+export type TablesUpdate<T extends keyof PublicSchema['Tables']> =
+  PublicSchema['Tables'][T]['Update'];
+export type FnReturns<T extends keyof PublicSchema['Functions']> =
+  PublicSchema['Functions'][T]['Returns'];

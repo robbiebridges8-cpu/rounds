@@ -1,14 +1,16 @@
 {
   "expo": {
-    "name": "rounds",
+    "name": "Rounds",
     "slug": "rounds",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "rounds",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.robbiebridges.rounds",
+      "supportsTablet": false
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +19,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.robbiebridges.rounds"
     },
     "web": {
       "output": "static",
@@ -28,11 +31,26 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#FCF5E9",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Rounds needs your photos so you can add pictures to a pub you have been to.",
+          "cameraPermission": "Rounds uses the camera so you can take a photo while you are in the pub."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Rounds uses your location to show the pubs near you and to confirm you are at the one you check in to."
+        }
+      ],
+      "expo-sharing",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
