@@ -16,7 +16,7 @@ import { colors, fonts } from '@/theme';
 
 export function Screen({ children }: { children: ReactNode }) {
   return (
-    <SafeAreaView className="flex-1 bg-cream" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top', 'bottom']}>
       {children}
     </SafeAreaView>
   );
@@ -148,7 +148,7 @@ export const Field = forwardRef<TextInput, FieldProps>(function Field(
         placeholderTextColor={colors.slate}
         multiline={multiline}
         className={[
-          'text-ink rounded-md border-2 bg-card px-4 text-[17px]',
+          'text-ink rounded-md border-2 bg-surface px-4 text-[17px]',
           multiline ? 'min-h-[96px] py-3' : 'h-[50px]',
           error ? 'border-danger' : 'border-line',
         ].join(' ')}
@@ -166,7 +166,7 @@ export const Field = forwardRef<TextInput, FieldProps>(function Field(
 
 export function Stat({ value, label }: { value: string | number; label: string }) {
   return (
-    <View className="flex-1 items-center rounded-md border border-line bg-card py-4">
+    <View className="flex-1 items-center rounded-md border border-line bg-surface py-4">
       <Text
         className="text-ink"
         style={{ fontFamily: fonts.displayBlack, fontSize: 28, lineHeight: 32, fontVariant: ['tabular-nums'] }}>
@@ -204,7 +204,7 @@ export function Avatar({
 
 /** A grouped-list card. Put ListRow children inside. */
 export function Card({ children }: { children: ReactNode }) {
-  return <View className="overflow-hidden rounded-md border border-line bg-card">{children}</View>;
+  return <View className="overflow-hidden rounded-md border border-line bg-surface">{children}</View>;
 }
 
 type ListRowProps = {
@@ -321,7 +321,7 @@ export function MapButton({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      className="h-11 w-11 items-center justify-center rounded-full border border-line bg-card active:bg-ale-tint"
+      className="h-11 w-11 items-center justify-center rounded-full border border-line bg-surface active:bg-ale-tint"
       style={{
         shadowColor: '#000',
         shadowOpacity: 0.15,

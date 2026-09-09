@@ -218,3 +218,32 @@ while you were away, which is when it matters.
 **Leaderboard columns, not leaderboards.** One function returns every metric
 for every friend; the app sorts. The monthly column resets, so a newcomer can
 win this month even if they will never catch up on boroughs.
+
+## Redesign: Beli, Letterboxd, Strava
+
+**Rankings, not stars.** Beli's model. After a check-in you say loved,
+decent or not for me, then answer a few "which do you prefer?" questions (a
+binary search through your pubs with the same sentiment) and the pub takes
+a position on your list. The score out of ten is derived from position within
+its bucket: loved spans 10 to 7, decent 6.9 to 4, not for me 3.9 to 0.5. Your
+first loved pub is a 10 until something beats it. All of this is in
+`rank_pub` and `rescore_rankings`; the app never writes positions.
+`checkins.score` and `checkins.rating` are mirrors kept by the same function,
+so the feed needs no join and `pub_stats` keeps working. The pub page shows
+the 1-5 average doubled as "out of 10", which is honest enough until enough
+people have ranked for a true score average to mean something.
+
+**Dark first.** Letterboxd's confidence. The map, the photos and the gold
+boroughs all read better on stout than on paper, and pubs happen at night.
+Token names stayed semantic (`canvas`, `surface`, `raised`, `ink`), so a light
+theme later is a values change, not a rewrite.
+
+**The borough snapshot.** Strava puts a map on every activity card. Ours is
+the silhouette of the pub's borough with a gold dot, drawn from the same SVG
+paths as the fill-in map. It shows when a check-in has no photo, so no card
+is ever just text.
+
+**Profile tabs.** Overview, Ranked, Diary. Four favourites (your top four
+ranked pubs, photo tiles where you have one), the fill-in map, an eight-week
+bar chart, the trophy case. The diary groups check-ins by month with the day
+in a box. All three apps agree that a profile is a record, not a form.

@@ -10,9 +10,9 @@ export default function FriendsLayout() {
         headerTintColor: colors.ale,
         headerTitleStyle: { color: colors.ink },
         headerLargeTitleStyle: { color: colors.ink },
-        headerStyle: { backgroundColor: colors.cream },
+        headerStyle: { backgroundColor: colors.canvas },
         headerShadowVisible: false,
-        contentStyle: { backgroundColor: colors.cream },
+        contentStyle: { backgroundColor: colors.canvas },
       }}
     />
   );

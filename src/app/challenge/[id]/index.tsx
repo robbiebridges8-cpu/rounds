@@ -134,7 +134,7 @@ export default function ChallengeScreen() {
             <Text className="text-[13px] text-white/85">Completed {formatWhen(challenge.completed_at)}</Text>
           </View>
         ) : challenge.joined ? (
-          <View className="gap-2 rounded-lg border border-line bg-card p-4">
+          <View className="gap-2 rounded-lg border border-line bg-surface p-4">
             <View className="flex-row items-baseline justify-between">
               <Text style={{ fontFamily: fonts.displayBlack, fontSize: 30, color }}>
                 {challenge.done_count}

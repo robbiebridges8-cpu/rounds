@@ -2,8 +2,9 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
+import { ScorePill } from '@/components/score-pill';
 import { Card, EmptyState, Icon, ListRow } from '@/components/ui';
-import { formatDistance, formatRating, plural } from '@/lib/format';
+import { formatDistance, plural } from '@/lib/format';
 import { getPosition, type Coords } from '@/lib/location';
 import { useNearbyPubs, type NearbyPub } from '@/lib/pubs';
 import { colors } from '@/theme';
@@ -24,7 +25,7 @@ export default function NearbyScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-cream" contentContainerClassName="gap-4 px-4 pb-10 pt-6">
+    <ScrollView className="flex-1 bg-canvas" contentContainerClassName="gap-4 px-4 pb-10 pt-6">
       <Text className="text-ink font-display text-[28px]">Near you</Text>
 
       {denied ? (
@@ -53,12 +54,12 @@ export default function NearbyScreen() {
               title={pub.name}
               subtitle={[
                 formatDistance(pub.distance_m),
-                pub.avg_rating != null ? `${formatRating(pub.avg_rating)} rated` : null,
                 pub.checkin_count > 0 ? plural(pub.checkin_count, 'visit') : null,
               ]
                 .filter(Boolean)
                 .join(' · ')}
               left={<Dot pub={pub} />}
+              right={pub.avg_rating != null ? <ScorePill score={Number(pub.avg_rating) * 2} size="sm" /> : undefined}
               onPress={() => open(pub)}
               last={index === pubs.data.length - 1}
             />

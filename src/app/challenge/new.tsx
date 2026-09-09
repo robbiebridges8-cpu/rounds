@@ -44,7 +44,7 @@ export default function NewChallengeSheet() {
 
   return (
     <ScrollView
-      className="flex-1 bg-cream"
+      className="flex-1 bg-canvas"
       contentContainerClassName="gap-6 px-5 pb-10 pt-5"
       keyboardShouldPersistTaps="handled"
       automaticallyAdjustKeyboardInsets>
@@ -94,7 +94,7 @@ export default function NewChallengeSheet() {
                 accessibilityRole="radio"
                 accessibilityState={{ selected: on }}
                 className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
-                  on ? 'border-ink bg-card' : 'border-line bg-card'
+                  on ? 'border-ink bg-surface' : 'border-line bg-surface'
                 }`}>
                 <Icon name={name} size={20} color={on ? colors.ink : colors.inkSoft} />
               </Pressable>

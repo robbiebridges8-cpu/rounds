@@ -26,7 +26,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <SessionProvider>
         <SafeAreaProvider>
-          <StatusBar style="dark" />
+          <StatusBar style="light" />
           <RootNavigator />
         </SafeAreaProvider>
       </SessionProvider>
@@ -58,10 +58,10 @@ function RootNavigator() {
         headerTintColor: colors.ale,
         headerTitleStyle: { color: colors.ink },
         headerLargeTitleStyle: { color: colors.ink },
-        headerStyle: { backgroundColor: colors.cream },
+        headerStyle: { backgroundColor: colors.canvas },
         headerShadowVisible: false,
         headerBackButtonDisplayMode: 'minimal',
-        contentStyle: { backgroundColor: colors.cream },
+        contentStyle: { backgroundColor: colors.canvas },
       }}>
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

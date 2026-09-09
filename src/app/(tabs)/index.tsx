@@ -5,8 +5,9 @@ import MapView, { Marker, type Region } from 'react-native-maps';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { ScorePill } from '@/components/score-pill';
 import { Icon, MapButton } from '@/components/ui';
-import { formatRating, plural } from '@/lib/format';
+import { plural } from '@/lib/format';
 import { LONDON_REGION, getPosition } from '@/lib/location';
 import { useMapPubs, type Bounds, type MapPub } from '@/lib/pubs';
 import { colors } from '@/theme';
@@ -50,12 +51,13 @@ export default function MapScreen() {
   const current = selected ? (pubs?.find((p) => p.id === selected.id) ?? selected) : null;
 
   return (
-    <View className="flex-1 bg-cream">
+    <View className="flex-1 bg-canvas">
       <MapView
         ref={mapRef}
         style={StyleSheet.absoluteFill}
         initialRegion={LONDON_REGION}
         mapType={Platform.OS === 'ios' ? 'mutedStandard' : 'standard'}
+        userInterfaceStyle="dark"
         showsUserLocation
         showsMyLocationButton={false}
         showsCompass={false}
@@ -91,7 +93,7 @@ export default function MapScreen() {
 
       {pubs && pubs.length >= 400 ? (
         <View
-          className="absolute left-4 flex-row items-center gap-1.5 rounded-full border border-line bg-card px-3 py-1.5"
+          className="absolute left-4 flex-row items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5"
           style={{ top: insets.top + 12 }}>
           <Icon name="plus.magnifyingglass" size={13} color={colors.inkSoft} />
           <Text className="text-ink-soft text-xs font-semibold">Zoom in to see every pub</Text>
@@ -114,7 +116,7 @@ export default function MapScreen() {
           </Animated.View>
         ) : (
           <View
-            className="flex-row items-center gap-4 self-center rounded-full border border-line bg-card px-4 py-2"
+            className="flex-row items-center gap-4 self-center rounded-full border border-line bg-surface px-4 py-2"
             style={shadow}>
             <Legend color={colors.gold} label="You" />
             <Legend color={colors.mate} label="Mates" />
@@ -138,7 +140,7 @@ function Pin({ tier, active }: { tier: Tier; active: boolean }) {
         borderRadius: size / 2,
         backgroundColor: TIER_COLOR[tier],
         borderWidth: active ? 4 : 2.5,
-        borderColor: '#fff',
+        borderColor: colors.canvas,
         opacity: tier === 'none' && !active ? 0.75 : 1,
         shadowColor: '#000',
         shadowOpacity: 0.25,
@@ -168,32 +170,23 @@ function Preview({
     <Pressable
       onPress={onOpen}
       accessibilityRole="button"
-      className="rounded-lg border border-line bg-card p-4 active:bg-ale-tint"
+      className="rounded-lg border border-line bg-surface p-4 active:bg-ale-tint"
       style={shadow}>
       <View className="flex-row items-center gap-3">
         <View className="flex-1 gap-0.5">
           <Text className="text-ink font-display text-[22px] leading-7" numberOfLines={2}>
             {pub.name}
           </Text>
-          <View className="flex-row items-center gap-1.5">
-            {pub.avg_rating != null ? (
-              <>
-                <Icon name="star.fill" size={12} color={colors.gold} />
-                <Text className="text-ink text-[15px] font-semibold">
-                  {formatRating(pub.avg_rating)}
-                </Text>
-              </>
-            ) : null}
-            <Text className="text-ink-soft text-[15px]">
-              {meta.length
-                ? (pub.avg_rating != null ? '· ' : '') + meta.join(' · ')
-                : 'Nobody you know has been'}
+          <View className="flex-row items-center gap-2">
+            {pub.avg_rating != null ? <ScorePill score={Number(pub.avg_rating) * 2} size="sm" /> : null}
+            <Text className="text-ink-soft text-[15px]" numberOfLines={1}>
+              {meta.length ? meta.join(' · ') : 'Nobody you know has been'}
             </Text>
           </View>
         </View>
         <View className="items-end gap-2">
           <View
-            className="h-3 w-3 rounded-full border-2 border-white"
+            className="h-3 w-3 rounded-full border-2 border-canvas"
             style={{ backgroundColor: TIER_COLOR[tier] }}
           />
           <Pressable

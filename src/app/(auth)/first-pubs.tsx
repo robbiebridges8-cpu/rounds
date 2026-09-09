@@ -172,7 +172,7 @@ export default function FirstPubs() {
           ) : null}
         </ScrollView>
 
-        <View className="gap-3 border-t border-line bg-cream px-6 pb-2 pt-4">
+        <View className="gap-3 border-t border-line bg-canvas px-6 pb-2 pt-4">
           <Button
             label={picked.size ? `Add ${picked.size} ${picked.size === 1 ? 'pub' : 'pubs'}` : 'Pick a pub'}
             onPress={() => void finish(true)}

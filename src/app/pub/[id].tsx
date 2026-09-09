@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 
+import { ScorePill } from '@/components/score-pill';
 import {
   Avatar,
   Body,
@@ -22,11 +23,11 @@ import {
   EmptyState,
   Icon,
   SectionTitle,
-  Stars,
 } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
-import { formatDistance, formatRating, formatWhen, plural } from '@/lib/format';
+import { formatDistance, formatWhen, plural } from '@/lib/format';
+import { usePubRankings } from '@/lib/rankings';
 import {
   useMyTagVotes,
   usePub,
@@ -59,6 +60,7 @@ export default function PubScreen() {
   const myVotes = useMyTagVotes(id);
   const vote = useVoteTag(id);
   const report = useReportPub(id);
+  const rankings = usePubRankings(id);
 
   const reportProblem = () => {
     const submit = (type: CorrectionType) =>
@@ -103,6 +105,7 @@ export default function PubScreen() {
   const { pub: details, stats } = pub.data;
   const mates = new Set(visits.data?.filter((v) => v.user_id !== me).map((v) => v.user_id));
   const been = visits.data?.some((v) => v.user_id === me) ?? false;
+  const myRanking = rankings.data?.find((r) => r.user_id === me);
 
   const netFor = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.net_votes ?? 0;
   const myVoteFor = (slug: string) => myVotes.data?.find((v) => v.tag === slug)?.value ?? 0;
@@ -154,10 +157,12 @@ export default function PubScreen() {
           ) : null}
         </View>
 
-        <View className="flex-row items-center gap-5 rounded-lg border border-line bg-card px-5 py-4">
+        <View className="flex-row items-center gap-5 rounded-lg border border-line bg-surface px-5 py-4">
           <View className="items-center">
-            <Display size={48}>{formatRating(stats?.avg_rating)}</Display>
-            <Stars value={stats?.avg_rating != null ? Math.round(Number(stats.avg_rating)) : 0} size={11} />
+            <Display size={48}>
+              {stats?.avg_rating != null ? (Number(stats.avg_rating) * 2).toFixed(1) : '–'}
+            </Display>
+            <Text className="text-ink-soft text-[11px] font-semibold uppercase tracking-wide">out of 10</Text>
           </View>
           <View className="h-12 w-px bg-line" />
           <View className="flex-1 gap-1.5">
@@ -167,11 +172,62 @@ export default function PubScreen() {
           </View>
         </View>
 
-        <Button
-          label="Check in"
-          icon="mappin.and.ellipse"
-          onPress={() => router.push({ pathname: '/checkin/[pubId]', params: { pubId: details.id } })}
-        />
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <Button
+              label="Check in"
+              icon="mappin.and.ellipse"
+              onPress={() => router.push({ pathname: '/checkin/[pubId]', params: { pubId: details.id } })}
+            />
+          </View>
+          {been ? (
+            <View className="flex-1">
+              <Button
+                label={myRanking ? 'Re-rank' : 'Rank it'}
+                icon="list.number"
+                variant="quiet"
+                onPress={() =>
+                  router.push({ pathname: '/checkin/[pubId]', params: { pubId: details.id, rank: '1' } })
+                }
+              />
+            </View>
+          ) : null}
+        </View>
+
+        {rankings.data && rankings.data.length > 0 ? (
+          <View>
+            <SectionTitle>Scores</SectionTitle>
+            <Card>
+              {rankings.data.map((r, index) => {
+                const mine = r.user_id === me;
+                return (
+                  <Pressable
+                    key={r.user_id}
+                    disabled={mine || !r.profiles}
+                    onPress={() => r.profiles && router.push({ pathname: '/user/[id]', params: { id: r.profiles.id } })}
+                    className="flex-row items-center gap-3 pl-4 active:bg-ale-tint">
+                    <Avatar url={r.profiles?.avatar_url} name={r.profiles?.display_name ?? '?'} size={36} />
+                    <View
+                      className={`flex-1 flex-row items-center gap-3 py-3 pr-4 ${
+                        index === rankings.data.length - 1 ? '' : 'border-b border-line'
+                      }`}>
+                      <View className="flex-1">
+                        <Text className="text-ink text-[17px] font-semibold">
+                          {mine ? 'You' : (r.profiles?.display_name ?? 'Someone')}
+                        </Text>
+                        <Text className="text-ink-soft text-[13px]">
+                          #{r.position + 1} on {mine ? 'your' : 'their'} list ·{' '}
+                          {r.sentiment === 'loved' ? 'loved it' : r.sentiment === 'fine' ? 'decent' : 'not for them'}
+                        </Text>
+                      </View>
+                      <ScorePill score={r.score} size="md" />
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </Card>
+          </View>
+        ) : null}
 
         <View>
           <SectionTitle>What it is like</SectionTitle>
@@ -246,7 +302,7 @@ export default function PubScreen() {
                             : ''}
                         </Text>
                       </View>
-                      {visit.rating ? <Stars value={visit.rating} size={14} /> : null}
+                      <ScorePill score={visit.score} size="sm" />
                     </Pressable>
                     {visit.note ? <Body>{visit.note}</Body> : null}
                     {visit.checkin_photos.length > 0 ? (

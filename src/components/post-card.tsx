@@ -1,15 +1,17 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 
-import { Avatar, Card, Icon, Stars } from '@/components/ui';
+import { BoroughSnapshot } from '@/components/borough-map';
+import { ScorePill } from '@/components/score-pill';
+import { Avatar, Card, Icon } from '@/components/ui';
 import { photoUrl } from '@/lib/checkins';
 import type { FeedPost } from '@/lib/feed';
 import { formatDistance, formatWhen } from '@/lib/format';
 import { colors } from '@/theme';
 
 type Props = {
-  post: FeedPost;
+  post: FeedPost & { pubs: (FeedPost['pubs'] & { lat?: number; lng?: number }) | null };
   me: string | undefined;
   onOpen: () => void;
   onCheers: () => void;
@@ -17,17 +19,20 @@ type Props = {
 };
 
 /**
- * One check-in in the feed. Photos are the point: a check-in with a photo
- * can be answered with a photo (cheers), and the answers show as a strip of
- * small circles under it, BeReal style.
+ * The activity card. Strava's shape: who, where, a map, the numbers, then
+ * the social bit. Our map is the borough silhouette with a gold dot, and
+ * cheers is a photo back, BeReal style, shown as a strip of small circles.
  */
 export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const who = post.profiles;
   const isMe = post.user_id === me;
   const hasPhotos = post.checkin_photos.length > 0;
   const mineCheers = post.cheers.some((c) => c.user_id === me);
   const replies = post.checkin_comments;
+  const cardWidth = width - 32;
+  const canSnapshot = post.pubs && post.pubs.lat != null && post.pubs.lng != null;
 
   return (
     <Card>
@@ -39,30 +44,27 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
             <Avatar url={who?.avatar_url} name={who?.display_name ?? '?'} size={40} />
           </Pressable>
           <View className="flex-1">
-            <Text className="text-ink text-[15px]" numberOfLines={2}>
-              <Text className="font-semibold">{isMe ? 'You' : (who?.display_name ?? 'Someone')}</Text>
-              <Text className="text-ink-soft"> at </Text>
-              <Text
-                className="font-semibold"
-                onPress={() =>
-                  post.pubs && router.push({ pathname: '/pub/[id]', params: { id: post.pubs.id } })
-                }>
-                {post.pubs?.name ?? 'a pub'}
-              </Text>
+            <Text className="text-ink text-[15px] font-semibold" numberOfLines={1}>
+              {isMe ? 'You' : (who?.display_name ?? 'Someone')}
             </Text>
-            <Text className="text-ink-soft text-[13px]">
+            <Text className="text-ink-soft text-[13px]" numberOfLines={1}>
               {formatWhen(post.created_at)}
               {post.pubs?.borough ? ` · ${post.pubs.borough}` : ''}
-              {!post.verified && post.distance_m != null
-                ? ` · logged ${formatDistance(post.distance_m)} away`
-                : ''}
             </Text>
           </View>
-          {post.rating ? <Stars value={post.rating} size={12} /> : null}
+          <ScorePill score={post.score} size="md" />
         </View>
 
+        <Pressable
+          className="px-4 pt-3"
+          onPress={() => post.pubs && router.push({ pathname: '/pub/[id]', params: { id: post.pubs.id } })}>
+          <Text className="text-ink font-display text-[24px] leading-7" numberOfLines={2}>
+            {post.pubs?.name ?? 'A pub'}
+          </Text>
+        </Pressable>
+
         {post.note ? (
-          <Text className="text-ink px-4 pt-3 text-[17px] leading-6">{post.note}</Text>
+          <Text className="text-ink px-4 pt-2 text-[16px] leading-6">{post.note}</Text>
         ) : null}
 
         {hasPhotos ? (
@@ -75,13 +77,37 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
               <Image
                 key={photo.id}
                 source={{ uri: photoUrl(photo.storage_path) }}
-                style={{ width: 220, height: 220, borderRadius: 14 }}
+                style={{
+                  width: post.checkin_photos.length === 1 ? cardWidth - 32 : 240,
+                  height: post.checkin_photos.length === 1 ? (cardWidth - 32) * 0.75 : 240,
+                  borderRadius: 14,
+                }}
                 contentFit="cover"
                 transition={150}
               />
             ))}
           </ScrollView>
+        ) : canSnapshot ? (
+          <View className="mx-4 mt-3 overflow-hidden rounded-md border border-line bg-canvas">
+            <BoroughSnapshot
+              borough={post.pubs!.borough}
+              lat={post.pubs!.lat!}
+              lng={post.pubs!.lng!}
+              width={cardWidth - 34}
+              height={120}
+            />
+            <View className="absolute bottom-2 left-3 flex-row items-center gap-1.5">
+              <View className="h-2 w-2 rounded-full bg-gold" />
+              <Text className="text-ink-soft text-[11px] font-semibold">{post.pubs!.borough ?? 'London'}</Text>
+            </View>
+          </View>
         ) : null}
+
+        <View className="flex-row gap-6 px-4 pt-3">
+          <Stat label={post.verified ? 'Verified' : 'Logged'} value={post.verified ? 'there' : post.distance_m != null ? `${formatDistance(post.distance_m)} away` : 'no location'} />
+          {post.score != null ? <Stat label="Their score" value={Number(post.score).toFixed(1)} /> : null}
+          {post.cheers.length > 0 ? <Stat label="Cheers" value={String(post.cheers.length)} /> : null}
+        </View>
 
         {post.cheers.length > 0 ? (
           <View className="flex-row items-center gap-2 px-4 pt-3">
@@ -89,20 +115,16 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
               {post.cheers.slice(0, 5).map((cheer, index) => (
                 <View
                   key={cheer.id}
-                  className="overflow-hidden rounded-full border-2 border-card"
+                  className="overflow-hidden rounded-full border-2 border-surface"
                   style={{ width: 34, height: 34, marginLeft: index ? -10 : 0 }}>
-                  <Image
-                    source={{ uri: photoUrl(cheer.photo_path) }}
-                    style={{ width: 30, height: 30 }}
-                    contentFit="cover"
-                  />
+                  <Image source={{ uri: photoUrl(cheer.photo_path) }} style={{ width: 30, height: 30 }} contentFit="cover" />
                 </View>
               ))}
             </View>
             <Text className="text-ink-soft text-[13px]">
               {post.cheers.length === 1
                 ? `${post.cheers[0].user_id === me ? 'You' : (post.cheers[0].profiles?.display_name ?? 'Someone')} said cheers`
-                : `${post.cheers.length} cheers`}
+                : `${post.cheers.length} said cheers`}
             </Text>
           </View>
         ) : null}
@@ -136,6 +158,15 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
         <Action icon="bubble.right" label="Reply" onPress={onReply} />
       </View>
     </Card>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <View>
+      <Text className="text-ink-soft text-[10px] font-bold uppercase tracking-wider">{label}</Text>
+      <Text className="text-ink text-[15px] font-semibold">{value}</Text>
+    </View>
   );
 }
 

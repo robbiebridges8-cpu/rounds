@@ -92,7 +92,7 @@ export default function Onboarding() {
           </View>
 
           <Pressable onPress={chooseAvatar} className="items-center gap-2">
-            <View className="h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2 border-line bg-card">
+            <View className="h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2 border-line bg-surface">
               {avatarUri ? (
                 <Image source={{ uri: avatarUri }} style={{ width: 112, height: 112 }} />
               ) : (

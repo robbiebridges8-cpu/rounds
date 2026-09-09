@@ -10,14 +10,14 @@ export type Comment = Tables<'checkin_comments'> & { profiles: Profile | null };
 
 export type FeedPost = Tables<'checkins'> & {
   profiles: Profile | null;
-  pubs: Pick<Tables<'pubs'>, 'id' | 'name' | 'borough'> | null;
+  pubs: Pick<Tables<'pubs'>, 'id' | 'name' | 'borough' | 'lat' | 'lng'> | null;
   checkin_photos: Tables<'checkin_photos'>[];
   cheers: Cheer[];
   checkin_comments: Comment[];
 };
 
 const SELECT =
-  '*, profiles(*), pubs(id, name, borough), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles(*))';
+  '*, profiles(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles(*))';
 const PAGE = 20;
 
 /**

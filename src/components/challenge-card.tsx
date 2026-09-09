@@ -50,7 +50,7 @@ export function ChallengeCard({ challenge, onPress }: { challenge: Challenge; on
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      className="gap-3 rounded-lg border border-line bg-card p-4 active:bg-ale-tint/40">
+      className="gap-3 rounded-lg border border-line bg-surface p-4 active:bg-ale-tint/40">
       <View className="flex-row items-center gap-3">
         <ChallengeIcon icon={challenge.icon} color={color} done={done} />
         <View className="flex-1">

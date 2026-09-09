@@ -57,7 +57,7 @@ export default function AddPubsSheet() {
     );
 
   return (
-    <View className="flex-1 bg-cream">
+    <View className="flex-1 bg-canvas">
       <ScrollView
         className="flex-1"
         contentContainerClassName="gap-4 px-5 pb-6 pt-5"

@@ -40,7 +40,7 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard(
         top: 0,
         width: CARD_SIZE,
         height: CARD_SIZE,
-        backgroundColor: colors.cream,
+        backgroundColor: colors.canvas,
         padding: 72,
         justifyContent: 'space-between',
       }}>
@@ -62,7 +62,7 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard(
       </View>
 
       <View style={{ alignItems: 'center' }}>
-        <BoroughMap visited={visited} width={CARD_SIZE - 144} stroke={colors.cream} empty="#EFE4D2" />
+        <BoroughMap visited={visited} width={CARD_SIZE - 144} stroke={colors.canvas} empty={colors.raised} />
       </View>
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>

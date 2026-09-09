@@ -29,9 +29,9 @@ export function MetricPicker({ value, onChange }: { value: Metric; onChange: (m:
             accessibilityRole="tab"
             accessibilityState={{ selected: on }}
             className={`h-9 items-center justify-center rounded-full px-4 ${
-              on ? 'bg-ink' : 'border border-line bg-card'
+              on ? 'bg-ink' : 'border border-line bg-surface'
             }`}>
-            <Text className={`text-[14px] font-semibold ${on ? 'text-cream' : 'text-ink'}`}>{m.label}</Text>
+            <Text className={`text-[14px] font-semibold ${on ? 'text-canvas' : 'text-ink'}`}>{m.label}</Text>
           </Pressable>
         );
       })}

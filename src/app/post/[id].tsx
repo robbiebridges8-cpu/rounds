@@ -163,7 +163,7 @@ export default function PostScreen() {
           </View>
         </ScrollView>
 
-        <View className="flex-row items-end gap-2 border-t border-line bg-cream px-4 pb-3 pt-2">
+        <View className="flex-row items-end gap-2 border-t border-line bg-canvas px-4 pb-3 pt-2">
           <TextInput
             ref={inputRef}
             value={body}
@@ -172,7 +172,7 @@ export default function PostScreen() {
             placeholderTextColor={colors.slate}
             multiline
             maxLength={280}
-            className="text-ink max-h-28 min-h-[44px] flex-1 rounded-[22px] border border-line bg-card px-4 py-3 text-[16px]"
+            className="text-ink max-h-28 min-h-[44px] flex-1 rounded-[22px] border border-line bg-surface px-4 py-3 text-[16px]"
           />
           <Pressable
             onPress={send}
