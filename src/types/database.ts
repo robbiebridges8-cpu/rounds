@@ -355,6 +355,32 @@ export type Database = {
           },
         ];
       };
+      list_follows: {
+        Row: { created_at: string; list_id: string; user_id: string };
+        Insert: { created_at?: string; list_id: string; user_id: string };
+        Update: { created_at?: string; list_id?: string; user_id?: string };
+        Relationships: [
+          { foreignKeyName: 'list_follows_list_id_fkey'; columns: ['list_id']; isOneToOne: false; referencedRelation: 'lists'; referencedColumns: ['id'] },
+          { foreignKeyName: 'list_follows_user_id_fkey'; columns: ['user_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] },
+        ];
+      };
+      list_pubs: {
+        Row: { added_at: string; list_id: string; note: string | null; position: number; pub_id: string };
+        Insert: { added_at?: string; list_id: string; note?: string | null; position?: number; pub_id: string };
+        Update: { added_at?: string; list_id?: string; note?: string | null; position?: number; pub_id?: string };
+        Relationships: [
+          { foreignKeyName: 'list_pubs_list_id_fkey'; columns: ['list_id']; isOneToOne: false; referencedRelation: 'lists'; referencedColumns: ['id'] },
+          { foreignKeyName: 'list_pubs_pub_id_fkey'; columns: ['pub_id']; isOneToOne: false; referencedRelation: 'pubs'; referencedColumns: ['id'] },
+        ];
+      };
+      lists: {
+        Row: { created_at: string; creator_id: string | null; description: string | null; id: string; title: string };
+        Insert: { created_at?: string; creator_id?: string | null; description?: string | null; id?: string; title: string };
+        Update: { created_at?: string; creator_id?: string | null; description?: string | null; id?: string; title?: string };
+        Relationships: [
+          { foreignKeyName: 'lists_creator_id_fkey'; columns: ['creator_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] },
+        ];
+      };
       notifications: {
         Row: { actor_id: string | null; body: string; checkin_id: string | null; created_at: string; id: string; kind: string; pub_id: string | null; read_at: string | null; title: string; user_id: string };
         Insert: { actor_id?: string | null; body: string; checkin_id?: string | null; created_at?: string; id?: string; kind: string; pub_id?: string | null; read_at?: string | null; title: string; user_id: string };
@@ -819,6 +845,33 @@ export type Database = {
         }[];
       };
       generate_invite_code: { Args: never; Returns: string };
+      list_index: {
+        Args: never;
+        Returns: {
+          created_at: string;
+          creator_id: string;
+          creator_name: string;
+          description: string;
+          follower_count: number;
+          following: boolean;
+          id: string;
+          pub_count: number;
+          sample: string[];
+          title: string;
+        }[];
+      };
+      list_pub_status: {
+        Args: { list: string };
+        Returns: {
+          avg_rating: number;
+          borough: string;
+          done: boolean;
+          name: string;
+          note: string;
+          pub_id: string;
+          sort_order: number;
+        }[];
+      };
       map_pubs: {
         Args: {
           max_lat: number;
@@ -885,6 +938,10 @@ export type Database = {
       notify: {
         Args: { p_actor: string; p_body: string; p_checkin: string; p_kind: string; p_pub: string; p_title: string; p_user: string };
         Returns: undefined;
+      };
+      pub_lists: {
+        Args: { pub: string };
+        Returns: { creator_name: string; follower_count: number; id: string; note: string; title: string }[];
       };
       refresh_challenge_completion: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
       refresh_pub_stats: { Args: { p: string }; Returns: undefined };

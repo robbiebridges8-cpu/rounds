@@ -21,11 +21,13 @@ import {
   Display,
   EmptyState,
   Icon,
+  ListRow,
   Rating,
   SectionTitle,
   Stars,
 } from '@/components/ui';
 import { useSession } from '@/lib/auth';
+import { usePubLists } from '@/lib/lists';
 import { photoUrl } from '@/lib/checkins';
 import { formatDistance, formatWhen, plural } from '@/lib/format';
 import {
@@ -60,6 +62,7 @@ export default function PubScreen() {
   const myVotes = useMyTagVotes(id);
   const vote = useVoteTag(id);
   const report = useReportPub(id);
+  const onLists = usePubLists(id);
 
   const reportProblem = () => {
     const submit = (type: CorrectionType) =>
@@ -185,6 +188,23 @@ export default function PubScreen() {
             </View>
           ) : null}
         </View>
+
+        {onLists.data && onLists.data.length > 0 ? (
+          <View>
+            <SectionTitle>On {onLists.data.length} {onLists.data.length === 1 ? 'list' : 'lists'}</SectionTitle>
+            <Card>
+              {onLists.data.map((l, index) => (
+                <ListRow
+                  key={l.id}
+                  title={l.title}
+                  subtitle={l.note ?? `by ${l.creator_name}${l.follower_count ? ` · ${l.follower_count} following` : ''}`}
+                  onPress={() => router.push({ pathname: '/list/[id]', params: { id: l.id } })}
+                  last={index === onLists.data.length - 1}
+                />
+              ))}
+            </Card>
+          </View>
+        ) : null}
 
         <View>
           <SectionTitle>What it is like</SectionTitle>

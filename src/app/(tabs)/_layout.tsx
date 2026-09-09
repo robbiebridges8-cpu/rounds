@@ -43,9 +43,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="challenges"
         options={{
-          title: 'Quests',
+          title: 'Explore',
           tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'trophy.fill' : 'trophy'} size={24} color={color} />
+            <Icon name={focused ? 'square.grid.2x2.fill' : 'square.grid.2x2'} size={24} color={color} />
           ),
         }}
       />

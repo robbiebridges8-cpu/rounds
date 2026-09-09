@@ -316,3 +316,11 @@ pubs an advertiser or a buyer asks for first. Reachable from Settings.
 
 **Account deletion is one RPC.** `delete_my_account` deletes the auth user;
 every table cascades. Apple requires it; the privacy policy points at it.
+
+## Lists
+
+**Lists are taste; quests are lists with a finish line.** Both live on the
+Explore tab. A list has a title, an optional description, pubs in order and
+a one-line note per pub, written by the creator alone. Anyone follows a
+list; a pub page says "On 3 lists". Nothing to complete, nothing to earn:
+the value is that someone who knows put their name to it. Migration 0015.
