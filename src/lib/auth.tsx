@@ -84,7 +84,7 @@ export function useAuthRedirect() {
       return;
     }
     // first-pubs is the one auth-group screen you visit with a profile.
-    if (inAuthFlow && !path.includes('first-pubs')) router.replace('/');
+    if (inAuthFlow && !path.includes('first-pubs') && !path.includes('reset')) router.replace('/');
   }, [settled, session, profile.data, segments, router]);
 
   return settled;

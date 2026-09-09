@@ -50,6 +50,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 |---|---|
 | `(auth)/welcome` | Four drifting colour shapes around the wordmark, one Get started button |
 | `(auth)/sign-in` | Email and password, sign in or create an account. No emails are ever sent |
+| `(auth)/reset` | Forgot password: a six-digit code by email, then a new password. No link to click |
 | `(auth)/onboarding` | Username, display name, optional avatar |
 | `(auth)/first-pubs` | Tick the pubs you already know, from nearby or search, so the map is never empty |
 | `(tabs)/index` | Apple Maps. Search bar, chips for All / Been / Mates / Not yet, dot pins by tier, a butter card with photos and Check in when you tap one. At city zoom only pubs with any check-ins show |
@@ -115,6 +116,5 @@ Query functions the app calls: `map_pubs`, `nearby_pubs`, `user_pub_map`, `user_
 - No Apple Developer membership yet, so no TestFlight, no native tabs, no expo-maps, and push delivery is wired but dormant.
 - Nobody but the author has used it. The first evening of real use will reorder the roadmap.
 - No offline queue for check-ins, though the client id makes one safe to add.
-- No password reset.
 - Pub claims for landlords and brands were built and removed; the design is in git history at commit 92f7ba2.
 - The contact email in PRIVACY.md is a placeholder.

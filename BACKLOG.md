@@ -37,12 +37,11 @@ Last updated 9 September 2026. See README.md for what exists.
 | 15 | Pub pulse: busiest nights and hours per pub from check-in times, once there is enough data | Low | Medium | Medium | Google's popular times, from people you know. Useful even when not checking in |
 | 16 | Moderation tools: a way to act on `reports` and `pub_corrections` without SQL | Medium | Medium | Small | Both tables exist and fill up; nothing reads them yet |
 | 17 | Offline check-in queue: save locally, retry on signal | Medium | Medium | Medium | The client id already makes retries safe. Pub wifi is the reason |
-| 18 | Password reset | Medium | Medium | Small | Someone will forget. Needs the email template set up in Supabase |
-| 19 | Native tabs and expo-maps once on a dev build | Low | Medium | Small | Both are one-file changes noted in DECISIONS.md. Liquid Glass tab bar on iOS 26 |
-| 20 | Rate limiting on invite acceptance, cheers uploads and list creation | Medium | Low | Small | Cheap insurance before strangers arrive |
-| 21 | Admin: approve or reject from the numbers page, pending reports count, per-borough growth over time | Low | Medium | Medium | The page an advertiser or buyer sees. Extend as the pitch firms up |
-| 22 | Accessibility pass: VoiceOver labels on every icon button, Dynamic Type on the display face, contrast on butter text | Low | Medium | Small | Apple review notices; users with large text notice sooner |
-| 23 | Dark mode audit: every screen, every card, the share card stays light on purpose | Low | Low | Small | Toggle exists; nobody has looked at every screen in it |
+| 18 | Native tabs and expo-maps once on a dev build | Low | Medium | Small | Both are one-file changes noted in DECISIONS.md. Liquid Glass tab bar on iOS 26 |
+| 19 | Rate limiting on invite acceptance, cheers uploads and list creation | Medium | Low | Small | Cheap insurance before strangers arrive |
+| 20 | Admin: approve or reject from the numbers page, pending reports count, per-borough growth over time | Low | Medium | Medium | The page an advertiser or buyer sees. Extend as the pitch firms up |
+| 21 | Accessibility pass: VoiceOver labels on every icon button, Dynamic Type on the display face, contrast on butter text | Low | Medium | Small | Apple review notices; users with large text notice sooner |
+| 22 | Dark mode audit: every screen, every card, the share card stays light on purpose | Low | Low | Small | Toggle exists; nobody has looked at every screen in it |
 
 ## P3. Later. Bigger bets and things that need an audience first.
 

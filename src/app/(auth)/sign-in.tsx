@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Text, TextInput, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
 import { Button, Field, Screen, Wordmark } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
@@ -10,6 +11,7 @@ import { colors } from '@/theme';
  * in lib/auth takes over the moment either call returns a session.
  */
 export default function SignIn() {
+  const router = useRouter();
   const passwordRef = useRef<TextInput>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -101,6 +103,9 @@ export default function SignIn() {
               onSubmitEditing={() => void signIn()}
             />
             <Button label="Continue" onPress={() => void signIn()} loading={busy === 'in'} disabled={busy === 'up'} />
+            <Pressable onPress={() => router.push('/reset')} className="items-center py-1" hitSlop={6}>
+              <Text className="text-you text-[14px] font-bold">Forgot your password?</Text>
+            </Pressable>
             <Text className="text-ink-soft py-1 text-center text-[15px]">or</Text>
             <Button label="Create an account" variant="outline" onPress={() => void createAccount()} loading={busy === 'up'} disabled={busy === 'in'} />
           </View>
