@@ -59,6 +59,14 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
           </Text>
         </Pressable>
 
+        {post.checkin_tags.length + post.checkin_guests.length > 0 ? (
+          <Text className="text-ink-soft px-4 pt-1 text-[14px]" numberOfLines={2}>
+            with{' '}
+            <Text className="text-ink font-bold">
+              {[...post.checkin_tags.map((t) => (t.user_id === me ? 'you' : (t.profiles?.display_name ?? 'someone'))), ...post.checkin_guests.map((g) => g.name)].join(', ')}
+            </Text>
+          </Text>
+        ) : null}
         {post.note ? <Text className="text-ink px-4 pt-2 text-[16px] leading-6">{post.note}</Text> : null}
 
         {hasPhotos ? (

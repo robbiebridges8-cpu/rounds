@@ -9,7 +9,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { SessionProvider, useAuthRedirect } from '@/lib/auth';
+import { SessionProvider, useAuthRedirect, useProfile } from '@/lib/auth';
+import { registerForPush } from '@/lib/inbox';
 import '@/lib/notifications';
 import { queryClient } from '@/lib/query-client';
 import { ThemeProvider, useTheme } from '@/lib/theme-provider';
@@ -37,6 +38,13 @@ function RootNavigator() {
   const theme = useTheme();
   const ready = authReady && fontsReady && theme.ready;
   const router = useRouter();
+  const profile = useProfile();
+
+  // Once there is a profile, offer push. No project id yet: a quiet no-op.
+  const profileId = profile.data?.id;
+  useEffect(() => {
+    if (profileId) void registerForPush();
+  }, [profileId]);
 
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
@@ -70,6 +78,13 @@ function RootNavigator() {
       <Stack.Screen name="invite/[code]" options={{ headerShown: false }} />
       <Stack.Screen name="post/[id]" options={{ title: '' }} />
       <Stack.Screen name="search" options={{ presentation: 'fullScreenModal', headerShown: false, animation: 'fade' }} />
+      <Stack.Screen name="inbox" options={{ title: 'Inbox' }} />
+      <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+      <Stack.Screen name="privacy" options={{ title: 'Privacy' }} />
+      <Stack.Screen name="admin" options={{ title: 'Numbers' }} />
+      <Stack.Screen name="claim/[pubId]" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.9, 1], sheetGrabberVisible: true, headerShown: false }} />
+      <Stack.Screen name="pub-details/[pubId]" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.92, 1], sheetGrabberVisible: true, headerShown: false }} />
+      <Stack.Screen name="add-pub" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen name="challenge/[id]/index" options={{ title: '' }} />
       <Stack.Screen
         name="challenge/new"

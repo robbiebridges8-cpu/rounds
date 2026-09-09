@@ -108,8 +108,12 @@ export default function FriendsScreen() {
     <>
       <Stack.Screen
         options={{
-          title: 'Friends',
+          title: 'Mates',
           headerRight: () => (
+            <View className="flex-row items-center gap-5">
+            <Pressable onPress={() => router.push('/search')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Search pubs">
+              <Icon name="magnifyingglass" size={20} color={colors.ink} weight="semibold" />
+            </Pressable>
             <Pressable
               onPress={addMenu}
               hitSlop={8}
@@ -117,6 +121,7 @@ export default function FriendsScreen() {
               accessibilityLabel="Add a friend">
               <Icon name="person.badge.plus" size={22} color={colors.ale} />
             </Pressable>
+            </View>
           ),
         }}
       />

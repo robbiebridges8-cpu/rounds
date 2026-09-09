@@ -17,8 +17,12 @@ export default function ChallengesScreen() {
     <>
       <Stack.Screen
         options={{
-          title: 'Challenges',
+          title: 'Quests',
           headerRight: () => (
+            <View className="flex-row items-center gap-5">
+            <Pressable onPress={() => router.push('/search')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Search pubs">
+              <Icon name="magnifyingglass" size={20} color={colors.ink} weight="semibold" />
+            </Pressable>
             <Pressable
               onPress={() => router.push('/challenge/new')}
               hitSlop={8}
@@ -26,6 +30,7 @@ export default function ChallengesScreen() {
               accessibilityLabel="Create a challenge">
               <Icon name="plus.circle.fill" size={24} color={colors.ale} />
             </Pressable>
+            </View>
           ),
         }}
       />

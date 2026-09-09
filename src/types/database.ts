@@ -8,6 +8,27 @@ export type Database = {
   __InternalSupabase: { PostgrestVersion: '14.5' };
   public: {
     Tables: {
+      admins: {
+        Row: { user_id: string };
+        Insert: { user_id: string };
+        Update: { user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'admins_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      app_config: {
+        Row: { key: string; value: string };
+        Insert: { key: string; value: string };
+        Update: { key?: string; value?: string };
+        Relationships: [
+        ];
+      };
       challenge_members: {
         Row: { challenge_id: string; completed_at: string | null; joined_at: string; user_id: string };
         Insert: { challenge_id: string; completed_at?: string | null; joined_at?: string; user_id: string };
@@ -116,6 +137,27 @@ export type Database = {
           },
         ];
       };
+      checkin_guests: {
+        Row: { checkin_id: string; created_at: string; id: string; invited_by: string; name: string };
+        Insert: { checkin_id: string; created_at?: string; id?: string; invited_by: string; name: string };
+        Update: { checkin_id?: string; created_at?: string; id?: string; invited_by?: string; name?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'checkin_guests_checkin_id_fkey';
+            columns: ['checkin_id'];
+            isOneToOne: false;
+            referencedRelation: 'checkins';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'checkin_guests_invited_by_fkey';
+            columns: ['invited_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       checkin_photos: {
         Row: {
           checkin_id: string;
@@ -147,6 +189,27 @@ export type Database = {
             columns: ['checkin_id'];
             isOneToOne: false;
             referencedRelation: 'checkins';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      checkin_tags: {
+        Row: { checkin_id: string; created_at: string; user_id: string };
+        Insert: { checkin_id: string; created_at?: string; user_id: string };
+        Update: { checkin_id?: string; created_at?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'checkin_tags_checkin_id_fkey';
+            columns: ['checkin_id'];
+            isOneToOne: false;
+            referencedRelation: 'checkins';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'checkin_tags_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
         ];
@@ -292,6 +355,41 @@ export type Database = {
           },
         ];
       };
+      notifications: {
+        Row: { actor_id: string | null; body: string; checkin_id: string | null; created_at: string; id: string; kind: string; pub_id: string | null; read_at: string | null; title: string; user_id: string };
+        Insert: { actor_id?: string | null; body: string; checkin_id?: string | null; created_at?: string; id?: string; kind: string; pub_id?: string | null; read_at?: string | null; title: string; user_id: string };
+        Update: { actor_id?: string | null; body?: string; checkin_id?: string | null; created_at?: string; id?: string; kind?: string; pub_id?: string | null; read_at?: string | null; title?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'notifications_actor_id_fkey';
+            columns: ['actor_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notifications_checkin_id_fkey';
+            columns: ['checkin_id'];
+            isOneToOne: false;
+            referencedRelation: 'checkins';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notifications_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: false;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notifications_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -318,6 +416,27 @@ export type Database = {
           username?: string;
         };
         Relationships: [];
+      };
+      pub_claims: {
+        Row: { contact: string; created_at: string; id: string; pub_id: string; role: string; status: string; user_id: string };
+        Insert: { contact: string; created_at?: string; id?: string; pub_id: string; role: string; status?: string; user_id: string };
+        Update: { contact?: string; created_at?: string; id?: string; pub_id?: string; role?: string; status?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'pub_claims_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: false;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pub_claims_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       pub_corrections: {
         Row: {
@@ -358,6 +477,27 @@ export type Database = {
           {
             foreignKeyName: 'pub_corrections_user_id_fkey';
             columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      pub_details: {
+        Row: { event: string | null; hours: string | null; offer: string | null; pub_id: string; updated_at: string; updated_by: string | null; website: string | null };
+        Insert: { event?: string | null; hours?: string | null; offer?: string | null; pub_id: string; updated_at?: string; updated_by?: string | null; website?: string | null };
+        Update: { event?: string | null; hours?: string | null; offer?: string | null; pub_id?: string; updated_at?: string; updated_by?: string | null; website?: string | null };
+        Relationships: [
+          {
+            foreignKeyName: 'pub_details_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: true;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pub_details_updated_by_fkey';
+            columns: ['updated_by'];
             isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
@@ -499,6 +639,7 @@ export type Database = {
       pubs: {
         Row: {
           address: string | null;
+          blurb: string | null;
           borough: string | null;
           created_at: string;
           created_by: string | null;
@@ -513,6 +654,7 @@ export type Database = {
         };
         Insert: {
           address?: string | null;
+          blurb?: string | null;
           borough?: string | null;
           created_at?: string;
           created_by?: string | null;
@@ -527,6 +669,7 @@ export type Database = {
         };
         Update: {
           address?: string | null;
+          blurb?: string | null;
           borough?: string | null;
           created_at?: string;
           created_by?: string | null;
@@ -604,6 +747,20 @@ export type Database = {
         };
         Relationships: [];
       };
+      push_tokens: {
+        Row: { platform: string; token: string; updated_at: string; user_id: string };
+        Insert: { platform?: string; token: string; updated_at?: string; user_id: string };
+        Update: { platform?: string; token?: string; updated_at?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'push_tokens_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       reports: {
         Row: {
           created_at: string;
@@ -657,6 +814,7 @@ export type Database = {
         };
         SetofOptions: { from: '*'; to: 'profiles'; isOneToOne: true; isSetofReturn: false };
       };
+      admin_stats: { Args: never; Returns: Json };
       are_friends: { Args: { a: string; b: string }; Returns: boolean };
       challenge_list: {
         Args: never;
@@ -688,6 +846,7 @@ export type Database = {
           pub_id: string;
         }[];
       };
+      delete_my_account: { Args: never; Returns: undefined };
       friends_leaderboard: {
         Args: never;
         Returns: {
@@ -727,6 +886,20 @@ export type Database = {
           visited_by_me: boolean;
         }[];
       };
+      my_month: {
+        Args: never;
+        Returns: {
+          avg_rating: number;
+          checkin_count: number;
+          month_start: string;
+          new_borough_count: number;
+          new_pub_count: number;
+          pub_count: number;
+          top_pub_id: string;
+          top_pub_name: string;
+          top_pub_visits: number;
+        }[];
+      };
       my_week: {
         Args: never;
         Returns: {
@@ -753,6 +926,11 @@ export type Database = {
           visited_by_me: boolean;
         }[];
       };
+      notify: {
+        Args: { p_actor: string; p_body: string; p_checkin: string; p_kind: string; p_pub: string; p_title: string; p_user: string };
+        Returns: undefined;
+      };
+      pub_is_claimed: { Args: { p: string }; Returns: boolean };
       refresh_challenge_completion: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
       refresh_pub_stats: { Args: { p: string }; Returns: undefined };
       request_friendship: {
@@ -767,6 +945,7 @@ export type Database = {
         };
         SetofOptions: { from: '*'; to: 'friendships'; isOneToOne: true; isSetofReturn: false };
       };
+      send_weekly_digests: { Args: never; Returns: number };
       user_badges: {
         Args: { target: string };
         Returns: {

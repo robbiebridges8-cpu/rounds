@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,16 +15,17 @@ import {
 } from 'react-native';
 
 import { PostCard } from '@/components/post-card';
-import { Avatar, Card, EmptyState, Icon, SectionTitle } from '@/components/ui';
+import { Avatar, Button, Card, EmptyState, Icon, SectionTitle } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
-import { useCheers, useDeleteReply, usePost, useRemoveCheers, useReply } from '@/lib/feed';
+import { useCheers, useClaimVisit, useDeleteCheckin, useDeleteReply, usePost, useRemoveCheers, useReply } from '@/lib/feed';
 import { formatWhen } from '@/lib/format';
 import { pickImage } from '@/lib/images';
 import { colors } from '@/theme';
 
 export default function PostScreen() {
   const { id, reply: focusReply } = useLocalSearchParams<{ id: string; reply?: string }>();
+  const router = useRouter();
   const { session } = useSession();
   const me = session?.user.id;
   const post = usePost(id);
@@ -32,6 +33,8 @@ export default function PostScreen() {
   const removeCheers = useRemoveCheers();
   const reply = useReply();
   const deleteReply = useDeleteReply();
+  const deleteCheckin = useDeleteCheckin();
+  const claimVisit = useClaimVisit();
   const inputRef = useRef<TextInput>(null);
   const [body, setBody] = useState('');
 
@@ -49,6 +52,14 @@ export default function PostScreen() {
   if (!post.data) return <EmptyState icon="bubble.left" title="That check-in is gone" />;
 
   const data = post.data;
+  const mine = data.user_id === me;
+  const taggedMe = data.checkin_tags.some((t) => t.user_id === me);
+
+  const confirmDelete = () =>
+    Alert.alert('Delete this check-in?', 'Photos, cheers and replies go with it.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => deleteCheckin.mutate(data.id, { onSuccess: () => router.back() }) },
+    ]);
 
   const sayCheers = async () => {
     if (data.cheers.some((c) => c.user_id === me)) {
@@ -83,7 +94,18 @@ export default function PostScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: data.pubs?.name ?? 'Check-in' }} />
+      <Stack.Screen
+        options={{
+          title: data.pubs?.name ?? 'Check-in',
+          headerRight: mine
+            ? () => (
+                <Pressable onPress={confirmDelete} hitSlop={8} accessibilityRole="button" accessibilityLabel="Delete check-in">
+                  <Icon name="trash" size={19} color={colors.danger} />
+                </Pressable>
+              )
+            : undefined,
+        }}
+      />
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -100,6 +122,16 @@ export default function PostScreen() {
             onCheers={() => void sayCheers()}
             onReply={() => inputRef.current?.focus()}
           />
+
+          {taggedMe && data.pubs ? (
+            <Button
+              label="You were here? Add it to your map"
+              icon="mappin.and.ellipse"
+              variant="accent"
+              onPress={() => claimVisit.mutate({ pubId: data.pubs!.id }, { onSuccess: () => Alert.alert('Added', 'It is on your map and counts for your boroughs.') })}
+              loading={claimVisit.isPending}
+            />
+          ) : null}
 
           {data.cheers.length > 0 ? (
             <View>

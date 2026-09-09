@@ -26,6 +26,7 @@
     "expo-router": "~57.0.20",
     "expo-secure-store": "~57.0.3",
     "expo-sharing": "~57.0.18",
+    "expo-sms": "~57.0.1",
     "expo-splash-screen": "~57.0.8",
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.2",
@@ -65,7 +66,8 @@
     "lint": "expo lint",
     "seed:pubs": "tsx scripts/seed-pubs.ts",
     "typecheck": "tsc --noEmit",
-    "build:boroughs": "tsx scripts/build-boroughs.ts"
+    "build:boroughs": "tsx scripts/build-boroughs.ts",
+    "build:privacy": "node -e \"require('fs').writeFileSync('src/lib/privacy-text.ts','// Generated from PRIVACY.md. Edit that file, then re-run: pnpm build:privacy\\nexport const PRIVACY_TEXT = '+JSON.stringify(require('fs').readFileSync('PRIVACY.md','utf8'))+';\\n')\""
   },
   "private": true
 }

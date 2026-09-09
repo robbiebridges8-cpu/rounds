@@ -7,13 +7,14 @@ import { BOROUGH_TOTAL, BoroughMap } from '@/components/borough-map';
 import { BadgeRow } from '@/components/challenge-card';
 import { Diary } from '@/components/diary';
 import { ShareCard, shareCard } from '@/components/share-card';
-import { Avatar, Button, Card, EmptyState, ListRow, SectionTitle, Stars } from '@/components/ui';
+import { Avatar, Button, Card, EmptyState, Icon, ListRow, SectionTitle, Stars } from '@/components/ui';
 import { WeeklyBars } from '@/components/weekly-bars';
 import type { Profile } from '@/lib/auth';
 import { useBadges } from '@/lib/challenges';
 import { photoUrl, useUserCheckins, useUserPubs, useUserStats } from '@/lib/checkins';
 import { plural } from '@/lib/format';
 import { shareInvite, useInviteCode } from '@/lib/invites';
+import { useMyMonth } from '@/lib/social';
 import { colors, fonts } from '@/theme';
 
 type Tab = 'overview' | 'pubs' | 'diary';
@@ -31,8 +32,10 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
   const checkins = useUserCheckins(profile.id);
   const badges = useBadges(profile.id);
   const inviteCode = useInviteCode();
+  const month = useMyMonth();
   const cardRef = useRef<View>(null);
-  const [sharing, setSharing] = useState(false);
+  const monthRef = useRef<View>(null);
+  const [sharing, setSharing] = useState<'map' | 'month' | null>(null);
   const [tab, setTab] = useState<Tab>('overview');
 
   const visited = new Set((pubs.data ?? []).map((p) => p.borough).filter((b): b is string => Boolean(b)));
@@ -44,14 +47,14 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
     void badges.refetch();
   };
 
-  const share = async () => {
-    setSharing(true);
+  const share = async (which: 'map' | 'month') => {
+    setSharing(which);
     try {
-      await shareCard(cardRef);
+      await shareCard(which === 'map' ? cardRef : monthRef);
     } catch (error) {
       Alert.alert('Could not share', error instanceof Error ? error.message : String(error));
     } finally {
-      setSharing(false);
+      setSharing(null);
     }
   };
 
@@ -169,7 +172,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
             {isMe ? (
               <View className="flex-row gap-3">
                 <View className="flex-1">
-                  <Button label="Share my map" icon="square.and.arrow.up" onPress={() => void share()} loading={sharing} />
+                  <Button label="Share my map" icon="square.and.arrow.up" onPress={() => void share('map')} loading={sharing === 'map'} />
                 </View>
                 <View className="flex-1">
                   <Button
@@ -181,6 +184,21 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
                   />
                 </View>
               </View>
+            ) : null}
+
+            {isMe && month.data && month.data.checkin_count > 0 ? (
+              <Pressable onPress={() => void share('month')} accessibilityRole="button" className="flex-row items-center gap-3 rounded-lg bg-stout px-4 py-4 active:opacity-90">
+                <View className="flex-1">
+                  <Text className="text-[11px] font-bold uppercase tracking-wider" style={{ color: colors.butter }}>Last month</Text>
+                  <Text className="text-white" style={{ fontFamily: fonts.display, fontSize: 18, lineHeight: 22, letterSpacing: -0.4 }}>
+                    {month.data.checkin_count} check-ins, {month.data.new_pub_count} new pubs
+                  </Text>
+                  <Text className="text-[13px] text-white" style={{ opacity: 0.85 }}>Share the recap</Text>
+                </View>
+                <View className="h-10 w-10 items-center justify-center rounded-full bg-white">
+                  <Icon name="square.and.arrow.up" size={16} color="#101014" weight="bold" />
+                </View>
+              </Pressable>
             ) : null}
 
             {badges.data && badges.data.length > 0 ? (
@@ -229,14 +247,12 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
       </ScrollView>
 
       {isMe ? (
-        <ShareCard
-          ref={cardRef}
-          displayName={profile.display_name}
-          username={profile.username}
-          visited={visited}
-          pubCount={stats.data?.pub_count ?? 0}
-          inviteCode={inviteCode.data ?? null}
-        />
+        <>
+          <ShareCard ref={cardRef} displayName={profile.display_name} username={profile.username} visited={visited} pubCount={stats.data?.pub_count ?? 0} inviteCode={inviteCode.data ?? null} />
+          {month.data ? (
+            <ShareCard ref={monthRef} displayName={profile.display_name} username={profile.username} visited={visited} pubCount={stats.data?.pub_count ?? 0} inviteCode={inviteCode.data ?? null} month={month.data} />
+          ) : null}
+        </>
       ) : null}
     </>
   );

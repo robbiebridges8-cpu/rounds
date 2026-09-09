@@ -284,3 +284,35 @@ mint are furniture: stat tiles, chips, the map card. Ink is anything you
 press. Unbounded for display, system font for everything else. Pills and
 22 px cards throughout; the map search bar has a hard ink offset shadow.
 Tabs are Map, Feed, Quests, Mates, You. Light by default, dark by toggle.
+
+## Growth, second round
+
+**Tagging is the viral loop.** A check-in can name the mates who were there
+(on Rounds: a tag they get notified about, with a one-tap "add it to my map")
+and the ones who are not (a name, and a text sent from your own phone with
+your invite link). No contact upload, no server-side SMS, nothing to consent
+to beyond what the person typing already knows.
+
+**Notifications are rows first, pushes second.** Every cheers, reply, tag
+and digest writes a row the inbox reads. A trigger then posts the row id to
+the send-push edge function through pg_net, which looks up the person's
+Expo tokens. Token registration needs an Expo project id, which arrives
+with the Apple account and EAS; until then the inbox is the whole feature
+and the push path is dormant but wired. The Sunday digest is a pg_cron job
+that writes digest rows for everyone whose circle did anything.
+
+**Pub claims are reviewed by hand.** Anyone can claim; nothing shows until
+the claim is approved in the database. An approved claimant edits four short
+fields (hours, this week, offer, website) that appear under "From the pub".
+This is the surface that gets sold later, so it exists before the audience.
+
+**Classics are seeded from memory, not scraped.** Thirty-seven well-known
+pubs got a one-line blurb and a "London classics" quest so a first open has
+somewhere to go. No photos: nothing we could licence cleanly.
+
+**Admin numbers live in one function.** `admin_stats` refuses anyone not on
+the admins table and returns the actives, weekly check-ins, boroughs and top
+pubs an advertiser or a buyer asks for first. Reachable from Settings.
+
+**Account deletion is one RPC.** `delete_my_account` deletes the auth user;
+every table cascades. Apple requires it; the privacy policy points at it.

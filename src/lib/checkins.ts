@@ -12,6 +12,10 @@ export type NewCheckin = {
   rating: number | null;
   note: string;
   photos: PickedImage[];
+  /** Friends who were there. */
+  tagIds: string[];
+  /** People who were there but are not on Rounds. */
+  guests: string[];
 };
 
 export type UserCheckin = Tables<'checkins'> & {
@@ -54,6 +58,15 @@ export function useCreateCheckin() {
         .single();
       if (error) throw error;
 
+      if (input.tagIds.length) {
+        await supabase.from('checkin_tags').insert(input.tagIds.map((user_id) => ({ checkin_id: checkin.id, user_id })));
+      }
+      if (input.guests.length) {
+        await supabase
+          .from('checkin_guests')
+          .insert(input.guests.map((name) => ({ checkin_id: checkin.id, name, invited_by: userId })));
+      }
+
       // Photos go up after the row exists, and a failed upload never undoes
       // the check-in: the row is already saved, so report the photo problem
       // separately and let the user carry on.
@@ -91,6 +104,7 @@ export function useCreateCheckin() {
         ['challenges'],
         ['leaderboard'],
         ['my-week'],
+        ['my-month'],
       ]) {
         void queryClient.invalidateQueries({ queryKey: key });
       }

@@ -93,3 +93,10 @@ export function useAuthRedirect() {
 export async function signOut() {
   await supabase.auth.signOut();
 }
+
+/** Apple requires it. Everything cascades from auth.users; then sign out. */
+export async function deleteAccount() {
+  const { error } = await supabase.rpc('delete_my_account');
+  if (error) throw error;
+  await supabase.auth.signOut();
+}

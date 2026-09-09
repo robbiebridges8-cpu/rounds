@@ -10,6 +10,7 @@ import { useSession } from '@/lib/auth';
 import { detectOvertakes, type Overtake } from '@/lib/digest';
 import { useCheers, useFeed, useRemoveCheers, type FeedPost } from '@/lib/feed';
 import { pickImage } from '@/lib/images';
+import { useUnreadCount } from '@/lib/inbox';
 import { useLeaderboard, useMyWeek, useWeeklySummary, type MyWeek } from '@/lib/social';
 import { colors, fonts } from '@/theme';
 
@@ -25,6 +26,7 @@ export default function FeedScreen() {
   const cheers = useCheers();
   const removeCheers = useRemoveCheers();
   const [overtakes, setOvertakes] = useState<Overtake[]>([]);
+  const unread = useUnreadCount();
 
   useEffect(() => {
     if (leaderboard.data) void detectOvertakes(leaderboard.data).then(setOvertakes);
@@ -60,7 +62,21 @@ export default function FeedScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Feed' }} />
+      <Stack.Screen
+        options={{
+          title: 'Feed',
+          headerRight: () => (
+            <View className="flex-row items-center gap-5">
+              <Pressable onPress={() => router.push('/search')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Search pubs">
+                <Icon name="magnifyingglass" size={20} color={colors.ink} weight="semibold" />
+              </Pressable>
+              <Pressable onPress={() => router.push('/inbox')} hitSlop={8} accessibilityRole="button" accessibilityLabel={unread ? `Inbox, ${unread} unread` : 'Inbox'}>
+                <Icon name={unread ? 'bell.badge.fill' : 'bell'} size={20} color={unread ? colors.ale : colors.ink} />
+              </Pressable>
+            </View>
+          ),
+        }}
+      />
       <FlatList
         data={posts}
         keyExtractor={(post) => post.id}

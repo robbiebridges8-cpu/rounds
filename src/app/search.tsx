@@ -60,7 +60,12 @@ export default function SearchScreen() {
             ))}
           </Card>
         ) : (
-          <EmptyState icon="mappin.slash" title="No pub by that name" body="Try fewer words, or the street it is on." />
+          <EmptyState icon="mappin.slash" title="No pub by that name" body="Try fewer words, or the street it is on.">
+            <Pressable onPress={() => router.push('/add-pub')} accessibilityRole="button" className="mt-3 h-11 flex-row items-center gap-2 rounded-full bg-ink px-5">
+              <Icon name="plus" size={14} color="#fff" weight="bold" />
+              <Text className="text-[15px] font-bold text-white">Add a missing pub</Text>
+            </Pressable>
+          </EmptyState>
         )}
       </ScrollView>
     </View>

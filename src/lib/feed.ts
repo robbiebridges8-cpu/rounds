@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import * as Crypto from 'expo-crypto';
 
 import type { Profile } from '@/lib/auth';
 import { compress, uploadImage, type PickedImage } from '@/lib/images';
@@ -8,8 +9,12 @@ import type { Tables } from '@/types/database';
 export type Cheer = Tables<'cheers'> & { profiles: Profile | null };
 export type Comment = Tables<'checkin_comments'> & { profiles: Profile | null };
 
+export type Tag = Tables<'checkin_tags'> & { profiles: Profile | null };
+
 export type FeedPost = Tables<'checkins'> & {
   profiles: Profile | null;
+  checkin_tags: Tag[];
+  checkin_guests: Tables<'checkin_guests'>[];
   pubs: Pick<Tables<'pubs'>, 'id' | 'name' | 'borough' | 'lat' | 'lng'> | null;
   checkin_photos: Tables<'checkin_photos'>[];
   cheers: Cheer[];
@@ -17,7 +22,7 @@ export type FeedPost = Tables<'checkins'> & {
 };
 
 const SELECT =
-  '*, profiles(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles(*))';
+  '*, profiles(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles(*)), checkin_tags(*, profiles(*)), checkin_guests(*)';
 const PAGE = 20;
 
 /**
@@ -129,5 +134,39 @@ export function useDeleteReply() {
       if (error) throw error;
     },
     onSuccess: (_, { checkinId }) => invalidate(checkinId),
+  });
+}
+
+export function useDeleteCheckin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('checkins').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries();
+    },
+  });
+}
+
+/** "You were here?" A tagged mate adds the visit to their own map. */
+export function useClaimVisit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ pubId }: { pubId: string }) => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const { error } = await supabase.from('checkins').insert({
+        user_id: session!.user.id,
+        pub_id: pubId,
+        client_id: Crypto.randomUUID(),
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries();
+    },
   });
 }

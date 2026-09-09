@@ -6,6 +6,7 @@ import type { FnReturns } from '@/types/database';
 export type LeaderboardRow = FnReturns<'friends_leaderboard'>[number];
 export type WeeklySummary = FnReturns<'weekly_summary'>[number];
 export type MyWeek = FnReturns<'my_week'>[number];
+export type MyMonth = FnReturns<'my_month'>[number];
 
 export function useLeaderboard() {
   return useQuery({
@@ -34,6 +35,17 @@ export function useMyWeek() {
     queryKey: ['my-week'],
     queryFn: async (): Promise<MyWeek | null> => {
       const { data, error } = await supabase.rpc('my_week');
+      if (error) throw error;
+      return data[0] ?? null;
+    },
+  });
+}
+
+export function useMyMonth() {
+  return useQuery({
+    queryKey: ['my-month'],
+    queryFn: async (): Promise<MyMonth | null> => {
+      const { data, error } = await supabase.rpc('my_month');
       if (error) throw error;
       return data[0] ?? null;
     },
