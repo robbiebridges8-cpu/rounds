@@ -43,9 +43,11 @@ export default function MapScreen() {
   const { scheme } = useTheme();
   const mapRef = useRef<MapView>(null);
   const [bounds, setBounds] = useState<Bounds>(() => boundsOf(LONDON_REGION));
+  const [wide, setWide] = useState(true);
   const [selected, setSelected] = useState<MapPub | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
-  const { data: pubs } = useMapPubs(bounds);
+  // City zoom shows only pubs with life in them; a neighbourhood shows all.
+  const { data: pubs } = useMapPubs(bounds, wide);
 
   const locate = async () => {
     const coords = await getPosition();
@@ -75,7 +77,10 @@ export default function MapScreen() {
         showsPointsOfInterests={false}
         showsBuildings={false}
         onPress={() => setSelected(null)}
-        onRegionChangeComplete={(region) => setBounds(boundsOf(region))}>
+        onRegionChangeComplete={(region) => {
+          setBounds(boundsOf(region));
+          setWide(region.latitudeDelta > 0.028);
+        }}>
         {shown?.map((pub) => {
           const tier = tierOf(pub);
           const active = pub.id === current?.id;
@@ -130,7 +135,7 @@ export default function MapScreen() {
               </Pressable>
             );
           })}
-          {pubs && pubs.length >= 400 ? (
+          {wide || (pubs && pubs.length >= 400) ? (
             <View className="h-9 flex-row items-center gap-1.5 rounded-full bg-surface px-3">
               <Icon name="plus.magnifyingglass" size={12} color={colors.inkSoft} />
               <Text className="text-ink-soft text-[12px] font-semibold">Zoom in for every pub</Text>
@@ -156,7 +161,7 @@ export default function MapScreen() {
           <View className="flex-row items-center gap-4 self-center rounded-full bg-surface px-4 py-2" style={shadow}>
             <Legend color={colors.you} label="Been" />
             <Legend color={colors.mates} label="Mates" />
-            <Legend color={colors.slate} label="Not yet" />
+            {!wide ? <Legend color={colors.slate} label="Not yet" /> : null}
           </View>
         )}
         <Text className="text-ink-soft self-start text-[10px]">© OpenStreetMap contributors</Text>
@@ -167,7 +172,7 @@ export default function MapScreen() {
 
 /** A dot with a light ring, sized by tier. */
 function Pin({ color, active, small }: { color: string; active: boolean; small: boolean }) {
-  const size = active ? 28 : small ? 12 : 18;
+  const size = active ? 28 : small ? 9 : 18;
   return (
     <View
       style={{
@@ -177,7 +182,7 @@ function Pin({ color, active, small }: { color: string; active: boolean; small: 
         backgroundColor: color,
         borderWidth: active ? 4 : 2.5,
         borderColor: colors.surface,
-        opacity: small && !active ? 0.8 : 1,
+        opacity: small && !active ? 0.55 : 1,
         shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowRadius: 3,

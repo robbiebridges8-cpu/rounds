@@ -826,6 +826,7 @@ export type Database = {
           max_rows?: number;
           min_lat: number;
           min_lng: number;
+          only_active?: boolean;
         };
         Returns: {
           avg_rating: number;

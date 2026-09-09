@@ -22,9 +22,9 @@ export type Visit = Tables<'checkins'> & {
 const roundBounds = (b: Bounds) =>
   [b.minLat, b.minLng, b.maxLat, b.maxLng].map((n) => Math.round(n * 1000) / 1000);
 
-export function useMapPubs(bounds: Bounds | null) {
+export function useMapPubs(bounds: Bounds | null, activeOnly = false) {
   return useQuery({
-    queryKey: ['map-pubs', bounds ? roundBounds(bounds) : null],
+    queryKey: ['map-pubs', bounds ? roundBounds(bounds) : null, activeOnly],
     enabled: Boolean(bounds),
     placeholderData: keepPreviousData,
     queryFn: async () => {
@@ -34,6 +34,7 @@ export function useMapPubs(bounds: Bounds | null) {
         max_lat: bounds!.maxLat,
         max_lng: bounds!.maxLng,
         max_rows: 400,
+        only_active: activeOnly,
       });
       if (error) throw error;
       return data;
