@@ -100,7 +100,7 @@ export function Leaderboard({ rows, metric }: { rows: LeaderboardRow[]; metric: 
               <View className="items-end">
                 <Text
                   className="text-ink"
-                  style={{ fontFamily: fonts.displayBlack, fontSize: 26, lineHeight: 30, fontVariant: ['tabular-nums'] }}>
+                  style={{ fontFamily: fonts.display, fontSize: 26, lineHeight: 30, fontVariant: ['tabular-nums'] }}>
                   {row[metric]}
                 </Text>
                 <Text className="text-ink-soft text-[11px] font-semibold uppercase tracking-wide">

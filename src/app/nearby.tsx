@@ -2,8 +2,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { ScorePill } from '@/components/score-pill';
-import { Card, EmptyState, Icon, ListRow } from '@/components/ui';
+import { Card, EmptyState, Icon, ListRow, Rating } from '@/components/ui';
 import { formatDistance, plural } from '@/lib/format';
 import { getPosition, type Coords } from '@/lib/location';
 import { useNearbyPubs, type NearbyPub } from '@/lib/pubs';
@@ -59,7 +58,7 @@ export default function NearbyScreen() {
                 .filter(Boolean)
                 .join(' · ')}
               left={<Dot pub={pub} />}
-              right={pub.avg_rating != null ? <ScorePill score={Number(pub.avg_rating) * 2} size="sm" /> : undefined}
+              right={pub.avg_rating != null ? <Rating value={pub.avg_rating} size={14} /> : undefined}
               onPress={() => open(pub)}
               last={index === pubs.data.length - 1}
             />

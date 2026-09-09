@@ -1,64 +1,119 @@
-// One place for colour, type and radius. Tailwind config mirrors these, so
-// use className for layout and reach for this object only where a component
-// needs a raw value (map pins, status bar, native props, SVG).
+// The look: London signage. Chalk-white paper, navy ink rather than black,
+// one red for the one action that matters, and the Underground line colours
+// doing the talking on the map: Circle yellow for you, District green for
+// your mates, Jubilee grey for everywhere else. Dark mode is the same idea
+// after closing time: navy, not black.
 //
-// Dark first. Pubs happen at night, and the map, the photos and the gold
-// boroughs all read better on stout than on paper.
+// `colors` is the live palette. The ThemeProvider swaps its values when the
+// scheme changes and remounts the tree, so plain `colors.x` reads in native
+// props and SVG stay correct. Class names use the same tokens through CSS
+// variables, see tailwind.config.js.
 
-export const colors = {
-  // surfaces
-  canvas: '#130F0C',
-  surface: '#1E1712',
-  raised: '#2A2019',
-  line: '#352A21',
+export type Palette = {
+  canvas: string;
+  surface: string;
+  raised: string;
+  line: string;
+  rule: string;
+  ink: string;
+  inkSoft: string;
+  ale: string;
+  aleDark: string;
+  aleTint: string;
+  stout: string;
+  stoutSoft: string;
+  gold: string;
+  goldTint: string;
+  mate: string;
+  mateTint: string;
+  slate: string;
+  danger: string;
+};
 
-  // text
-  ink: '#F3EADB',
-  inkSoft: '#A99A88',
+export const palettes: Record<'light' | 'dark', Palette> = {
+  light: {
+    canvas: '#F5F3EC', // chalk
+    surface: '#FFFFFF',
+    raised: '#EBE8DF',
+    line: '#D9D5CA',
+    rule: '#10214A', // the thick navy rule under a station name
+    ink: '#10214A', // navy, never black
+    inkSoft: '#5B6478',
+    ale: '#DC241F', // Central line red: the action colour
+    aleDark: '#B71B17',
+    aleTint: '#FBE4E3',
+    stout: '#10214A', // the contrast surface is navy, not dark brown
+    stoutSoft: '#C7CEE0',
+    gold: '#FFD300', // Circle line yellow: you have been here
+    goldTint: '#FFF4B8',
+    mate: '#00843D', // District line green: a mate has been
+    mateTint: '#CFE9D8',
+    slate: '#A0A5A9', // Jubilee line grey: nobody you know has been
+    danger: '#B71B17',
+  },
+  dark: {
+    canvas: '#0B1020',
+    surface: '#141B33',
+    raised: '#1E2747',
+    line: '#2B3559',
+    rule: '#F5F3EC',
+    ink: '#F5F3EC',
+    inkSoft: '#A9B0C6',
+    ale: '#F0362F',
+    aleDark: '#DC241F',
+    aleTint: '#3B1618',
+    stout: '#2140C8',
+    stoutSoft: '#C7CEE0',
+    gold: '#FFD300',
+    goldTint: '#4A3F00',
+    mate: '#2FB86A',
+    mateTint: '#173A27',
+    slate: '#6E7590',
+    danger: '#F0362F',
+  },
+};
 
-  // brand: a proper amber, brighter on dark
-  ale: '#E8842E',
-  aleDark: '#C96A1C',
-  aleTint: '#3B2617',
+/** Live palette. Mutated by ThemeProvider; see applyPalette. */
+export const colors: Palette = { ...palettes.light };
 
-  // the accent surface (week card, banners): warm and loud, used once
-  stout: '#E8842E',
-  stoutSoft: '#F3EADB',
+export function applyPalette(scheme: 'light' | 'dark') {
+  Object.assign(colors, palettes[scheme]);
+}
 
-  // map legend
-  gold: '#F2B92E', // you have been here
-  mate: '#4FB58C', // a friend has been, you have not
-  mateTint: '#22463A', // same, on the borough map
-  slate: '#6B5F55', // nobody you know has been
-
-  // score pills, Beli style: green good, amber middling, red poor
-  scoreHigh: '#4FB58C',
-  scoreMid: '#F2B92E',
-  scoreLow: '#E8842E',
-  scoreBad: '#E0533F',
-
-  danger: '#E0533F',
-} as const;
+/** The same palette as CSS variables, for NativeWind's vars(). */
+export function paletteVars(p: Palette): Record<string, string> {
+  return {
+    '--color-canvas': p.canvas,
+    '--color-surface': p.surface,
+    '--color-raised': p.raised,
+    '--color-line': p.line,
+    '--color-rule': p.rule,
+    '--color-ink': p.ink,
+    '--color-ink-soft': p.inkSoft,
+    '--color-ale': p.ale,
+    '--color-ale-dark': p.aleDark,
+    '--color-ale-tint': p.aleTint,
+    '--color-stout': p.stout,
+    '--color-stout-soft': p.stoutSoft,
+    '--color-gold': p.gold,
+    '--color-gold-tint': p.goldTint,
+    '--color-mate': p.mate,
+    '--color-mate-tint': p.mateTint,
+    '--color-slate': p.slate,
+    '--color-danger': p.danger,
+  };
+}
 
 /**
- * Fraunces for display: headings, big numbers, the wordmark. It has the
- * warmth of a pub sign without the cliché. Everything else is the system
- * font, which is what the Human Interface Guidelines want for UI text.
+ * Bricolage Grotesque for display: an editorial grotesque with real character
+ * in the heavy weights, and not the default anyone reaches for. UI text is
+ * the system font, as the Human Interface Guidelines want.
  */
 export const fonts = {
-  display: 'Fraunces_700Bold',
-  displayBlack: 'Fraunces_900Black',
-  displayItalic: 'Fraunces_600SemiBold_Italic',
+  display: 'BricolageGrotesque_800ExtraBold',
+  displayMedium: 'BricolageGrotesque_600SemiBold',
 } as const;
 
-export const radii = { sm: 10, md: 16, lg: 24, pill: 999 } as const;
+export const radii = { sm: 6, md: 10, lg: 14, pill: 999 } as const;
 
 export const space = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 } as const;
-
-/** 0 to 10, colour coded. */
-export function scoreColor(score: number): string {
-  if (score >= 8) return colors.scoreHigh;
-  if (score >= 6) return colors.scoreMid;
-  if (score >= 4) return colors.scoreLow;
-  return colors.scoreBad;
-}

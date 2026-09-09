@@ -29,7 +29,7 @@ export default function InviteScreen() {
 
     if (!session) {
       started.current = true;
-      void savePendingInvite(code).then(() => router.replace('/sign-in'));
+      void savePendingInvite(code).then(() => router.replace('/welcome'));
       return;
     }
     if (profile.isPending) return;

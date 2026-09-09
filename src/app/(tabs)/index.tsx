@@ -1,15 +1,18 @@
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ScorePill } from '@/components/score-pill';
-import { Icon, MapButton } from '@/components/ui';
+import { BoroughSnapshot } from '@/components/borough-map';
+import { Icon, MapButton, Rating } from '@/components/ui';
+import { photoUrl } from '@/lib/checkins';
 import { plural } from '@/lib/format';
 import { LONDON_REGION, getPosition } from '@/lib/location';
-import { useMapPubs, type Bounds, type MapPub } from '@/lib/pubs';
+import { useMapPubs, usePubPhotos, type Bounds, type MapPub } from '@/lib/pubs';
+import { useTheme } from '@/lib/theme-provider';
 import { colors } from '@/theme';
 
 const boundsOf = (region: Region): Bounds => ({
@@ -20,21 +23,25 @@ const boundsOf = (region: Region): Bounds => ({
 });
 
 type Tier = 'me' | 'mate' | 'none';
-const tierOf = (pub: MapPub): Tier =>
-  pub.visited_by_me ? 'me' : pub.friend_visits > 0 ? 'mate' : 'none';
+type Filter = 'all' | 'me' | 'mate' | 'none';
 
-const TIER_COLOR: Record<Tier, string> = {
-  me: colors.gold,
-  mate: colors.mate,
-  none: colors.slate,
-};
+const tierOf = (pub: MapPub): Tier => (pub.visited_by_me ? 'me' : pub.friend_visits > 0 ? 'mate' : 'none');
+
+const CHIPS: { key: Filter; label: string; icon?: 'checkmark' | 'person.2.fill' | 'circle.dashed' }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'me', label: 'Been', icon: 'checkmark' },
+  { key: 'mate', label: 'Mates', icon: 'person.2.fill' },
+  { key: 'none', label: 'Not yet', icon: 'circle.dashed' },
+];
 
 export default function MapScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { scheme } = useTheme();
   const mapRef = useRef<MapView>(null);
   const [bounds, setBounds] = useState<Bounds>(() => boundsOf(LONDON_REGION));
   const [selected, setSelected] = useState<MapPub | null>(null);
+  const [filter, setFilter] = useState<Filter>('all');
   const { data: pubs } = useMapPubs(bounds);
 
   const locate = async () => {
@@ -47,8 +54,9 @@ export default function MapScreen() {
     void locate();
   }, []);
 
-  // Keep the preview in step with fresh data after a check-in.
   const current = selected ? (pubs?.find((p) => p.id === selected.id) ?? selected) : null;
+  const shown = pubs?.filter((p) => filter === 'all' || tierOf(p) === filter);
+  const tierColor: Record<Tier, string> = { me: colors.gold, mate: colors.mate, none: colors.slate };
 
   return (
     <View className="flex-1 bg-canvas">
@@ -57,7 +65,7 @@ export default function MapScreen() {
         style={StyleSheet.absoluteFill}
         initialRegion={LONDON_REGION}
         mapType={Platform.OS === 'ios' ? 'mutedStandard' : 'standard'}
-        userInterfaceStyle="dark"
+        userInterfaceStyle={scheme}
         showsUserLocation
         showsMyLocationButton={false}
         showsCompass={false}
@@ -65,7 +73,7 @@ export default function MapScreen() {
         showsBuildings={false}
         onPress={() => setSelected(null)}
         onRegionChangeComplete={(region) => setBounds(boundsOf(region))}>
-        {pubs?.map((pub) => {
+        {shown?.map((pub) => {
           const tier = tierOf(pub);
           const active = pub.id === current?.id;
           return (
@@ -80,47 +88,66 @@ export default function MapScreen() {
                 setSelected(pub);
               }}
               zIndex={active ? 3 : tier === 'me' ? 2 : tier === 'mate' ? 1 : 0}>
-              <Pin tier={tier} active={active} />
+              <Pin color={tierColor[tier]} active={active} small={tier === 'none'} />
             </Marker>
           );
         })}
       </MapView>
 
-      <View className="absolute right-4 gap-3" style={{ top: insets.top + 12 }}>
-        <MapButton icon="location" label="Show my location" onPress={() => void locate()} />
-        <MapButton icon="list.bullet" label="Pubs near me" onPress={() => router.push('/nearby')} />
+      {/* Resy's top: a search bar and a row of chips. */}
+      <View className="absolute left-4 right-4 gap-2" style={{ top: insets.top + 8 }}>
+        <Pressable
+          onPress={() => router.push('/search')}
+          accessibilityRole="search"
+          className="h-12 flex-row items-center gap-3 rounded-lg bg-ink px-4 active:opacity-90"
+          style={shadow}>
+          <Icon name="magnifyingglass" size={18} color={colors.canvas} weight="semibold" />
+          <Text className="text-canvas text-[17px] font-semibold">Search</Text>
+          <Text className="text-[17px]" style={{ color: colors.stoutSoft }}>London pubs</Text>
+        </Pressable>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
+          {CHIPS.map((chip) => {
+            const on = filter === chip.key;
+            return (
+              <Pressable
+                key={chip.key}
+                onPress={() => setFilter(chip.key)}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: on }}
+                className={`h-9 flex-row items-center gap-1.5 rounded-full px-4 ${on ? 'bg-ale' : 'bg-ink'}`}
+                style={shadow}>
+                {chip.icon ? <Icon name={chip.icon} size={12} color={colors.canvas} weight="bold" /> : null}
+                <Text className="text-canvas text-[14px] font-bold">{chip.label}</Text>
+              </Pressable>
+            );
+          })}
+          {pubs && pubs.length >= 400 ? (
+            <View className="h-9 flex-row items-center gap-1.5 rounded-full bg-surface px-3">
+              <Icon name="plus.magnifyingglass" size={12} color={colors.inkSoft} />
+              <Text className="text-ink-soft text-[12px] font-semibold">Zoom in for every pub</Text>
+            </View>
+          ) : null}
+        </ScrollView>
       </View>
 
-      {pubs && pubs.length >= 400 ? (
-        <View
-          className="absolute left-4 flex-row items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5"
-          style={{ top: insets.top + 12 }}>
-          <Icon name="plus.magnifyingglass" size={13} color={colors.inkSoft} />
-          <Text className="text-ink-soft text-xs font-semibold">Zoom in to see every pub</Text>
-        </View>
-      ) : null}
+      <View className="absolute right-4" style={{ bottom: current ? 300 : 64 }}>
+        <MapButton icon="location.fill" label="Show my location" onPress={() => void locate()} />
+      </View>
 
       <View className="absolute left-4 right-4 gap-2" style={{ bottom: 12 }}>
         {current ? (
-          <Animated.View
-            key={current.id}
-            entering={FadeInDown.springify().damping(18).stiffness(220)}
-            exiting={FadeOutDown.duration(140)}>
+          <Animated.View key={current.id} entering={FadeInDown.springify().damping(18).stiffness(220)} exiting={FadeOutDown.duration(140)}>
             <Preview
               pub={current}
               onOpen={() => router.push({ pathname: '/pub/[id]', params: { id: current.id } })}
-              onCheckIn={() =>
-                router.push({ pathname: '/checkin/[pubId]', params: { pubId: current.id } })
-              }
+              onCheckIn={() => router.push({ pathname: '/checkin/[pubId]', params: { pubId: current.id } })}
             />
           </Animated.View>
         ) : (
-          <View
-            className="flex-row items-center gap-4 self-center rounded-full border border-line bg-surface px-4 py-2"
-            style={shadow}>
-            <Legend color={colors.gold} label="You" />
+          <View className="flex-row items-center gap-4 self-center rounded-full bg-surface px-4 py-2" style={shadow}>
+            <Legend color={colors.gold} label="Been" />
             <Legend color={colors.mate} label="Mates" />
-            <Legend color={colors.slate} label="Unvisited" />
+            <Legend color={colors.slate} label="Not yet" />
           </View>
         )}
         <Text className="text-ink-soft self-start text-[10px]">© OpenStreetMap contributors</Text>
@@ -129,21 +156,21 @@ export default function MapScreen() {
   );
 }
 
-/** A dot, not a pin. Reads at any zoom and never covers the pub next door. */
-function Pin({ tier, active }: { tier: Tier; active: boolean }) {
-  const size = active ? 26 : tier === 'none' ? 12 : 16;
+/** A dot with a light ring, sized by tier. */
+function Pin({ color, active, small }: { color: string; active: boolean; small: boolean }) {
+  const size = active ? 28 : small ? 12 : 18;
   return (
     <View
       style={{
         width: size,
         height: size,
         borderRadius: size / 2,
-        backgroundColor: TIER_COLOR[tier],
+        backgroundColor: color,
         borderWidth: active ? 4 : 2.5,
-        borderColor: colors.canvas,
-        opacity: tier === 'none' && !active ? 0.75 : 1,
+        borderColor: colors.surface,
+        opacity: small && !active ? 0.8 : 1,
         shadowColor: '#000',
-        shadowOpacity: 0.25,
+        shadowOpacity: 0.3,
         shadowRadius: 3,
         shadowOffset: { width: 0, height: 1 },
       }}
@@ -151,52 +178,44 @@ function Pin({ tier, active }: { tier: Tier; active: boolean }) {
   );
 }
 
-function Preview({
-  pub,
-  onOpen,
-  onCheckIn,
-}: {
-  pub: MapPub;
-  onOpen: () => void;
-  onCheckIn: () => void;
-}) {
-  const tier = tierOf(pub);
-  const meta = [
-    pub.checkin_count > 0 ? plural(pub.checkin_count, 'visit') : null,
-    pub.friend_visits > 0 ? plural(pub.friend_visits, 'mate') : null,
-  ].filter(Boolean);
+/** Resy's card: a photo strip, the name, a red star rating, and the action. */
+function Preview({ pub, onOpen, onCheckIn }: { pub: MapPub; onOpen: () => void; onCheckIn: () => void }) {
+  const { width } = useWindowDimensions();
+  const photos = usePubPhotos(pub.id);
+  const inner = width - 32;
+  const meta = [pub.checkin_count > 0 ? plural(pub.checkin_count, 'visit') : null, pub.friend_visits > 0 ? plural(pub.friend_visits, 'mate') : null].filter(Boolean);
 
   return (
-    <Pressable
-      onPress={onOpen}
-      accessibilityRole="button"
-      className="rounded-lg border border-line bg-surface p-4 active:bg-ale-tint"
-      style={shadow}>
-      <View className="flex-row items-center gap-3">
-        <View className="flex-1 gap-0.5">
-          <Text className="text-ink font-display text-[22px] leading-7" numberOfLines={2}>
+    <Pressable onPress={onOpen} accessibilityRole="button" className="overflow-hidden rounded-lg bg-surface active:opacity-95" style={shadow}>
+      {photos.data && photos.data.length > 0 ? (
+        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ height: 150 }}>
+          {photos.data.map((p) => (
+            <Image key={p} source={{ uri: photoUrl(p) }} style={{ width: inner, height: 150 }} contentFit="cover" transition={150} />
+          ))}
+        </ScrollView>
+      ) : (
+        <View style={{ height: 110 }} className="bg-raised">
+          <BoroughSnapshot borough={null} lat={pub.lat} lng={pub.lng} width={inner} height={110} fill={colors.line} />
+        </View>
+      )}
+      <View className="flex-row items-center gap-3 p-4">
+        <View className="flex-1 gap-1">
+          <Text className="text-ink font-display text-[22px] leading-7" style={{ letterSpacing: -0.4 }} numberOfLines={2}>
             {pub.name}
           </Text>
           <View className="flex-row items-center gap-2">
-            {pub.avg_rating != null ? <ScorePill score={Number(pub.avg_rating) * 2} size="sm" /> : null}
-            <Text className="text-ink-soft text-[15px]" numberOfLines={1}>
-              {meta.length ? meta.join(' · ') : 'Nobody you know has been'}
-            </Text>
+            <Rating value={pub.avg_rating} count={pub.checkin_count || null} />
+            {meta.length ? (
+              <Text className="text-ink-soft text-[14px]" numberOfLines={1}>
+                · {meta.join(' · ')}
+              </Text>
+            ) : null}
           </View>
         </View>
-        <View className="items-end gap-2">
-          <View
-            className="h-3 w-3 rounded-full border-2 border-canvas"
-            style={{ backgroundColor: TIER_COLOR[tier] }}
-          />
-          <Pressable
-            onPress={onCheckIn}
-            accessibilityRole="button"
-            className="h-10 flex-row items-center gap-1.5 rounded-full bg-ale px-4 active:bg-ale-dark">
-            <Icon name="mappin.and.ellipse" size={14} color="#fff" weight="semibold" />
-            <Text className="text-[15px] font-semibold text-white">Check in</Text>
-          </Pressable>
-        </View>
+        <Pressable onPress={onCheckIn} accessibilityRole="button" className="h-11 flex-row items-center gap-1.5 rounded-full bg-ink px-4 active:opacity-80">
+          <Icon name="mappin.and.ellipse" size={14} color={colors.canvas} weight="semibold" />
+          <Text className="text-canvas text-[15px] font-bold">Check in</Text>
+        </Pressable>
       </View>
     </Pressable>
   );
@@ -206,14 +225,14 @@ function Legend({ color, label }: { color: string; label: string }) {
   return (
     <View className="flex-row items-center gap-1.5">
       <View className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
-      <Text className="text-ink text-xs font-semibold">{label}</Text>
+      <Text className="text-ink text-xs font-bold">{label}</Text>
     </View>
   );
 }
 
 const shadow = {
-  shadowColor: '#2A1A0C',
-  shadowOpacity: 0.12,
+  shadowColor: '#10214A',
+  shadowOpacity: 0.16,
   shadowRadius: 12,
   shadowOffset: { width: 0, height: 4 },
   elevation: 4,

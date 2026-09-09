@@ -164,6 +164,25 @@ export function usePubVisits(pubId: string | undefined) {
   });
 }
 
+/** Up to five photos from check-ins you can see at this pub. */
+export function usePubPhotos(pubId: string | undefined) {
+  return useQuery({
+    queryKey: ['pub-photos', pubId],
+    enabled: Boolean(pubId),
+    staleTime: 5 * 60_000,
+    queryFn: async (): Promise<string[]> => {
+      const { data, error } = await supabase
+        .from('checkin_photos')
+        .select('storage_path, checkins!inner(pub_id)')
+        .eq('checkins.pub_id', pubId!)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data.map((row) => row.storage_path);
+    },
+  });
+}
+
 export type CorrectionType = Tables<'pub_corrections'>['type'];
 
 export function useReportPub(pubId: string) {

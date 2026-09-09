@@ -162,7 +162,6 @@ export type Database = {
           note: string | null;
           pub_id: string;
           rating: number | null;
-          score: number | null;
           user_id: string;
           verified: boolean;
         };
@@ -176,7 +175,6 @@ export type Database = {
           note?: string | null;
           pub_id: string;
           rating?: number | null;
-          score?: number | null;
           user_id: string;
           verified?: boolean;
         };
@@ -190,7 +188,6 @@ export type Database = {
           note?: string | null;
           pub_id?: string;
           rating?: number | null;
-          score?: number | null;
           user_id?: string;
           verified?: boolean;
         };
@@ -360,48 +357,6 @@ export type Database = {
           },
           {
             foreignKeyName: 'pub_corrections_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      pub_rankings: {
-        Row: {
-          pub_id: string;
-          position: number;
-          score: number;
-          sentiment: string;
-          updated_at: string;
-          user_id: string;
-        };
-        Insert: {
-          pub_id: string;
-          position: number;
-          score?: number;
-          sentiment: string;
-          updated_at?: string;
-          user_id: string;
-        };
-        Update: {
-          pub_id?: string;
-          position?: number;
-          score?: number;
-          sentiment?: string;
-          updated_at?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'pub_rankings_pub_id_fkey';
-            columns: ['pub_id'];
-            isOneToOne: false;
-            referencedRelation: 'pubs';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'pub_rankings_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -798,13 +753,8 @@ export type Database = {
           visited_by_me: boolean;
         }[];
       };
-      rank_pub: {
-        Args: { p_index: number; p_pub: string; p_sentiment: string };
-        Returns: { rank_position: number; rank_score: number; rank_total: number }[];
-      };
       refresh_challenge_completion: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
       refresh_pub_stats: { Args: { p: string }; Returns: undefined };
-      rescore_rankings: { Args: { p_user: string }; Returns: undefined };
       request_friendship: {
         Args: { target_username: string };
         Returns: {
@@ -817,8 +767,6 @@ export type Database = {
         };
         SetofOptions: { from: '*'; to: 'friendships'; isOneToOne: true; isSetofReturn: false };
       };
-      sentiment_rank: { Args: { s: string }; Returns: number };
-      unrank_pub: { Args: { p_pub: string }; Returns: undefined };
       user_badges: {
         Args: { target: string };
         Returns: {

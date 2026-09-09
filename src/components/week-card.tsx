@@ -54,7 +54,7 @@ export function WeekCard({ summary, myId }: { summary: WeeklySummary | null; myI
                   <Text className="text-[13px]" style={{ color: 'rgba(19,15,12,0.72)' }}>
                     Most visited · {summary.top_pub_visits}{' '}
                     {summary.top_pub_visits === 1 ? 'visit' : 'visits'}
-                    {summary.top_pub_rating != null ? ` · ${(Number(summary.top_pub_rating) * 2).toFixed(1)} out of 10` : ''}
+                    {summary.top_pub_rating != null ? ` · ${Number(summary.top_pub_rating).toFixed(1)} stars` : ''}
                   </Text>
                 </View>
                 <Icon name="chevron.right" size={12} color={colors.canvas} weight="semibold" />

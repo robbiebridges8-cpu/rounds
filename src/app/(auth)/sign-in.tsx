@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, TextInput, View } from 'react-native';
 
-import { Body, Button, Field, Heading, Screen, Wordmark } from '@/components/ui';
+import { Button, Field, Screen, Wordmark } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
 import { colors } from '@/theme';
 
@@ -34,15 +34,12 @@ export default function SignIn() {
     const address = validate();
     if (!address) return;
     setBusy('in');
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: address,
-      password,
-    });
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email: address, password });
     setBusy(null);
     if (signInError) {
       setError(
         signInError.message === 'Invalid login credentials'
-          ? 'Wrong email or password. New here? Use Create account.'
+          ? 'Wrong email or password. New here? Create an account below.'
           : signInError.message
       );
     }
@@ -54,13 +51,10 @@ export default function SignIn() {
     setBusy('up');
     const { data, error: signUpError } = await supabase.auth.signUp({ email: address, password });
     setBusy(null);
-
     if (signUpError) {
       setError(signUpError.message);
       return;
     }
-    // No session back means the project still has "Confirm email" switched
-    // on in Supabase. Say so plainly rather than leaving a dead button.
     if (!data.session) {
       setError('Account created, but email confirmation is still on in Supabase. Turn it off and sign in.');
     }
@@ -68,52 +62,48 @@ export default function SignIn() {
 
   return (
     <Screen>
-      <KeyboardAvoidingView
-        className="flex-1 justify-between px-6 py-8"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View className="gap-3 pt-16">
-          <Wordmark size={40} color={colors.ale} />
-          <Heading>Your London, one pub at a time.</Heading>
-          <Body>Log the pubs you go to. Turn boroughs gold. See where your mates have been.</Body>
-        </View>
+      <KeyboardAvoidingView className="flex-1 px-6" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View className="flex-1 justify-center gap-8">
+          <View className="items-center gap-4">
+            <View className="h-16 w-16 items-center justify-center rounded-full" style={{ backgroundColor: colors.ink }}>
+              <Wordmark size={18} color={colors.canvas} />
+            </View>
+            <Text className="text-ink font-display text-[32px]" style={{ letterSpacing: -0.8 }}>
+              Log in or sign up
+            </Text>
+          </View>
 
-        <View className="gap-5">
-          <Field
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@example.com"
-            autoCapitalize="none"
-            autoComplete="email"
-            autoCorrect={false}
-            keyboardType="email-address"
-            inputMode="email"
-            textContentType="username"
-            returnKeyType="next"
-            onSubmitEditing={() => passwordRef.current?.focus()}
-          />
-          <Field
-            ref={passwordRef}
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            error={error}
-            placeholder="At least 8 characters"
-            secureTextEntry
-            autoCapitalize="none"
-            autoComplete="password"
-            textContentType="password"
-            returnKeyType="go"
-            onSubmitEditing={() => void signIn()}
-          />
-          <Button label="Sign in" onPress={() => void signIn()} loading={busy === 'in'} disabled={busy === 'up'} />
-          <Button
-            label="Create account"
-            variant="quiet"
-            onPress={() => void createAccount()}
-            loading={busy === 'up'}
-            disabled={busy === 'in'}
-          />
+          <View className="gap-3">
+            <Field
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Email"
+              autoCapitalize="none"
+              autoComplete="email"
+              autoCorrect={false}
+              keyboardType="email-address"
+              inputMode="email"
+              textContentType="username"
+              returnKeyType="next"
+              onSubmitEditing={() => passwordRef.current?.focus()}
+            />
+            <Field
+              ref={passwordRef}
+              value={password}
+              onChangeText={setPassword}
+              error={error}
+              placeholder="Password"
+              secureTextEntry
+              autoCapitalize="none"
+              autoComplete="password"
+              textContentType="password"
+              returnKeyType="go"
+              onSubmitEditing={() => void signIn()}
+            />
+            <Button label="Continue" onPress={() => void signIn()} loading={busy === 'in'} disabled={busy === 'up'} />
+            <Text className="text-ink-soft py-1 text-center text-[15px]">or</Text>
+            <Button label="Create an account" variant="outline" onPress={() => void createAccount()} loading={busy === 'up'} disabled={busy === 'in'} />
+          </View>
         </View>
       </KeyboardAvoidingView>
     </Screen>

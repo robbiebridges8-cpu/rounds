@@ -1,34 +1,37 @@
 /** @type {import('tailwindcss').Config} */
-// Mirrors src/theme.ts. Change both.
+// Every colour is a CSS variable set by ThemeProvider (see src/theme.ts), so
+// the same class names work in light and dark. Do not use opacity modifiers
+// (bg-ink/50) on these: variables and modifiers do not mix in NativeWind.
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
       colors: {
-        canvas: '#130F0C',
-        surface: '#1E1712',
-        raised: '#2A2019',
-        line: '#352A21',
-        ink: '#F3EADB',
-        'ink-soft': '#A99A88',
-        ale: '#E8842E',
-        'ale-dark': '#C96A1C',
-        'ale-tint': '#3B2617',
-        stout: '#E8842E',
-        'stout-soft': '#F3EADB',
-        gold: '#F2B92E',
-        mate: '#4FB58C',
-        'mate-tint': '#22463A',
-        slate: '#6B5F55',
-        danger: '#E0533F',
+        canvas: 'var(--color-canvas)',
+        surface: 'var(--color-surface)',
+        raised: 'var(--color-raised)',
+        line: 'var(--color-line)',
+        rule: 'var(--color-rule)',
+        ink: 'var(--color-ink)',
+        'ink-soft': 'var(--color-ink-soft)',
+        ale: 'var(--color-ale)',
+        'ale-dark': 'var(--color-ale-dark)',
+        'ale-tint': 'var(--color-ale-tint)',
+        stout: 'var(--color-stout)',
+        'stout-soft': 'var(--color-stout-soft)',
+        gold: 'var(--color-gold)',
+        'gold-tint': 'var(--color-gold-tint)',
+        mate: 'var(--color-mate)',
+        'mate-tint': 'var(--color-mate-tint)',
+        slate: 'var(--color-slate)',
+        danger: 'var(--color-danger)',
       },
       fontFamily: {
-        display: ['Fraunces_700Bold'],
-        'display-black': ['Fraunces_900Black'],
-        'display-italic': ['Fraunces_600SemiBold_Italic'],
+        display: ['BricolageGrotesque_800ExtraBold'],
+        'display-medium': ['BricolageGrotesque_600SemiBold'],
       },
-      borderRadius: { sm: '10px', md: '16px', lg: '24px' },
+      borderRadius: { sm: '6px', md: '10px', lg: '14px' },
     },
   },
   plugins: [],

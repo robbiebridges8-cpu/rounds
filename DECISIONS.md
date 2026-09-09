@@ -247,3 +247,25 @@ is ever just text.
 ranked pubs, photo tiles where you have one), the fill-in map, an eight-week
 bar chart, the trophy case. The diary groups check-ins by month with the day
 in a box. All three apps agree that a profile is a record, not a form.
+
+## Redesign, second attempt
+
+**The first redesign was reverted.** Dark-first plus a serif plus a ranking
+system still read as a template. Rankings are gone (migration 0010): people
+talk about pubs in stars. Ratings are 0.5 to 5 in half steps, Letterboxd
+style, stored as numeric with a check constraint so the halves are the only
+fractions.
+
+**Light by default, dark by choice.** A ThemeProvider swaps the palette and
+remounts the tree; class names go through CSS variables (NativeWind `vars`)
+so every token works in both. The toggle lives on the You tab and is
+remembered on the device. Opacity modifiers on themed colours are banned
+because variables and modifiers do not mix.
+
+**The look: London signage, three references.** Chalk-white paper and navy
+ink rather than black; Central line red for stars, active states and the
+section rules; Circle line yellow for your boroughs; District green for your
+mates; Jubilee grey for the rest. Bricolage Grotesque for display. Ink pill
+buttons as Luma and Patreon do them; Patreon's soft filled inputs; Luma's
+orbit on the welcome screen; Resy's map with a search bar, filter chips and
+a photo card with a red star rating rising from the bottom.

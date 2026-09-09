@@ -2,8 +2,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
-import { ScorePill } from '@/components/score-pill';
-import { Card, EmptyState } from '@/components/ui';
+import { Card, EmptyState, Stars } from '@/components/ui';
 import { photoUrl, type UserCheckin } from '@/lib/checkins';
 import { fonts } from '@/theme';
 
@@ -15,11 +14,7 @@ export function Diary({ checkins, me }: { checkins: UserCheckin[]; me: boolean }
   if (checkins.length === 0) {
     return (
       <Card>
-        <EmptyState
-          icon="book.closed"
-          title="Nothing in the diary"
-          body={me ? 'Every check-in lands here, by month.' : undefined}
-        />
+        <EmptyState icon="book.closed" title="Nothing in the diary" body={me ? 'Every check-in lands here, by month.' : undefined} />
       </Card>
     );
   }
@@ -38,9 +33,7 @@ export function Diary({ checkins, me }: { checkins: UserCheckin[]; me: boolean }
         const label = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
         return (
           <View key={key}>
-            <Text className="text-ink-soft mb-2 px-1 text-[12px] font-semibold uppercase tracking-wide">
-              {label}
-            </Text>
+            <Text className="text-ink-soft mb-2 px-1 text-[12px] font-bold uppercase tracking-wider">{label}</Text>
             <Card>
               {items.map((c, index) => (
                 <DiaryRow key={c.id} checkin={c} last={index === items.length - 1} />
@@ -62,32 +55,26 @@ function DiaryRow({ checkin, last }: { checkin: UserCheckin; last: boolean }) {
     <Pressable
       onPress={() => router.push({ pathname: '/post/[id]', params: { id: checkin.id } })}
       accessibilityRole="button"
-      className="flex-row items-center gap-3 pl-3 active:bg-ale-tint">
+      className="flex-row items-center gap-3 pl-3 active:bg-raised">
       <View className="w-11 items-center rounded-md bg-raised py-1.5">
-        <Text className="text-ink-soft text-[10px] font-bold uppercase">
-          {d.toLocaleDateString('en-GB', { weekday: 'short' })}
-        </Text>
-        <Text className="text-ink" style={{ fontFamily: fonts.displayBlack, fontSize: 20, lineHeight: 24 }}>
+        <Text className="text-ink-soft text-[10px] font-bold uppercase">{d.toLocaleDateString('en-GB', { weekday: 'short' })}</Text>
+        <Text className="text-ink" style={{ fontFamily: fonts.display, fontSize: 20, lineHeight: 24 }}>
           {d.getDate()}
         </Text>
       </View>
       <View className={`flex-1 flex-row items-center gap-3 py-3 pr-4 ${last ? '' : 'border-b border-line'}`}>
-        <View className="flex-1">
+        <View className="flex-1 gap-0.5">
           <Text className="text-ink text-[17px] font-semibold" numberOfLines={1}>
             {checkin.pubs?.name ?? 'A pub'}
           </Text>
-          <Text className="text-ink-soft text-[13px]" numberOfLines={1}>
-            {checkin.note ?? checkin.pubs?.borough ?? ''}
-          </Text>
+          {checkin.rating ? <Stars value={checkin.rating} size={12} /> : null}
+          {checkin.note ? (
+            <Text className="text-ink-soft text-[13px]" numberOfLines={1}>
+              {checkin.note}
+            </Text>
+          ) : null}
         </View>
-        {photo ? (
-          <Image
-            source={{ uri: photoUrl(photo.storage_path) }}
-            style={{ width: 40, height: 40, borderRadius: 8 }}
-            contentFit="cover"
-          />
-        ) : null}
-        <ScorePill score={checkin.score} size="sm" />
+        {photo ? <Image source={{ uri: photoUrl(photo.storage_path) }} style={{ width: 44, height: 44, borderRadius: 8 }} contentFit="cover" /> : null}
       </View>
     </Pressable>
   );

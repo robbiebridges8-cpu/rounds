@@ -76,7 +76,7 @@ export function useAuthRedirect() {
     const inAuthFlow = segments[0] === '(auth)';
 
     if (!session) {
-      if (!inAuthFlow) router.replace('/sign-in');
+      if (!inAuthFlow) router.replace('/welcome');
       return;
     }
     if (!profile.data) {

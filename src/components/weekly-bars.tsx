@@ -36,7 +36,7 @@ export function WeeklyBars({ dates, width }: { dates: string[]; width: number })
     <View className="gap-2 rounded-lg border border-line bg-surface p-4">
       <View className="flex-row items-baseline justify-between">
         <Text className="text-ink-soft text-[12px] font-semibold uppercase tracking-wide">Last 8 weeks</Text>
-        <Text className="text-ink" style={{ fontFamily: fonts.displayBlack, fontSize: 20 }}>
+        <Text className="text-ink" style={{ fontFamily: fonts.display, fontSize: 20 }}>
           {total}
           <Text className="text-ink-soft text-[13px]"> {total === 1 ? 'check-in' : 'check-ins'}</Text>
         </Text>

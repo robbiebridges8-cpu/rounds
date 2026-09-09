@@ -136,7 +136,7 @@ export default function ChallengeScreen() {
         ) : challenge.joined ? (
           <View className="gap-2 rounded-lg border border-line bg-surface p-4">
             <View className="flex-row items-baseline justify-between">
-              <Text style={{ fontFamily: fonts.displayBlack, fontSize: 30, color }}>
+              <Text style={{ fontFamily: fonts.display, fontSize: 30, color }}>
                 {challenge.done_count}
                 <Text className="text-ink-soft text-[17px]"> of {challenge.pub_count}</Text>
               </Text>

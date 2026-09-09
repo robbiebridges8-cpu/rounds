@@ -66,7 +66,7 @@ export function ChallengeCard({ challenge, onPress }: { challenge: Challenge; on
         {done ? (
           <Icon name="checkmark.seal.fill" size={24} color={color} />
         ) : challenge.joined ? (
-          <Text style={{ fontFamily: fonts.displayBlack, fontSize: 20, color }}>{pct}%</Text>
+          <Text style={{ fontFamily: fonts.display, fontSize: 20, color }}>{pct}%</Text>
         ) : (
           <Icon name="chevron.right" size={14} color={colors.slate} weight="semibold" />
         )}

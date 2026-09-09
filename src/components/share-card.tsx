@@ -45,13 +45,13 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard(
         justifyContent: 'space-between',
       }}>
       <View>
-        <Text style={{ color: colors.ale, fontSize: 44, fontFamily: fonts.displayBlack }}>Rounds</Text>
+        <Text style={{ color: colors.ale, fontSize: 44, fontFamily: fonts.display }}>Rounds</Text>
         <Text
           style={{
             color: colors.ink,
             fontSize: 84,
             lineHeight: 92,
-            fontFamily: fonts.displayBlack,
+            fontFamily: fonts.display,
             marginTop: 20,
           }}>
           {possessive} London
@@ -72,7 +72,7 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard(
             <Text style={{ color: colors.inkSoft, fontSize: 24, fontWeight: '500' }}>
               Join me with code
             </Text>
-            <Text style={{ color: colors.ale, fontSize: 44, fontFamily: fonts.displayBlack, letterSpacing: 2 }}>
+            <Text style={{ color: colors.ale, fontSize: 44, fontFamily: fonts.display, letterSpacing: 2 }}>
               {inviteCode}
             </Text>
           </View>
