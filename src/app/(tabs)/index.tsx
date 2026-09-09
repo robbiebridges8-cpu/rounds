@@ -61,7 +61,9 @@ export default function MapScreen() {
 
   const current = selected ? (pubs?.find((p) => p.id === selected.id) ?? selected) : null;
   const shown = pubs?.filter((p) => filter === 'all' || tierOf(p) === filter);
-  const tierColor: Record<Tier, string> = { me: colors.you, mate: colors.mates, none: colors.slate };
+  // Unvisited dots are a mid grey, not the palette's pale slate: on Apple's
+  // muted map the pale one vanished.
+  const tierColor: Record<Tier, string> = { me: colors.you, mate: colors.mates, none: '#8A8A96' };
 
   return (
     <View className="flex-1 bg-canvas">
@@ -161,7 +163,7 @@ export default function MapScreen() {
           <View className="flex-row items-center gap-4 self-center rounded-full bg-surface px-4 py-2" style={shadow}>
             <Legend color={colors.you} label="Been" />
             <Legend color={colors.mates} label="Mates" />
-            {!wide ? <Legend color={colors.slate} label="Not yet" /> : null}
+            {!wide ? <Legend color="#8A8A96" label="Not yet" /> : null}
           </View>
         )}
         <Text className="text-ink-soft self-start text-[10px]">© OpenStreetMap contributors</Text>
@@ -172,7 +174,7 @@ export default function MapScreen() {
 
 /** A dot with a light ring, sized by tier. */
 function Pin({ color, active, small }: { color: string; active: boolean; small: boolean }) {
-  const size = active ? 28 : small ? 9 : 18;
+  const size = active ? 28 : small ? 12 : 18;
   return (
     <View
       style={{
@@ -180,9 +182,9 @@ function Pin({ color, active, small }: { color: string; active: boolean; small: 
         height: size,
         borderRadius: size / 2,
         backgroundColor: color,
-        borderWidth: active ? 4 : 2.5,
+        borderWidth: active ? 4 : 2,
         borderColor: colors.surface,
-        opacity: small && !active ? 0.55 : 1,
+        opacity: 1,
         shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowRadius: 3,
