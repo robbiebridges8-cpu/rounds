@@ -43,6 +43,24 @@ Last updated 9 September 2026. See README.md for what exists.
 | 21 | Accessibility pass: VoiceOver labels on every icon button, Dynamic Type on the display face, contrast on butter text | Low | Medium | Small | Apple review notices; users with large text notice sooner |
 | 22 | Dark mode audit: every screen, every card, the share card stays light on purpose | Low | Low | Small | Toggle exists; nobody has looked at every screen in it |
 
+## P2b. User-contributed data. Planned 9 September, parked until there are users.
+
+One optional structured question at check-in, rotating, never all at once. Show people the impact of what they add. Amenities already work this way.
+
+| # | Item | Urgency | Value | Effort | Notes |
+|---|---|---|---|---|---|
+| 31 | Pint price at check-in: drink type and price, public aggregate per pub | Low | High | Medium | A London pint price index by borough and month. Press, a brewer's dashboard, nobody else has it at street level |
+| 32 | Busyness at check-in: Quiet / Steady / Rammed, aggregated by day and hour | Low | High | Small | Popular times from people inside. Feeds the live layer |
+| 33 | What you drank: drink and brand, recent ones suggested first | Low | Medium | Medium | Friends see it on the post; publicly "what people drink here"; personally, share-card stats |
+| 34 | Best for: After work, Big group, Date, Match day, Sunday, Solo pint, Last one before the train | Low | Medium | Small | Confirmable like amenities. Makes search occasion-aware |
+| 35 | Front photo: one photo of the outside per pub, used as the hero when nobody has taken one inside | Low | Medium | Small | Fixes blank pubs for good |
+| 36 | Still open? prompt for pubs with no check-in in a year, asked of the next person nearby | Low | Medium | Small | Keeps the record honest without a team |
+| 37 | Open now? yes/no when standing outside, quietly correcting imported hours | Low | Low | Small | |
+| 38 | Corrections with upvotes: three people saying the same fix applies it | Low | Medium | Small | Reports table exists |
+| 39 | Your local: one pub declared on your profile; the pub shows how many call it theirs | Low | Medium | Small | A badge pubs will want |
+| 40 | Your drink: one favourite on your profile | Low | Low | Small | |
+| 41 | Impact line on the profile: facts confirmed, pints priced, people who used them | Low | Medium | Small | The thing that keeps people contributing |
+
 ## P3. Later. Bigger bets and things that need an audience first.
 
 | # | Item | Urgency | Value | Effort | Notes |
