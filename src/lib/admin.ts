@@ -11,7 +11,6 @@ export type AdminStats = {
   checkins_total: number;
   photos_total: number;
   friendships: number;
-  claims_pending: number;
   weekly: { week: string; checkins: number; users: number }[];
   boroughs: { borough: string; checkins: number }[];
   top_pubs: { id: string; name: string; borough: string | null; checkins: number; visitors: number }[];

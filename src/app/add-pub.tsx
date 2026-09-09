@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Body, Button, Field, Icon } from '@/components/ui';
-import { useCreatePub } from '@/lib/claims';
+import { useCreatePub } from '@/lib/pubs';
 import { getPosition, type Coords } from '@/lib/location';
 import { colors } from '@/theme';
 

@@ -201,3 +201,33 @@ export function useReportPub(pubId: string) {
     },
   });
 }
+
+/** Adding a pub the import missed. Unverified until someone checks in. */
+export function useCreatePub() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { name: string; lat: number; lng: number; address?: string }) => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const { data, error } = await supabase
+        .from('pubs')
+        .insert({
+          name: input.name.trim(),
+          lat: input.lat,
+          lng: input.lng,
+          address: input.address?.trim() || null,
+          created_by: session!.user.id,
+          status: 'unverified',
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['map-pubs'] });
+      void queryClient.invalidateQueries({ queryKey: ['nearby-pubs'] });
+    },
+  });
+}

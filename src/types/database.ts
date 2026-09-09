@@ -417,27 +417,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      pub_claims: {
-        Row: { contact: string; created_at: string; id: string; pub_id: string; role: string; status: string; user_id: string };
-        Insert: { contact: string; created_at?: string; id?: string; pub_id: string; role: string; status?: string; user_id: string };
-        Update: { contact?: string; created_at?: string; id?: string; pub_id?: string; role?: string; status?: string; user_id?: string };
-        Relationships: [
-          {
-            foreignKeyName: 'pub_claims_pub_id_fkey';
-            columns: ['pub_id'];
-            isOneToOne: false;
-            referencedRelation: 'pubs';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'pub_claims_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
       pub_corrections: {
         Row: {
           created_at: string;
@@ -477,27 +456,6 @@ export type Database = {
           {
             foreignKeyName: 'pub_corrections_user_id_fkey';
             columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      pub_details: {
-        Row: { event: string | null; hours: string | null; offer: string | null; pub_id: string; updated_at: string; updated_by: string | null; website: string | null };
-        Insert: { event?: string | null; hours?: string | null; offer?: string | null; pub_id: string; updated_at?: string; updated_by?: string | null; website?: string | null };
-        Update: { event?: string | null; hours?: string | null; offer?: string | null; pub_id?: string; updated_at?: string; updated_by?: string | null; website?: string | null };
-        Relationships: [
-          {
-            foreignKeyName: 'pub_details_pub_id_fkey';
-            columns: ['pub_id'];
-            isOneToOne: true;
-            referencedRelation: 'pubs';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'pub_details_updated_by_fkey';
-            columns: ['updated_by'];
             isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
@@ -930,7 +888,6 @@ export type Database = {
         Args: { p_actor: string; p_body: string; p_checkin: string; p_kind: string; p_pub: string; p_title: string; p_user: string };
         Returns: undefined;
       };
-      pub_is_claimed: { Args: { p: string }; Returns: boolean };
       refresh_challenge_completion: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
       refresh_pub_stats: { Args: { p: string }; Returns: undefined };
       request_friendship: {

@@ -301,10 +301,9 @@ with the Apple account and EAS; until then the inbox is the whole feature
 and the push path is dormant but wired. The Sunday digest is a pg_cron job
 that writes digest rows for everyone whose circle did anything.
 
-**Pub claims are reviewed by hand.** Anyone can claim; nothing shows until
-the claim is approved in the database. An approved claimant edits four short
-fields (hours, this week, offer, website) that appear under "From the pub".
-This is the surface that gets sold later, so it exists before the audience.
+**Pub claims were built and taken out again the same day.** Migration
+0012 drops them. Too early: nobody to sell to and nobody to review claims.
+The design stays in git history for when there is an audience.
 
 **Classics are seeded from memory, not scraped.** Thirty-seven well-known
 pubs got a one-line blurb and a "London classics" quest so a first open has

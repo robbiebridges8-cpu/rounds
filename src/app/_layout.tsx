@@ -82,8 +82,6 @@ function RootNavigator() {
       <Stack.Screen name="settings" options={{ title: 'Settings' }} />
       <Stack.Screen name="privacy" options={{ title: 'Privacy' }} />
       <Stack.Screen name="admin" options={{ title: 'Numbers' }} />
-      <Stack.Screen name="claim/[pubId]" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.9, 1], sheetGrabberVisible: true, headerShown: false }} />
-      <Stack.Screen name="pub-details/[pubId]" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.92, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen name="add-pub" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen name="challenge/[id]/index" options={{ title: '' }} />
       <Stack.Screen

@@ -39,7 +39,7 @@ export default function AdminScreen() {
             <View className="flex-row gap-2">
               <Tile value={s.checkins_7d} label="Check-ins 7d" bg={colors.surface} fg={colors.ink} />
               <Tile value={s.new_users_7d} label="New 7d" bg={colors.surface} fg={colors.ink} />
-              <Tile value={s.claims_pending} label="Claims" bg={colors.surface} fg={colors.ink} />
+              <Tile value={s.friendships} label="Friendships" bg={colors.surface} fg={colors.ink} />
             </View>
 
             <View>

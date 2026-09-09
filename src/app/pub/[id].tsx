@@ -21,13 +21,11 @@ import {
   Display,
   EmptyState,
   Icon,
-  ListRow,
   Rating,
   SectionTitle,
   Stars,
 } from '@/components/ui';
 import { useSession } from '@/lib/auth';
-import { usePubClaim } from '@/lib/claims';
 import { photoUrl } from '@/lib/checkins';
 import { formatDistance, formatWhen, plural } from '@/lib/format';
 import {
@@ -62,7 +60,6 @@ export default function PubScreen() {
   const myVotes = useMyTagVotes(id);
   const vote = useVoteTag(id);
   const report = useReportPub(id);
-  const claim = usePubClaim(id);
 
   const reportProblem = () => {
     const submit = (type: CorrectionType) =>
@@ -190,19 +187,6 @@ export default function PubScreen() {
           ) : null}
         </View>
 
-        {claim.data?.claimed && claim.data.details ? (
-          <View>
-            <SectionTitle>From the pub</SectionTitle>
-            <Card>
-              {claim.data.details.hours ? <ListRow title="Hours" subtitle={claim.data.details.hours} chevron={false} /> : null}
-              {claim.data.details.event ? <ListRow title="This week" subtitle={claim.data.details.event} chevron={false} /> : null}
-              {claim.data.details.offer ? <ListRow title="Offer" subtitle={claim.data.details.offer} chevron={false} /> : null}
-              {claim.data.details.website ? <ListRow title="Website" subtitle={claim.data.details.website} chevron={false} /> : null}
-              <View className="px-4 pb-3 pt-1"><Text className="text-ink-soft text-[12px]">Posted by the pub. Verified by Rounds.</Text></View>
-            </Card>
-          </View>
-        ) : null}
-
         <View>
           <SectionTitle>What it is like</SectionTitle>
           <Card>
@@ -300,20 +284,6 @@ export default function PubScreen() {
             })}
           </View>
         </View>
-        <Pressable
-          onPress={() =>
-            claim.data?.mine?.status === 'approved'
-              ? router.push({ pathname: '/pub-details/[pubId]', params: { pubId: details.id } })
-              : claim.data?.mine
-                ? undefined
-                : router.push({ pathname: '/claim/[pubId]', params: { pubId: details.id } })
-          }
-          accessibilityRole="button"
-          className="items-center py-2">
-          <Text className="text-ink-soft text-[13px] font-semibold">
-            {claim.data?.mine?.status === 'approved' ? 'Edit your pub page' : claim.data?.mine ? 'Your claim is being checked' : 'Run this pub? Claim the page'}
-          </Text>
-        </Pressable>
       </ScrollView>
     </>
   );
