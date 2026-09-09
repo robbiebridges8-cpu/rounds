@@ -214,6 +214,15 @@ export type Database = {
           },
         ];
       };
+      checkin_likes: {
+        Row: { checkin_id: string; created_at: string; user_id: string };
+        Insert: { checkin_id: string; created_at?: string; user_id: string };
+        Update: { checkin_id?: string; created_at?: string; user_id?: string };
+        Relationships: [
+          { foreignKeyName: 'checkin_likes_checkin_id_fkey'; columns: ['checkin_id']; isOneToOne: false; referencedRelation: 'checkins'; referencedColumns: ['id'] },
+          { foreignKeyName: 'checkin_likes_user_id_fkey'; columns: ['user_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] },
+        ];
+      };
       checkins: {
         Row: {
           client_id: string;
@@ -290,6 +299,15 @@ export type Database = {
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
+        ];
+      };
+      comment_likes: {
+        Row: { comment_id: string; created_at: string; user_id: string };
+        Insert: { comment_id: string; created_at?: string; user_id: string };
+        Update: { comment_id?: string; created_at?: string; user_id?: string };
+        Relationships: [
+          { foreignKeyName: 'comment_likes_comment_id_fkey'; columns: ['comment_id']; isOneToOne: false; referencedRelation: 'checkin_comments'; referencedColumns: ['id'] },
+          { foreignKeyName: 'comment_likes_user_id_fkey'; columns: ['user_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] },
         ];
       };
       friendships: {
@@ -615,9 +633,9 @@ export type Database = {
         ];
       };
       pub_tags: {
-        Row: { label: string; slug: string; sort_order: number };
-        Insert: { label: string; slug: string; sort_order?: number };
-        Update: { label?: string; slug?: string; sort_order?: number };
+        Row: { group: string; label: string; slug: string; sort_order: number };
+        Insert: { group?: string; label: string; slug: string; sort_order?: number };
+        Update: { group?: string; label?: string; slug?: string; sort_order?: number };
         Relationships: [];
       };
       pubs: {
@@ -943,6 +961,7 @@ export type Database = {
         Args: { pub: string };
         Returns: { creator_name: string; follower_count: number; id: string; note: string; title: string }[];
       };
+      pub_rating_histogram: { Args: { pub: string }; Returns: { n: number; star: number }[] };
       refresh_challenge_completion: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
       refresh_pub_stats: { Args: { p: string }; Returns: undefined };
       request_friendship: {

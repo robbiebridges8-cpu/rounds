@@ -345,3 +345,25 @@ viewfinder. The photo is the check-in; stars, who was there and a note are
 a caption laid over it. Library and skip are both one tap, because
 basements and battery exist. This guarantees the photos that cheers and
 the feed run on.
+
+## Opinions, rebuilt
+
+**Tags are confirmations.** The thumbs up and down on a list of tags was
+the worst screen in the app, and "Cash only" with a thumbs up meant two
+things at once. Now a tag is a chip you tap because it is true. The count
+is how many people have. There is no vote against; a long press offers
+"not any more" for things that have changed, and a tag with more of those
+than confirmations fades and strikes through. Two groups, "It's got" and
+"Good to know", so the list reads as description rather than a survey.
+Offered at check-in as an optional row with the already-confirmed ones
+first, so agreeing is one tap.
+
+**Stars stay.** Verdict words were considered and rejected: stars are the
+unit everyone understands. What changed is the pub page: a distribution
+of everyone's ratings, your mates' faces on the line where they rated it,
+and their notes as quotes.
+
+**Cheers, Like, Reply, in that order.** Three responses on every post.
+Cheers is the photo back and the big butter pill; Like is a nod; Reply
+opens a box under the post with no navigation. Replies can be liked too.
+The order and the sizes are deliberate: cheers is the thing we want.

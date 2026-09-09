@@ -1,46 +1,26 @@
 import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { PostCard } from '@/components/post-card';
-import { Avatar, Button, Card, EmptyState, Icon, SectionTitle } from '@/components/ui';
+import { Button, EmptyState, Icon, SectionTitle } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
-import { useCheers, useClaimVisit, useDeleteCheckin, useDeleteReply, usePost, useRemoveCheers, useReply } from '@/lib/feed';
-import { formatWhen } from '@/lib/format';
+import { useCheers, useClaimVisit, useDeleteCheckin, usePost, useRemoveCheers } from '@/lib/feed';
 import { pickImage } from '@/lib/images';
 import { colors } from '@/theme';
 
 export default function PostScreen() {
-  const { id, reply: focusReply } = useLocalSearchParams<{ id: string; reply?: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { session } = useSession();
   const me = session?.user.id;
   const post = usePost(id);
   const cheers = useCheers();
   const removeCheers = useRemoveCheers();
-  const reply = useReply();
-  const deleteReply = useDeleteReply();
   const deleteCheckin = useDeleteCheckin();
   const claimVisit = useClaimVisit();
-  const inputRef = useRef<TextInput>(null);
-  const [body, setBody] = useState('');
-
-  useEffect(() => {
-    if (focusReply && post.data) setTimeout(() => inputRef.current?.focus(), 350);
-  }, [focusReply, post.data]);
 
   if (post.isPending) {
     return (
@@ -80,18 +60,6 @@ export default function PostScreen() {
     );
   };
 
-  const send = () => {
-    const text = body.trim();
-    if (!text) return;
-    reply.mutate(
-      { checkinId: data.id, body: text },
-      {
-        onSuccess: () => setBody(''),
-        onError: (error) => Alert.alert('Reply did not send', error.message),
-      }
-    );
-  };
-
   return (
     <>
       <Stack.Screen
@@ -120,7 +88,7 @@ export default function PostScreen() {
             me={me}
             onOpen={() => undefined}
             onCheers={() => void sayCheers()}
-            onReply={() => inputRef.current?.focus()}
+            expanded
           />
 
           {taggedMe && data.pubs ? (
@@ -154,69 +122,8 @@ export default function PostScreen() {
             </View>
           ) : null}
 
-          <View>
-            <SectionTitle>Replies</SectionTitle>
-            {data.checkin_comments.length === 0 ? (
-              <Text className="text-ink-soft px-1 text-[15px]">Nothing yet. Say something.</Text>
-            ) : (
-              <Card>
-                {data.checkin_comments.map((c, index) => (
-                  <Pressable
-                    key={c.id}
-                    disabled={c.user_id !== me}
-                    onLongPress={() =>
-                      Alert.alert('Delete your reply?', undefined, [
-                        { text: 'Cancel', style: 'cancel' },
-                        {
-                          text: 'Delete',
-                          style: 'destructive',
-                          onPress: () => deleteReply.mutate({ id: c.id, checkinId: data.id }),
-                        },
-                      ])
-                    }
-                    className="flex-row gap-3 px-4 pt-3">
-                    <Avatar url={c.profiles?.avatar_url} name={c.profiles?.display_name ?? '?'} size={32} />
-                    <View
-                      className={`flex-1 pb-3 ${
-                        index === data.checkin_comments.length - 1 ? '' : 'border-b border-line'
-                      }`}>
-                      <View className="flex-row items-baseline gap-2">
-                        <Text className="text-ink text-[15px] font-semibold">
-                          {c.user_id === me ? 'You' : (c.profiles?.display_name ?? 'Someone')}
-                        </Text>
-                        <Text className="text-ink-soft text-[12px]">{formatWhen(c.created_at)}</Text>
-                      </View>
-                      <Text className="text-ink text-[15px] leading-5">{c.body}</Text>
-                    </View>
-                  </Pressable>
-                ))}
-              </Card>
-            )}
-          </View>
         </ScrollView>
 
-        <View className="flex-row items-end gap-2 border-t border-line bg-canvas px-4 pb-3 pt-2">
-          <TextInput
-            ref={inputRef}
-            value={body}
-            onChangeText={setBody}
-            placeholder="Reply"
-            placeholderTextColor={colors.slate}
-            multiline
-            maxLength={280}
-            className="text-ink max-h-28 min-h-[44px] flex-1 rounded-[22px] border border-line bg-surface px-4 py-3 text-[16px]"
-          />
-          <Pressable
-            onPress={send}
-            disabled={!body.trim() || reply.isPending}
-            accessibilityRole="button"
-            accessibilityLabel="Send reply"
-            className={`h-11 w-11 items-center justify-center rounded-full ${
-              body.trim() ? 'bg-ale active:bg-ale-dark' : 'bg-line'
-            }`}>
-            <Icon name="arrow.up" size={18} color="#fff" weight="bold" />
-          </Pressable>
-        </View>
       </KeyboardAvoidingView>
     </>
   );

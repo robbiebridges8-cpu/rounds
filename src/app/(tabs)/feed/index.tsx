@@ -102,9 +102,6 @@ export default function FeedScreen() {
             me={me}
             onOpen={() => router.push({ pathname: '/post/[id]', params: { id: item.id } })}
             onCheers={() => void sayCheers(item)}
-            onReply={() =>
-              router.push({ pathname: '/post/[id]', params: { id: item.id, reply: '1' } })
-            }
           />
         )}
         ListEmptyComponent={

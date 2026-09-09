@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import type { Tables } from '@/types/database';
 
 export type Cheer = Tables<'cheers'> & { profiles: Profile | null };
-export type Comment = Tables<'checkin_comments'> & { profiles: Profile | null };
+export type Comment = Tables<'checkin_comments'> & { profiles: Profile | null; comment_likes: { user_id: string }[] };
 
 export type Tag = Tables<'checkin_tags'> & { profiles: Profile | null };
 
@@ -15,6 +15,7 @@ export type FeedPost = Tables<'checkins'> & {
   profiles: Profile | null;
   checkin_tags: Tag[];
   checkin_guests: Tables<'checkin_guests'>[];
+  checkin_likes: { user_id: string }[];
   pubs: Pick<Tables<'pubs'>, 'id' | 'name' | 'borough' | 'lat' | 'lng'> | null;
   checkin_photos: Tables<'checkin_photos'>[];
   cheers: Cheer[];
@@ -22,7 +23,7 @@ export type FeedPost = Tables<'checkins'> & {
 };
 
 const SELECT =
-  '*, profiles(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles(*)), checkin_tags(*, profiles(*)), checkin_guests(*)';
+  '*, profiles(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles(*), comment_likes(user_id)), checkin_tags(*, profiles(*)), checkin_guests(*), checkin_likes(user_id)';
 const PAGE = 20;
 
 /**
@@ -168,5 +169,40 @@ export function useClaimVisit() {
     onSuccess: () => {
       void queryClient.invalidateQueries();
     },
+  });
+}
+
+/** A plain like on a post. Cheers is the photo; this is the nod. */
+export function useLikePost() {
+  const invalidate = useInvalidatePost();
+  return useMutation({
+    mutationFn: async ({ checkinId, like }: { checkinId: string; like: boolean }) => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const me = session!.user.id;
+      const { error } = like
+        ? await supabase.from('checkin_likes').insert({ checkin_id: checkinId, user_id: me })
+        : await supabase.from('checkin_likes').delete().match({ checkin_id: checkinId, user_id: me });
+      if (error && error.code !== '23505') throw error;
+    },
+    onSuccess: (_, { checkinId }) => invalidate(checkinId),
+  });
+}
+
+export function useLikeReply() {
+  const invalidate = useInvalidatePost();
+  return useMutation({
+    mutationFn: async ({ commentId, like }: { commentId: string; checkinId: string; like: boolean }) => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const me = session!.user.id;
+      const { error } = like
+        ? await supabase.from('comment_likes').insert({ comment_id: commentId, user_id: me })
+        : await supabase.from('comment_likes').delete().match({ comment_id: commentId, user_id: me });
+      if (error && error.code !== '23505') throw error;
+    },
+    onSuccess: (_, { checkinId }) => invalidate(checkinId),
   });
 }

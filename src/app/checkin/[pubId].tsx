@@ -15,7 +15,7 @@ import { useFriendships } from '@/lib/friends';
 import { pickImage, type PickedImage } from '@/lib/images';
 import { inviteLink, useInviteCode } from '@/lib/invites';
 import { offerWeeklyNudge } from '@/lib/notifications';
-import { usePub } from '@/lib/pubs';
+import { useConfirmTags, usePub, usePubTagStats, usePubTags } from '@/lib/pubs';
 import { colors, fonts } from '@/theme';
 
 const LABELS: Record<string, string> = {
@@ -37,6 +37,10 @@ export default function CheckinScreen() {
   const friendships = useFriendships();
   const { data: me } = useProfile();
   const inviteCode = useInviteCode();
+  const tags = usePubTags();
+  const tagStats = usePubTagStats(pubId);
+  const confirmTags = useConfirmTags();
+  const [picked, setPicked] = useState<Set<string>>(new Set());
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
 
@@ -52,6 +56,19 @@ export default function CheckinScreen() {
 
   const pubName = pub.data?.pub.name ?? '';
   const friends = friendships.data?.friends ?? [];
+
+  // Tags others have confirmed come first, so agreeing is one tap.
+  const confirmedCount = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.up_votes ?? 0;
+  const tagOrder = [...(tags.data ?? [])].sort((a, b) => confirmedCount(b.slug) - confirmedCount(a.slug) || a.sort_order - b.sort_order);
+  const togglePick = (slug: string) => {
+    void Haptics.selectionAsync();
+    setPicked((current) => {
+      const next = new Set(current);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
+  };
 
   const snap = async () => {
     if (!cameraRef.current || snapping) return;
@@ -117,6 +134,7 @@ export default function CheckinScreen() {
       {
         onSuccess: async ({ photoError }) => {
           void Haptics.notificationAsync(photoError ? Haptics.NotificationFeedbackType.Warning : Haptics.NotificationFeedbackType.Success);
+          if (picked.size) confirmTags.mutate({ pubId: pub.data!.pub.id, slugs: [...picked] });
           router.back();
           void offerWeeklyNudge();
           if (photoError) Alert.alert('Checked in, but the photo did not upload', photoError);
@@ -251,6 +269,24 @@ export default function CheckinScreen() {
                 <Icon name="plus" size={16} color="#101014" weight="bold" />
               </Pressable>
             </View>
+
+            {tagOrder.length > 0 ? (
+              <View className="gap-1.5">
+                <Text className="text-[11px] font-bold uppercase tracking-wider text-white" style={{ opacity: 0.7 }}>What&apos;s it got? Optional</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
+                  {tagOrder.map((t) => {
+                    const on = picked.has(t.slug);
+                    const n = confirmedCount(t.slug);
+                    return (
+                      <Pressable key={t.slug} onPress={() => togglePick(t.slug)} accessibilityRole="checkbox" accessibilityState={{ checked: on }} className="h-9 flex-row items-center gap-1.5 rounded-full px-3.5" style={{ backgroundColor: on ? colors.butter : 'rgba(255,255,255,0.18)' }}>
+                        {on ? <Icon name="checkmark" size={11} color="#101014" weight="bold" /> : null}
+                        <Text className="text-[13px] font-bold" style={{ color: on ? '#101014' : '#fff' }}>{t.label}{n ? ` · ${n}` : ''}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            ) : null}
 
             <TextInput
               value={note}

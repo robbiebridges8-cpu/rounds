@@ -184,6 +184,41 @@ export function usePubPhotos(pubId: string | undefined) {
   });
 }
 
+export function usePubRatingHistogram(pubId: string | undefined) {
+  return useQuery({
+    queryKey: ['pub-histogram', pubId],
+    enabled: Boolean(pubId),
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('pub_rating_histogram', { pub: pubId! });
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+/** Confirm several tags at once, from the check-in flow. */
+export function useConfirmTags() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ pubId, slugs }: { pubId: string; slugs: string[] }) => {
+      if (slugs.length === 0) return;
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const userId = session!.user.id;
+      const now = new Date().toISOString();
+      const { error } = await supabase
+        .from('pub_tag_votes')
+        .upsert(slugs.map((tag) => ({ user_id: userId, pub_id: pubId, tag, value: 1, updated_at: now })), { onConflict: 'user_id,pub_id,tag' });
+      if (error) throw error;
+    },
+    onSettled: (_, __, { pubId }) => {
+      void queryClient.invalidateQueries({ queryKey: ['pub-tag-stats', pubId] });
+      void queryClient.invalidateQueries({ queryKey: ['my-tag-votes', pubId] });
+    },
+  });
+}
+
 export type CorrectionType = Tables<'pub_corrections'>['type'];
 
 export function useReportPub(pubId: string) {

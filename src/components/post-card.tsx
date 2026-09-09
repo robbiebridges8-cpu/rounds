@@ -1,11 +1,13 @@
 import { Image } from 'expo-image';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, ScrollView, Text, TextInput, View, useWindowDimensions } from 'react-native';
 
 import { BoroughSnapshot } from '@/components/borough-map';
 import { Avatar, Card, Icon, Stars } from '@/components/ui';
 import { photoUrl } from '@/lib/checkins';
-import type { FeedPost } from '@/lib/feed';
+import { useLikePost, useLikeReply, useReply, type FeedPost } from '@/lib/feed';
 import { formatDistance, formatWhen } from '@/lib/format';
 import { colors } from '@/theme';
 
@@ -14,37 +16,63 @@ type Props = {
   me: string | undefined;
   onOpen: () => void;
   onCheers: () => void;
-  onReply: () => void;
+  /** Show every reply rather than the last two. The post page sets this. */
+  expanded?: boolean;
 };
 
 /**
- * The activity card. Strava's shape: who, where, a picture, the numbers,
- * then the social bit. The picture is the photo if there is one, otherwise
- * the borough silhouette with a yellow dot.
+ * The activity card. Three ways to respond, in order of how much we want
+ * them: Cheers (a photo back, the big butter pill), Like (a nod), Reply
+ * (a line, typed right here under the post, no navigation).
  */
-export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
+export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props) {
   const router = useRouter();
   const { width } = useWindowDimensions();
+  const likePost = useLikePost();
+  const likeReply = useLikeReply();
+  const reply = useReply();
+  const [composing, setComposing] = useState(expanded);
+  const [draft, setDraft] = useState('');
+
   const who = post.profiles;
   const isMe = post.user_id === me;
   const hasPhotos = post.checkin_photos.length > 0;
   const mineCheers = post.cheers.some((c) => c.user_id === me);
-  const replies = post.checkin_comments;
+  const liked = post.checkin_likes.some((l) => l.user_id === me);
+  const replies = expanded ? post.checkin_comments : post.checkin_comments.slice(-2);
   const cardWidth = width - 32;
   const canSnapshot = post.pubs && post.pubs.lat != null && post.pubs.lng != null;
+
+  const toggleLike = () => {
+    void Haptics.selectionAsync();
+    likePost.mutate({ checkinId: post.id, like: !liked });
+  };
+
+  const send = () => {
+    const body = draft.trim();
+    if (!body) return;
+    reply.mutate(
+      { checkinId: post.id, body },
+      {
+        onSuccess: () => {
+          setDraft('');
+          if (!expanded) setComposing(false);
+        },
+        onError: (e) => Alert.alert('Reply did not send', e.message),
+      }
+    );
+  };
 
   return (
     <Card>
       <View className="h-2" style={{ backgroundColor: isMe ? colors.you : colors.mates }} />
-      <Pressable onPress={onOpen} accessibilityRole="button" className="active:bg-raised">
+      <Pressable onPress={onOpen} accessibilityRole="button" disabled={expanded} className={expanded ? '' : 'active:bg-raised'}>
         <View className="flex-row items-center gap-3 px-4 pt-4">
           <Pressable disabled={isMe || !who} onPress={() => who && router.push({ pathname: '/user/[id]', params: { id: who.id } })}>
             <Avatar url={who?.avatar_url} name={who?.display_name ?? '?'} size={40} />
           </Pressable>
           <View className="flex-1">
-            <Text className="text-ink text-[15px] font-bold" numberOfLines={1}>
-              {isMe ? 'You' : (who?.display_name ?? 'Someone')}
-            </Text>
+            <Text className="text-ink text-[15px] font-bold" numberOfLines={1}>{isMe ? 'You' : (who?.display_name ?? 'Someone')}</Text>
             <Text className="text-ink-soft text-[13px]" numberOfLines={1}>
               {formatWhen(post.created_at)}
               {post.pubs?.borough ? ` · ${post.pubs.borough}` : ''}
@@ -54,9 +82,7 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
         </View>
 
         <Pressable className="px-4 pt-3" onPress={() => post.pubs && router.push({ pathname: '/pub/[id]', params: { id: post.pubs.id } })}>
-          <Text className="text-ink font-display text-[24px] leading-7" style={{ letterSpacing: -0.5 }} numberOfLines={2}>
-            {post.pubs?.name ?? 'A pub'}
-          </Text>
+          <Text className="text-ink font-display text-[24px] leading-7" style={{ letterSpacing: -0.5 }} numberOfLines={2}>{post.pubs?.name ?? 'A pub'}</Text>
         </Pressable>
 
         {post.checkin_tags.length + post.checkin_guests.length > 0 ? (
@@ -67,22 +93,13 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
             </Text>
           </Text>
         ) : null}
+
         {post.note ? <Text className="text-ink px-4 pt-2 text-[16px] leading-6">{post.note}</Text> : null}
 
         {hasPhotos ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3" contentContainerClassName="gap-2 px-4">
             {post.checkin_photos.map((photo) => (
-              <Image
-                key={photo.id}
-                source={{ uri: photoUrl(photo.storage_path) }}
-                style={{
-                  width: post.checkin_photos.length === 1 ? cardWidth - 32 : 240,
-                  height: post.checkin_photos.length === 1 ? (cardWidth - 32) * 0.72 : 240,
-                  borderRadius: 12,
-                }}
-                contentFit="cover"
-                transition={150}
-              />
+              <Image key={photo.id} source={{ uri: photoUrl(photo.storage_path) }} style={{ width: post.checkin_photos.length === 1 ? cardWidth - 32 : 240, height: post.checkin_photos.length === 1 ? (cardWidth - 32) * 0.72 : 240, borderRadius: 12 }} contentFit="cover" transition={150} />
             ))}
           </ScrollView>
         ) : canSnapshot ? (
@@ -95,14 +112,9 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
           </View>
         ) : null}
 
-        <View className="flex-row gap-6 px-4 pt-3">
-          <Stat
-            label={post.verified ? 'Verified' : 'Logged'}
-            value={post.verified ? 'there' : post.distance_m != null ? `${formatDistance(post.distance_m)} away` : 'no location'}
-          />
-          {post.rating ? <Stat label="Rated" value={`${Number(post.rating).toFixed(1)} / 5`} /> : null}
-          {post.cheers.length > 0 ? <Stat label="Cheers" value={String(post.cheers.length)} /> : null}
-        </View>
+        {!post.verified && post.distance_m != null ? (
+          <Text className="text-ink-soft px-4 pt-2 text-[12px]">Logged {formatDistance(post.distance_m)} away</Text>
+        ) : null}
 
         {post.cheers.length > 0 ? (
           <View className="flex-row items-center gap-2 px-4 pt-3">
@@ -114,51 +126,77 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
               ))}
             </View>
             <Text className="text-ink-soft text-[13px]">
-              {post.cheers.length === 1
-                ? `${post.cheers[0].user_id === me ? 'You' : (post.cheers[0].profiles?.display_name ?? 'Someone')} said cheers`
-                : `${post.cheers.length} said cheers`}
+              {post.cheers.length === 1 ? `${post.cheers[0].user_id === me ? 'You' : (post.cheers[0].profiles?.display_name ?? 'Someone')} said cheers` : `${post.cheers.length} said cheers`}
             </Text>
-          </View>
-        ) : null}
-
-        {replies.length > 0 ? (
-          <View className="gap-1 px-4 pt-3">
-            {replies.slice(-2).map((reply) => (
-              <Text key={reply.id} className="text-ink text-[15px]" numberOfLines={2}>
-                <Text className="font-bold">{reply.user_id === me ? 'You' : (reply.profiles?.display_name ?? 'Someone')}</Text> {reply.body}
-              </Text>
-            ))}
-            {replies.length > 2 ? <Text className="text-ink-soft text-[13px]">View all {replies.length} replies</Text> : null}
           </View>
         ) : null}
       </Pressable>
 
-      <View className="flex-row gap-2 px-4 pb-4 pt-3">
+      {/* The three responses. Cheers first and biggest, on purpose. */}
+      <View className="flex-row items-center gap-2 px-4 pb-3 pt-3">
         {hasPhotos ? (
-          <Action icon={mineCheers ? 'camera.fill' : 'camera'} label={mineCheers ? 'Cheersed' : 'Cheers'} active={mineCheers} onPress={onCheers} />
+          <Pressable onPress={onCheers} accessibilityRole="button" className="h-11 flex-row items-center gap-2 rounded-full px-4 active:opacity-80" style={{ backgroundColor: mineCheers ? colors.ale : colors.butter }}>
+            <Icon name={mineCheers ? 'camera.fill' : 'camera'} size={16} color={mineCheers ? '#fff' : '#101014'} weight="bold" />
+            <Text className="text-[15px] font-bold" style={{ color: mineCheers ? '#fff' : '#101014' }}>
+              {mineCheers ? 'Cheersed' : 'Cheers'}{post.cheers.length ? ` · ${post.cheers.length}` : ''}
+            </Text>
+          </Pressable>
         ) : null}
-        <Action icon="bubble.right" label="Reply" onPress={onReply} quiet />
+        <Pressable onPress={toggleLike} accessibilityRole="button" accessibilityLabel={liked ? 'Unlike' : 'Like'} className="h-11 flex-row items-center gap-1.5 rounded-full bg-raised px-3.5 active:opacity-80">
+          <Icon name={liked ? 'heart.fill' : 'heart'} size={16} color={liked ? colors.ale : colors.ink} weight="bold" />
+          {post.checkin_likes.length ? <Text className="text-ink text-[14px] font-bold">{post.checkin_likes.length}</Text> : null}
+        </Pressable>
+        <Pressable onPress={() => setComposing((c) => !c)} accessibilityRole="button" accessibilityLabel="Reply" className="h-11 flex-row items-center gap-1.5 rounded-full bg-raised px-3.5 active:opacity-80">
+          <Icon name="bubble.right" size={16} color={colors.ink} weight="bold" />
+          {post.checkin_comments.length ? <Text className="text-ink text-[14px] font-bold">{post.checkin_comments.length}</Text> : null}
+        </Pressable>
       </View>
+
+      {replies.length > 0 ? (
+        <View className="gap-2 px-4 pb-3">
+          {!expanded && post.checkin_comments.length > 2 ? (
+            <Pressable onPress={onOpen}>
+              <Text className="text-ink-soft text-[13px] font-semibold">View all {post.checkin_comments.length} replies</Text>
+            </Pressable>
+          ) : null}
+          {replies.map((r) => {
+            const rliked = r.comment_likes.some((l) => l.user_id === me);
+            return (
+              <View key={r.id} className="flex-row items-start gap-2">
+                <Avatar url={r.profiles?.avatar_url} name={r.profiles?.display_name ?? '?'} size={24} />
+                <View className="flex-1">
+                  <Text className="text-ink text-[15px] leading-5">
+                    <Text className="font-bold">{r.user_id === me ? 'You' : (r.profiles?.display_name ?? 'Someone')}</Text> {r.body}
+                  </Text>
+                  <Text className="text-ink-soft text-[11px]">{formatWhen(r.created_at)}</Text>
+                </View>
+                <Pressable onPress={() => { void Haptics.selectionAsync(); likeReply.mutate({ commentId: r.id, checkinId: post.id, like: !rliked }); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={rliked ? 'Unlike reply' : 'Like reply'} className="flex-row items-center gap-1 pt-0.5">
+                  <Icon name={rliked ? 'heart.fill' : 'heart'} size={13} color={rliked ? colors.ale : colors.slate} />
+                  {r.comment_likes.length ? <Text className="text-ink-soft text-[11px] font-bold">{r.comment_likes.length}</Text> : null}
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      ) : null}
+
+      {composing ? (
+        <View className="flex-row items-end gap-2 border-t border-line px-4 py-3">
+          <TextInput
+            value={draft}
+            onChangeText={setDraft}
+            placeholder={`Reply to ${isMe ? 'your check-in' : (who?.display_name ?? 'this')}`}
+            placeholderTextColor={colors.slate}
+            multiline
+            maxLength={280}
+            autoFocus={!expanded}
+            className="text-ink max-h-24 min-h-[40px] flex-1 rounded-[20px] bg-raised px-4 py-2.5 text-[15px]"
+          />
+          <Pressable onPress={send} disabled={!draft.trim() || reply.isPending} accessibilityRole="button" accessibilityLabel="Send reply" className="h-10 w-10 items-center justify-center rounded-full" style={{ backgroundColor: draft.trim() ? colors.ink : colors.line }}>
+            <Icon name="arrow.up" size={16} color="#fff" weight="bold" />
+          </Pressable>
+        </View>
+      ) : null}
     </Card>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <View>
-      <Text className="text-ink-soft text-[10px] font-bold uppercase tracking-wider">{label}</Text>
-      <Text className="text-ink text-[15px] font-bold">{value}</Text>
-    </View>
-  );
-}
-
-function Action({ icon, label, active, quiet, onPress }: { icon: 'camera' | 'camera.fill' | 'bubble.right'; label: string; active?: boolean; quiet?: boolean; onPress: () => void }) {
-  const bg = active ? colors.ale : quiet ? colors.raised : colors.butter;
-  const fg = active ? '#fff' : '#101014';
-  return (
-    <Pressable onPress={onPress} accessibilityRole="button" className="h-10 flex-row items-center justify-center gap-2 rounded-full px-4 active:opacity-80" style={{ backgroundColor: bg }}>
-      <Icon name={icon} size={15} color={fg} weight="bold" />
-      <Text className="text-[14px] font-bold" style={{ color: fg }}>{label}</Text>
-    </Pressable>
   );
 }

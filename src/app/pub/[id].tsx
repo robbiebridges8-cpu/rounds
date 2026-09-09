@@ -11,7 +11,7 @@ import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
 import { formatDistance, formatWhen, plural } from '@/lib/format';
 import { useAddListPubs, useLists, usePubLists } from '@/lib/lists';
-import { useMyTagVotes, usePub, usePubPhotos, usePubTagStats, usePubTags, usePubVisits, useReportPub, useVoteTag, type CorrectionType } from '@/lib/pubs';
+import { useMyTagVotes, usePub, usePubPhotos, usePubRatingHistogram, usePubTagStats, usePubTags, usePubVisits, useReportPub, useVoteTag, type CorrectionType } from '@/lib/pubs';
 import { colors, fonts } from '@/theme';
 
 const CORRECTIONS: { label: string; type: CorrectionType }[] = [
@@ -42,6 +42,7 @@ export default function PubScreen() {
   const vote = useVoteTag(id);
   const report = useReportPub(id);
   const onLists = usePubLists(id);
+  const histogram = usePubRatingHistogram(id);
   const lists = useLists();
   const addToList = useAddListPubs();
 
@@ -88,13 +89,22 @@ export default function PubScreen() {
   const hero = photos.data?.[0];
   const heroHeight = Math.round(width * 0.85);
 
-  const netFor = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.net_votes ?? 0;
+  const confirmedFor = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.up_votes ?? 0;
+  const goneFor = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.down_votes ?? 0;
   const myVoteFor = (slug: string) => myVotes.data?.find((v) => v.tag === slug)?.value ?? 0;
-  const castVote = (slug: string, value: 1 | -1) => {
+  const confirm = (slug: string) => {
     void Haptics.selectionAsync();
-    vote.mutate({ tag: slug, value: myVoteFor(slug) === value ? 0 : value });
+    vote.mutate({ tag: slug, value: myVoteFor(slug) === 1 ? 0 : 1 });
   };
-  const sortedTags = [...(tags.data ?? [])].sort((a, b) => netFor(b.slug) - netFor(a.slug));
+  const notAnyMore = (slug: string, label: string) =>
+    Alert.alert(`${label}: not any more?`, 'Say so if it has changed. Nobody will see who said it.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Not any more', style: 'destructive', onPress: () => vote.mutate({ tag: slug, value: -1 }) },
+    ]);
+  const group = (g: string) => [...(tags.data ?? [])].filter((t) => t.group === g).sort((a, b) => confirmedFor(b.slug) - confirmedFor(a.slug) || a.sort_order - b.sort_order);
+  const totalRatings = (histogram.data ?? []).reduce((a, h) => a + h.n, 0);
+  const ratedVisits = (visits.data ?? []).filter((v) => v.rating != null);
+  const quotes = (visits.data ?? []).filter((v) => v.note && v.note.trim().length > 0).slice(0, 3);
 
   return (
     <>
@@ -164,22 +174,72 @@ export default function PubScreen() {
             </ScrollView>
           ) : null}
 
-          <View>
-            <SectionTitle>What it is like</SectionTitle>
-            <Card>
-              {sortedTags.map((tag, index) => {
-                const net = netFor(tag.slug);
-                const mine = myVoteFor(tag.slug);
-                return (
-                  <View key={tag.slug} className={`flex-row items-center gap-3 py-2 pl-4 pr-2 ${index === sortedTags.length - 1 ? '' : 'border-b border-line'}`}>
-                    <Text className="text-ink flex-1 text-[17px]">{tag.label}</Text>
-                    <Text className={`w-8 text-right text-[15px] font-bold ${net > 0 ? 'text-you' : net < 0 ? 'text-danger' : 'text-slate'}`}>{net > 0 ? `+${net}` : net}</Text>
-                    <VoteButton icon={mine === 1 ? 'hand.thumbsup.fill' : 'hand.thumbsup'} active={mine === 1} label={`Yes, ${tag.label.toLowerCase()}`} onPress={() => castVote(tag.slug, 1)} />
-                    <VoteButton icon={mine === -1 ? 'hand.thumbsdown.fill' : 'hand.thumbsdown'} active={mine === -1} label={`No, not ${tag.label.toLowerCase()}`} onPress={() => castVote(tag.slug, -1)} />
+          {totalRatings > 0 ? (
+            <View>
+              <SectionTitle>Ratings</SectionTitle>
+              <Card>
+                <View className="gap-3 p-4">
+                  <View className="flex-row items-end gap-4">
+                    <Text style={{ fontFamily: fonts.display, fontSize: 48, lineHeight: 52, letterSpacing: -2, color: colors.ink }}>{stats?.avg_rating != null ? Number(stats.avg_rating).toFixed(1) : '–'}</Text>
+                    <View className="flex-1 gap-1 pb-2">
+                      <Stars value={stats?.avg_rating} size={16} />
+                      <Text className="text-ink-soft text-[13px] font-semibold">{plural(totalRatings, 'rating')}{ratedVisits.length ? ` · your mates say ${(ratedVisits.reduce((a, v) => a + Number(v.rating), 0) / ratedVisits.length).toFixed(1)}` : ''}</Text>
+                    </View>
                   </View>
-                );
-              })}
-            </Card>
+                  <View className="gap-1.5">
+                    {(histogram.data ?? []).map((h) => (
+                      <View key={h.star} className="flex-row items-center gap-2">
+                        <Text className="text-ink-soft w-3 text-[11px] font-bold">{h.star}</Text>
+                        <View className="h-2.5 flex-1 overflow-hidden rounded-full bg-raised">
+                          <View className="h-full rounded-full" style={{ width: `${totalRatings ? (h.n / totalRatings) * 100 : 0}%`, backgroundColor: h.star >= 4 ? colors.ale : colors.slate }} />
+                        </View>
+                        <Text className="text-ink-soft w-7 text-right text-[11px]">{h.n}</Text>
+                      </View>
+                    ))}
+                  </View>
+                  {ratedVisits.length > 0 ? (
+                    <View className="pt-1" style={{ height: 52 }}>
+                      <View className="absolute left-0 right-0 rounded-full bg-line" style={{ top: 26, height: 3 }} />
+                      {ratedVisits.map((v) => (
+                        <View key={v.id} className="absolute items-center" style={{ left: `${(Number(v.rating) / 5) * 100}%`, transform: [{ translateX: -13 }] }}>
+                          <View className="rounded-full border-2 border-surface">
+                            <Avatar url={v.profiles?.avatar_url} name={v.profiles?.display_name ?? '?'} size={26} />
+                          </View>
+                          <Text className="text-ink text-[10px] font-bold">{Number(v.rating).toFixed(1)}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : null}
+                </View>
+              </Card>
+            </View>
+          ) : null}
+
+          {quotes.length > 0 ? (
+            <View>
+              <SectionTitle>What mates say</SectionTitle>
+              <View className="gap-2">
+                {quotes.map((v) => (
+                  <Pressable key={v.id} onPress={() => router.push({ pathname: '/post/[id]', params: { id: v.id } })} className="rounded-lg bg-surface p-4 active:bg-raised">
+                    <Text className="text-ink text-[17px] leading-6" style={{ fontStyle: 'italic' }}>&ldquo;{v.note}&rdquo;</Text>
+                    <View className="mt-2 flex-row items-center gap-2">
+                      <Avatar url={v.profiles?.avatar_url} name={v.profiles?.display_name ?? '?'} size={22} />
+                      <Text className="text-ink-soft text-[13px] font-semibold">{v.user_id === me ? 'You' : (v.profiles?.display_name ?? 'Someone')} · {formatWhen(v.created_at)}</Text>
+                      {v.rating ? <Stars value={v.rating} size={11} /> : null}
+                    </View>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          ) : null}
+
+          <View>
+            <SectionTitle>It&apos;s got</SectionTitle>
+            <TagChips items={group('has')} confirmedFor={confirmedFor} goneFor={goneFor} myVoteFor={myVoteFor} onConfirm={confirm} onGone={notAnyMore} />
+          </View>
+          <View>
+            <SectionTitle>Good to know</SectionTitle>
+            <TagChips items={group('know')} confirmedFor={confirmedFor} goneFor={goneFor} myVoteFor={myVoteFor} onConfirm={confirm} onGone={notAnyMore} />
           </View>
 
           {onLists.data && onLists.data.length > 0 ? (
@@ -240,10 +300,43 @@ export default function PubScreen() {
   );
 }
 
-function VoteButton({ icon, active, label, onPress }: { icon: 'hand.thumbsup' | 'hand.thumbsup.fill' | 'hand.thumbsdown' | 'hand.thumbsdown.fill'; active: boolean; label: string; onPress: () => void }) {
+type Tag = { slug: string; label: string };
+
+/**
+ * Tags as chips. Tap to confirm it is true; the count is how many people
+ * have. Long press for "not any more". Nothing to vote against.
+ */
+function TagChips({ items, confirmedFor, goneFor, myVoteFor, onConfirm, onGone }: {
+  items: Tag[];
+  confirmedFor: (slug: string) => number;
+  goneFor: (slug: string) => number;
+  myVoteFor: (slug: string) => number;
+  onConfirm: (slug: string) => void;
+  onGone: (slug: string, label: string) => void;
+}) {
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} className={`h-11 w-11 items-center justify-center rounded-full ${active ? 'bg-ale-tint' : 'active:bg-raised'}`}>
-      <Icon name={icon} size={20} color={active ? colors.ale : colors.inkSoft} />
-    </Pressable>
+    <View className="flex-row flex-wrap gap-2">
+      {items.map((t) => {
+        const n = confirmedFor(t.slug);
+        const gone = goneFor(t.slug) > n;
+        const mine = myVoteFor(t.slug) === 1;
+        return (
+          <Pressable
+            key={t.slug}
+            onPress={() => onConfirm(t.slug)}
+            onLongPress={() => onGone(t.slug, t.label)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: mine }}
+            accessibilityLabel={`${t.label}${n ? `, confirmed by ${n}` : ''}`}
+            className="h-9 flex-row items-center gap-1.5 rounded-full px-3.5 active:opacity-80"
+            style={{ backgroundColor: mine ? colors.you : n > 0 ? colors.surface : colors.raised, opacity: gone ? 0.45 : 1 }}>
+            {mine ? <Icon name="checkmark" size={11} color="#fff" weight="bold" /> : null}
+            <Text className="text-[13px] font-bold" style={{ color: mine ? '#fff' : n > 0 ? colors.ink : colors.inkSoft, textDecorationLine: gone ? 'line-through' : 'none' }}>
+              {t.label}{n ? ` · ${n}` : ''}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
