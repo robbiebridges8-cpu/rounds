@@ -1,11 +1,14 @@
-import { Image } from 'expo-image';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SMS from 'expo-sms';
-import { useState } from 'react';
-import { ActionSheetIOS, Alert, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Avatar, Body, Button, Field, Icon, Stars } from '@/components/ui';
+import { Avatar, Icon, Stars } from '@/components/ui';
 import { useProfile } from '@/lib/auth';
 import { useCreateCheckin } from '@/lib/checkins';
 import { useFriendships } from '@/lib/friends';
@@ -13,51 +16,63 @@ import { pickImage, type PickedImage } from '@/lib/images';
 import { inviteLink, useInviteCode } from '@/lib/invites';
 import { offerWeeklyNudge } from '@/lib/notifications';
 import { usePub } from '@/lib/pubs';
-import { colors } from '@/theme';
-
-const MAX_PHOTOS = 3;
+import { colors, fonts } from '@/theme';
 
 const LABELS: Record<string, string> = {
   '0.5': 'Never again', '1': 'Grim', '1.5': 'Poor', '2': 'Meh', '2.5': 'Fine',
   '3': 'Decent', '3.5': 'Good', '4': 'Very good', '4.5': 'Excellent', '5': 'Belter',
 };
 
-export default function CheckinSheet() {
+/**
+ * Camera first. The sheet opens on the viewfinder: the photo is the
+ * check-in, and the rating, who was there and a note are a caption laid
+ * over it. Skipping the photo is allowed, because basements exist.
+ */
+export default function CheckinScreen() {
   const { pubId } = useLocalSearchParams<{ pubId: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const pub = usePub(pubId);
   const create = useCreateCheckin();
   const friendships = useFriendships();
   const { data: me } = useProfile();
   const inviteCode = useInviteCode();
+  const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef<CameraView>(null);
 
+  const [step, setStep] = useState<'camera' | 'review'>('camera');
+  const [facing, setFacing] = useState<'back' | 'front'>('back');
+  const [photo, setPhoto] = useState<PickedImage | null>(null);
   const [rating, setRating] = useState(0);
   const [note, setNote] = useState('');
-  const [photos, setPhotos] = useState<PickedImage[]>([]);
   const [tagged, setTagged] = useState<Set<string>>(new Set());
   const [guests, setGuests] = useState<string[]>([]);
   const [guestName, setGuestName] = useState('');
+  const [snapping, setSnapping] = useState(false);
 
-  const addPhoto = async (source: 'camera' | 'library') => {
-    const picked = await pickImage(source);
-    if (picked) setPhotos((current) => [...current, picked].slice(0, MAX_PHOTOS));
+  const pubName = pub.data?.pub.name ?? '';
+  const friends = friendships.data?.friends ?? [];
+
+  const snap = async () => {
+    if (!cameraRef.current || snapping) return;
+    setSnapping(true);
+    try {
+      const shot = await cameraRef.current.takePictureAsync({ quality: 0.9 });
+      if (shot) {
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        setPhoto({ uri: shot.uri, width: shot.width, height: shot.height });
+        setStep('review');
+      }
+    } finally {
+      setSnapping(false);
+    }
   };
 
-  const choosePhotoSource = () => {
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        { options: ['Cancel', 'Take a photo', 'Choose from library'], cancelButtonIndex: 0 },
-        (index) => {
-          if (index === 1) void addPhoto('camera');
-          if (index === 2) void addPhoto('library');
-        }
-      );
-    } else {
-      Alert.alert('Add a photo', undefined, [
-        { text: 'Take a photo', onPress: () => void addPhoto('camera') },
-        { text: 'Choose from library', onPress: () => void addPhoto('library') },
-        { text: 'Cancel', style: 'cancel' },
-      ]);
+  const fromLibrary = async () => {
+    const picked = await pickImage('library');
+    if (picked) {
+      setPhoto(picked);
+      setStep('review');
     }
   };
 
@@ -78,14 +93,12 @@ export default function CheckinSheet() {
     setGuestName('');
   };
 
-  /** The text to the people who are not on Rounds. Sent from this phone. */
   const textGuests = async () => {
     if (guests.length === 0 || !me || !inviteCode.data) return;
     if (!(await SMS.isAvailableAsync())) return;
-    const pubName = pub.data?.pub.name ?? 'the pub';
     await SMS.sendSMSAsync(
       [],
-      `${me.display_name} put you at ${pubName} on Rounds, the pub map for you and your mates. Claim it: ${inviteLink(inviteCode.data)} (code ${inviteCode.data})`
+      `${me.display_name} put you at ${pubName || 'the pub'} on Rounds, the pub map for you and your mates. Claim it: ${inviteLink(inviteCode.data)} (code ${inviteCode.data})`
     );
   };
 
@@ -97,7 +110,7 @@ export default function CheckinSheet() {
         pubCoords: { latitude: pub.data.pub.lat, longitude: pub.data.pub.lng },
         rating: rating || null,
         note,
-        photos,
+        photos: photo ? [photo] : [],
         tagIds: [...tagged],
         guests,
       },
@@ -117,112 +130,150 @@ export default function CheckinSheet() {
     );
   };
 
-  const friends = friendships.data?.friends ?? [];
-
-  return (
-    <ScrollView
-      className="flex-1 bg-canvas"
-      contentContainerClassName="gap-6 px-5 pb-10 pt-4"
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="interactive"
-      automaticallyAdjustKeyboardInsets>
-      <View className="flex-row items-center justify-between">
-        <Pressable onPress={() => router.back()} hitSlop={8} accessibilityRole="button">
-          <Text className="text-ink text-[17px] font-semibold">Cancel</Text>
-        </Pressable>
-        <Text className="text-ink text-[17px] font-bold">Check in</Text>
-        <View style={{ width: 52 }} />
-      </View>
-
-      <View className="gap-1">
-        <Text className="text-ink font-display text-[28px] leading-9" style={{ letterSpacing: -1 }}>
-          {pub.data?.pub.name ?? ' '}
-        </Text>
-        <Body>Say how it was. Only your mates ever see this.</Body>
-      </View>
-
-      <View className="items-center gap-1 rounded-lg bg-surface py-5">
-        <Stars value={rating} onChange={(v) => { void Haptics.selectionAsync(); setRating(v); }} size={34} />
-        <Text className="text-ink-soft text-[14px] font-semibold">
-          {rating ? `${LABELS[String(rating)]} · ${rating} stars` : 'Tap to rate. Halves count.'}
-        </Text>
-      </View>
-
-      <View className="gap-3">
-        <Text className="text-ink text-[13px] font-bold uppercase tracking-wider">Who&apos;s here?</Text>
-        {friends.length > 0 ? (
-          <View className="flex-row flex-wrap gap-2">
-            {friends.map((f) => {
-              const on = tagged.has(f.id);
-              return (
-                <Pressable
-                  key={f.id}
-                  onPress={() => toggleTag(f.id)}
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: on }}
-                  className="h-10 flex-row items-center gap-2 rounded-full pl-1 pr-3.5"
-                  style={{ backgroundColor: on ? colors.ale : colors.surface, borderWidth: 2, borderColor: on ? colors.ale : colors.line }}>
-                  <Avatar url={f.avatar_url} name={f.display_name} size={30} />
-                  <Text className="text-[14px] font-bold" style={{ color: on ? '#fff' : colors.ink }}>{f.display_name}</Text>
-                </Pressable>
-              );
-            })}
+  // ---------------------------------------------------------------- camera
+  if (step === 'camera') {
+    const granted = permission?.granted;
+    return (
+      <View className="flex-1 bg-black">
+        {granted ? (
+          <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing} />
+        ) : (
+          <View className="flex-1 items-center justify-center gap-4 px-8">
+            <Icon name="camera.fill" size={40} color="#fff" weight="regular" />
+            <Text className="text-center text-[17px] font-bold text-white">A check-in starts with a photo</Text>
+            <Text className="text-center text-[14px] text-white" style={{ opacity: 0.75 }}>
+              {permission?.canAskAgain === false ? 'Camera is off for Rounds. Allow it in Settings, or skip the photo.' : 'Allow the camera, or skip the photo.'}
+            </Text>
+            {permission?.canAskAgain !== false ? (
+              <Pressable onPress={() => void requestPermission()} className="h-12 items-center justify-center rounded-full bg-white px-6">
+                <Text className="text-[15px] font-bold" style={{ color: '#101014' }}>Allow camera</Text>
+              </Pressable>
+            ) : null}
           </View>
-        ) : null}
-        <View className="flex-row flex-wrap gap-2">
-          {guests.map((g, i) => (
-            <Pressable
-              key={`${g}-${i}`}
-              onPress={() => setGuests((c) => c.filter((_, j) => j !== i))}
-              className="h-10 flex-row items-center gap-1.5 rounded-full bg-butter px-3.5">
-              <Text className="text-[14px] font-bold" style={{ color: '#101014' }}>{g}</Text>
-              <Icon name="xmark" size={11} color="#101014" weight="bold" />
-            </Pressable>
-          ))}
-        </View>
-        <View className="flex-row gap-2">
-          <TextInput
-            value={guestName}
-            onChangeText={setGuestName}
-            placeholder="Someone not on Rounds"
-            placeholderTextColor={colors.slate}
-            returnKeyType="done"
-            onSubmitEditing={addGuest}
-            autoCapitalize="words"
-            className="text-ink h-11 flex-1 rounded-full bg-raised px-4 text-[15px]"
-          />
-          <Pressable onPress={addGuest} disabled={!guestName.trim()} accessibilityRole="button" className="h-11 w-11 items-center justify-center rounded-full bg-ink" style={{ opacity: guestName.trim() ? 1 : 0.4 }}>
-            <Icon name="plus" size={16} color="#fff" weight="bold" />
+        )}
+
+        <View className="absolute left-0 right-0 flex-row items-center justify-between px-5" style={{ top: insets.top + 8 }}>
+          <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button">
+            <Text className="text-[16px] font-bold text-white">Cancel</Text>
+          </Pressable>
+          <View className="h-8 max-w-[200px] flex-row items-center gap-1.5 rounded-full bg-white px-3">
+            <Icon name="mappin.and.ellipse" size={12} color="#101014" weight="bold" />
+            <Text className="text-[12px] font-bold" style={{ color: '#101014' }} numberOfLines={1}>{pubName || ' '}</Text>
+          </View>
+          <Pressable onPress={() => setFacing((f) => (f === 'back' ? 'front' : 'back'))} hitSlop={10} accessibilityRole="button" accessibilityLabel="Flip camera">
+            <Icon name="arrow.triangle.2.circlepath.camera" size={24} color="#fff" weight="semibold" />
           </Pressable>
         </View>
-        {guests.length > 0 ? (
-          <Text className="text-ink-soft text-[12px]">After you check in, a text opens so you can send them the app.</Text>
-        ) : null}
+
+        {granted ? <View pointerEvents="none" className="absolute left-6 right-6 rounded-lg border-2" style={{ top: insets.top + 60, bottom: 220, borderColor: 'rgba(255,255,255,0.55)' }} /> : null}
+
+        <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.85)']} className="absolute bottom-0 left-0 right-0" style={{ paddingBottom: insets.bottom + 16, paddingTop: 40 }}>
+          <View className="flex-row items-center justify-center gap-8 px-6">
+            <Pressable onPress={() => void fromLibrary()} accessibilityRole="button" accessibilityLabel="Choose from library" className="h-12 w-12 items-center justify-center rounded-md" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>
+              <Icon name="photo.on.rectangle" size={20} color="#fff" weight="semibold" />
+            </Pressable>
+            <Pressable onPress={() => void snap()} disabled={!granted || snapping} accessibilityRole="button" accessibilityLabel="Take photo" className="h-[80px] w-[80px] items-center justify-center rounded-full border-[5px] border-white" style={{ opacity: granted ? 1 : 0.4 }}>
+              {snapping ? <ActivityIndicator color="#fff" /> : <View className="h-[60px] w-[60px] rounded-full bg-white" />}
+            </Pressable>
+            <Pressable onPress={() => setStep('review')} accessibilityRole="button" className="h-12 w-12 items-center justify-center rounded-md" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>
+              <Icon name="forward.end.fill" size={18} color="#fff" weight="semibold" />
+            </Pressable>
+          </View>
+          <Text className="mt-3 text-center text-[12px] font-semibold text-white" style={{ opacity: 0.7 }}>Library · Take a photo · Skip</Text>
+        </LinearGradient>
+      </View>
+    );
+  }
+
+  // ---------------------------------------------------------------- review
+  return (
+    <View className="flex-1 bg-black">
+      {photo ? (
+        <Image source={{ uri: photo.uri }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} contentFit="cover" />
+      ) : (
+        <View className="absolute inset-0" style={{ backgroundColor: colors.you }} />
+      )}
+      <LinearGradient colors={['rgba(0,0,0,0.55)', 'rgba(0,0,0,0)']} className="absolute left-0 right-0 top-0" style={{ height: 140 }} />
+
+      <View className="absolute left-0 right-0 flex-row items-center justify-between px-5" style={{ top: insets.top + 8 }}>
+        <Pressable onPress={() => setStep('camera')} hitSlop={10} accessibilityRole="button">
+          <Text className="text-[16px] font-bold text-white">{photo ? 'Retake' : 'Add photo'}</Text>
+        </Pressable>
+        <Text style={{ fontFamily: fonts.display, fontSize: 16, color: '#fff' }} numberOfLines={1}>{pubName}</Text>
+        <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button">
+          <Text className="text-[16px] font-bold text-white">Cancel</Text>
+        </Pressable>
       </View>
 
-      <Field label="Note" value={note} onChangeText={setNote} placeholder="Who you were with, what you drank, anything worth remembering." multiline maxLength={500} />
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 justify-end">
+        <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.9)']} style={{ paddingTop: 60 }}>
+          <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="gap-4 px-5" style={{ maxHeight: 520 }}>
+            <View className="items-center gap-1">
+              <Stars value={rating} onChange={(v) => { void Haptics.selectionAsync(); setRating(v); }} size={34} color={colors.butter} />
+              <Text className="text-[13px] font-bold text-white" style={{ opacity: 0.85 }}>
+                {rating ? `${LABELS[String(rating)]} · ${rating} stars` : 'How was it?'}
+              </Text>
+            </View>
 
-      <View className="gap-2">
-        <Text className="text-ink text-[13px] font-bold uppercase tracking-wider">Photos</Text>
-        <View className="flex-row gap-3">
-          {photos.map((photo, index) => (
-            <Pressable key={photo.uri} accessibilityRole="button" accessibilityLabel="Remove photo" onPress={() => setPhotos((current) => current.filter((_, i) => i !== index))}>
-              <Image source={{ uri: photo.uri }} style={{ width: 88, height: 88, borderRadius: 14 }} contentFit="cover" />
-              <View className="absolute -right-1.5 -top-1.5 h-6 w-6 items-center justify-center rounded-full bg-surface">
-                <Icon name="xmark.circle.fill" size={22} color={colors.ink} />
+            {friends.length > 0 || guests.length > 0 ? (
+              <View className="flex-row flex-wrap justify-center gap-2">
+                {friends.map((f) => {
+                  const on = tagged.has(f.id);
+                  return (
+                    <Pressable key={f.id} onPress={() => toggleTag(f.id)} accessibilityRole="checkbox" accessibilityState={{ checked: on }} className="h-10 flex-row items-center gap-2 rounded-full pl-1 pr-3.5" style={{ backgroundColor: on ? colors.ale : 'rgba(255,255,255,0.18)' }}>
+                      <Avatar url={f.avatar_url} name={f.display_name} size={30} />
+                      <Text className="text-[14px] font-bold text-white">{f.display_name}</Text>
+                    </Pressable>
+                  );
+                })}
+                {guests.map((g, i) => (
+                  <Pressable key={`${g}-${i}`} onPress={() => setGuests((c) => c.filter((_, j) => j !== i))} className="h-10 flex-row items-center gap-1.5 rounded-full px-3.5" style={{ backgroundColor: colors.butter }}>
+                    <Text className="text-[14px] font-bold" style={{ color: '#101014' }}>{g}</Text>
+                    <Icon name="xmark" size={11} color="#101014" weight="bold" />
+                  </Pressable>
+                ))}
               </View>
-            </Pressable>
-          ))}
-          {photos.length < MAX_PHOTOS ? (
-            <Pressable onPress={choosePhotoSource} accessibilityRole="button" accessibilityLabel="Add a photo" className="h-[88px] w-[88px] items-center justify-center rounded-md bg-raised active:bg-line">
-              <Icon name="camera.fill" size={24} color={colors.ink} />
-            </Pressable>
-          ) : null}
-        </View>
-        <Text className="text-ink-soft text-[12px]">A photo is what lets mates say cheers back.</Text>
-      </View>
+            ) : null}
 
-      <Button label="Check in" onPress={submit} loading={create.isPending} disabled={!pub.data} />
-    </ScrollView>
+            <View className="flex-row gap-2">
+              <TextInput
+                value={guestName}
+                onChangeText={setGuestName}
+                placeholder="Someone not on Rounds"
+                placeholderTextColor="rgba(255,255,255,0.55)"
+                returnKeyType="done"
+                onSubmitEditing={addGuest}
+                autoCapitalize="words"
+                className="h-11 flex-1 rounded-full px-4 text-[15px] text-white"
+                style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
+              />
+              <Pressable onPress={addGuest} disabled={!guestName.trim()} accessibilityRole="button" className="h-11 w-11 items-center justify-center rounded-full bg-white" style={{ opacity: guestName.trim() ? 1 : 0.4 }}>
+                <Icon name="plus" size={16} color="#101014" weight="bold" />
+              </Pressable>
+            </View>
+
+            <TextInput
+              value={note}
+              onChangeText={setNote}
+              placeholder="A line about it, if you like"
+              placeholderTextColor="rgba(255,255,255,0.55)"
+              maxLength={500}
+              multiline
+              className="min-h-[46px] rounded-md px-4 py-3 text-[15px] text-white"
+              style={{ backgroundColor: 'rgba(255,255,255,0.18)', textAlignVertical: 'top' }}
+            />
+
+            <Pressable onPress={submit} disabled={!pub.data || create.isPending} accessibilityRole="button" className="h-[54px] flex-row items-center justify-center gap-2 rounded-full" style={{ backgroundColor: colors.butter, marginBottom: insets.bottom + 16, opacity: pub.data ? 1 : 0.5 }}>
+              {create.isPending ? <ActivityIndicator color="#101014" /> : (
+                <>
+                  <Icon name="mappin.and.ellipse" size={16} color="#101014" weight="bold" />
+                  <Text className="text-[17px] font-bold" style={{ color: '#101014' }}>Check in{photo ? '' : ' without a photo'}</Text>
+                </>
+              )}
+            </Pressable>
+          </ScrollView>
+        </LinearGradient>
+      </KeyboardAvoidingView>
+    </View>
   );
 }

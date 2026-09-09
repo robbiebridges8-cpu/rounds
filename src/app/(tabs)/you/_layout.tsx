@@ -6,11 +6,9 @@ export default function YouLayout() {
   return (
     <Stack
       screenOptions={{
-        headerLargeTitle: true,
-        headerTintColor: colors.ale,
-        headerTitleStyle: { color: colors.ink },
-        headerLargeTitleStyle: { color: colors.ink },
-        headerStyle: { backgroundColor: colors.canvas },
+        headerTransparent: true,
+        headerTintColor: '#FFFFFF',
+        headerTitle: '',
         headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.canvas },
       }}

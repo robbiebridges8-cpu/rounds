@@ -324,3 +324,24 @@ Explore tab. A list has a title, an optional description, pubs in order and
 a one-line note per pub, written by the creator alone. Anyone follows a
 list; a pub page says "On 3 lists". Nothing to complete, nothing to earn:
 the value is that someone who knows put their name to it. Migration 0015.
+
+## Signal, chosen per screen
+
+Thirty-six Signal ideas were mocked, six per screen, and Robbie picked:
+search-first map, card feed, poster profile, hero pub page, camera-first
+check-in, lists-then-quests explore. Three were already built.
+
+**Poster profile.** A cobalt hero with the fill-in map edge to edge and
+"Robbie's London" on it, the borough count as a huge butter numeral. The
+header is transparent with white controls so the poster starts at the top.
+
+**Hero pub page.** The first photo anyone took here is the page, full
+bleed, name and two pills over a dark gradient; a cobalt silhouette of the
+borough stands in when there is no photo yet. "List" adds it to one of
+your lists.
+
+**Camera-first check-in.** A full-screen modal that opens on the
+viewfinder. The photo is the check-in; stars, who was there and a note are
+a caption laid over it. Library and skip are both one tap, because
+basements and battery exist. This guarantees the photos that cheers and
+the feed run on.

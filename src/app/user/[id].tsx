@@ -26,7 +26,7 @@ export default function UserScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: profile.data.display_name }} />
+      <Stack.Screen options={{ title: '', headerTransparent: true, headerTintColor: '#FFFFFF' }} />
       <ProfileView profile={profile.data} isMe={profile.data.id === session?.user.id} />
     </>
   );

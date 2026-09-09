@@ -50,7 +50,13 @@
         }
       ],
       "expo-sharing",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Rounds uses the camera so a check-in starts with a photo of where you are."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
