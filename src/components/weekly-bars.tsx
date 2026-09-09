@@ -53,7 +53,7 @@ export function WeeklyBars({ dates, width }: { dates: string[]; width: number })
               width={bar}
               height={h}
               rx={3}
-              fill={n === 0 ? colors.raised : current ? colors.ale : colors.gold}
+              fill={n === 0 ? colors.raised : current ? colors.ale : colors.you}
             />
           );
         })}

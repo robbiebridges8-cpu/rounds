@@ -24,7 +24,7 @@ export function Screen({ children }: { children: ReactNode }) {
 
 export function Heading({ children }: { children: ReactNode }) {
   return (
-    <Text className="text-ink font-display text-[34px] leading-[38px]" style={{ letterSpacing: -0.8 }}>
+    <Text className="text-ink font-display text-[30px] leading-[34px]" style={{ letterSpacing: -1 }}>
       {children}
     </Text>
   );
@@ -38,10 +38,7 @@ export function Body({ children }: { children: ReactNode }) {
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <View className="flex-row items-end justify-between px-1 pb-2 pt-1">
-      <View className="gap-1.5">
-        <View className="h-[3px] w-6 rounded-full bg-ale" />
-        <Text className="text-ink text-[13px] font-bold uppercase tracking-wider">{children}</Text>
-      </View>
+      <Text className="text-ink text-[13px] font-bold uppercase tracking-wider">{children}</Text>
       {action}
     </View>
   );
@@ -92,7 +89,7 @@ export function Icon({
 type ButtonProps = {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'quiet' | 'outline';
+  variant?: 'primary' | 'quiet' | 'outline' | 'accent';
   disabled?: boolean;
   loading?: boolean;
   icon?: SFSymbol;
@@ -101,12 +98,14 @@ type ButtonProps = {
 /** Pill buttons. Primary is ink on canvas, the way Luma and Patreon do it. */
 export function Button({ label, onPress, variant = 'primary', disabled = false, loading = false, icon }: ButtonProps) {
   const inert = disabled || loading;
-  const foreground = variant === 'primary' ? colors.canvas : colors.ink;
+  const foreground = variant === 'primary' || variant === 'accent' ? '#FFFFFF' : colors.ink;
   const surface =
     variant === 'primary'
       ? 'bg-ink active:opacity-80'
+      : variant === 'accent'
+        ? 'bg-ale active:opacity-80'
       : variant === 'outline'
-        ? 'border-[1.5px] border-line bg-surface active:bg-raised'
+        ? 'border-2 border-ink bg-surface active:bg-raised'
         : 'bg-raised active:bg-line';
 
   return (
@@ -121,7 +120,7 @@ export function Button({ label, onPress, variant = 'primary', disabled = false, 
       ) : (
         <>
           {icon ? <Icon name={icon} size={18} color={foreground} weight="semibold" /> : null}
-          <Text className={`text-[17px] font-bold ${variant === 'primary' ? 'text-canvas' : 'text-ink'}`}>{label}</Text>
+          <Text className="text-[17px] font-bold" style={{ color: foreground }}>{label}</Text>
         </>
       )}
     </Pressable>
@@ -140,7 +139,7 @@ export const Field = forwardRef<TextInput, FieldProps>(function Field({ label, h
         placeholderTextColor={colors.slate}
         multiline={multiline}
         className={[
-          'text-ink rounded-lg bg-raised px-4 text-[17px]',
+          'text-ink rounded-md bg-raised px-4 text-[17px]',
           multiline ? 'min-h-[100px] py-3' : 'h-[54px]',
           error ? 'border-[1.5px] border-danger' : '',
         ].join(' ')}
@@ -302,7 +301,7 @@ export function MapButton({ icon, label, onPress }: { icon: SFSymbol; label: str
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      className="h-12 w-12 items-center justify-center rounded-lg bg-ink active:opacity-80"
+      className="h-12 w-12 items-center justify-center rounded-full bg-ink active:opacity-80"
       style={{ shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 3 }}>
       <Icon name={icon} size={20} color={colors.canvas} weight="semibold" />
     </Pressable>

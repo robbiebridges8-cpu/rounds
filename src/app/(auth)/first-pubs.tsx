@@ -146,7 +146,7 @@ export default function FirstPubs() {
                     <Icon
                       name={on ? 'checkmark.circle.fill' : 'circle'}
                       size={26}
-                      color={on ? colors.gold : colors.line}
+                      color={on ? colors.you : colors.line}
                     />
                     <View
                       className={`flex-1 py-3 pr-4 ${

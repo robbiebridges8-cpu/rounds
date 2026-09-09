@@ -1,148 +1,91 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import type { SFSymbol } from 'expo-symbols';
 import { useEffect } from 'react';
 import { Text, View, useWindowDimensions } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, Icon, Wordmark } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 
-type Orb = { icon: SFSymbol; bg: string; fg: string; ring: number; angle: number; size: number };
-
-const ORBS: Orb[] = [
-  { icon: 'mug.fill', bg: '#FFD300', fg: '#10214A', ring: 1, angle: 20, size: 56 },
-  { icon: 'mappin', bg: '#DC241F', fg: '#FFFFFF', ring: 1, angle: 200, size: 52 },
-  { icon: 'person.fill', bg: '#00843D', fg: '#FFFFFF', ring: 2, angle: 95, size: 48 },
-  { icon: 'star.fill', bg: '#10214A', fg: '#FFD300', ring: 2, angle: 250, size: 46 },
-  { icon: 'person.fill', bg: '#A0A5A9', fg: '#10214A', ring: 2, angle: 330, size: 44 },
-  { icon: 'camera.fill', bg: '#FFFFFF', fg: '#DC241F', ring: 3, angle: 150, size: 44 },
-  { icon: 'trophy.fill', bg: '#FFFFFF', fg: '#10214A', ring: 3, angle: 40, size: 42 },
-];
-
 /**
- * The first thing you see. A slow orbit of the things the app is about, on a
- * soft wash of the line colours, and one button. Luma's welcome without the
- * 3D renders.
+ * The first thing you see. Four big colour shapes, the wordmark in an ink
+ * disc, one line of copy, one button. The shapes drift very slowly so the
+ * screen feels alive without doing anything.
  */
 export default function Welcome() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const spin = useSharedValue(0);
+  const t = useSharedValue(0);
 
   useEffect(() => {
-    spin.value = withRepeat(withTiming(360, { duration: 90_000, easing: Easing.linear }), -1, false);
-  }, [spin]);
+    t.value = withRepeat(withTiming(1, { duration: 9000, easing: Easing.inOut(Easing.sin) }), -1, true);
+  }, [t]);
 
-  const orbit = useAnimatedStyle(() => ({ transform: [{ rotate: `${spin.value}deg` }] }));
-  const counter = useAnimatedStyle(() => ({ transform: [{ rotate: `${-spin.value}deg` }] }));
+  const drift = (dx: number, dy: number) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useAnimatedStyle(() => ({ transform: [{ translateX: t.value * dx }, { translateY: t.value * dy }] }));
+  const a = drift(10, 14);
+  const b = drift(-12, 8);
+  const c = drift(8, -10);
+  const d = drift(-6, -12);
 
-  const radius = [0, width * 0.24, width * 0.36, width * 0.47];
-  const centre = width / 2;
+  const s = width / 390;
 
   return (
-    <View className="flex-1 bg-canvas">
-      <LinearGradient
-        colors={['#FBE4E3', '#F5F3EC', '#CFE9D8', '#FFF4B8']}
-        locations={[0, 0.45, 0.8, 1]}
-        start={{ x: 0.1, y: 0 }}
-        end={{ x: 0.9, y: 1 }}
-        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-      />
-
-      <View style={{ height: width, marginTop: insets.top + 24 }}>
-        {[1, 2, 3].map((ring) => (
-          <View
-            key={ring}
-            pointerEvents="none"
-            style={{
-              position: 'absolute',
-              left: centre - radius[ring],
-              top: centre - radius[ring],
-              width: radius[ring] * 2,
-              height: radius[ring] * 2,
-              borderRadius: radius[ring],
-              borderWidth: 1.5,
-              borderColor: 'rgba(16,33,74,0.10)',
-            }}
-          />
-        ))}
-
-        <Animated.View style={[{ position: 'absolute', left: 0, top: 0, width, height: width }, orbit]}>
-          {ORBS.map((orb, i) => {
-            const a = (orb.angle * Math.PI) / 180;
-            const x = centre + Math.cos(a) * radius[orb.ring] - orb.size / 2;
-            const y = centre + Math.sin(a) * radius[orb.ring] - orb.size / 2;
-            return (
-              <Animated.View
-                key={i}
-                style={[
-                  {
-                    position: 'absolute',
-                    left: x,
-                    top: y,
-                    width: orb.size,
-                    height: orb.size,
-                    borderRadius: orb.size / 2,
-                    backgroundColor: orb.bg,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    shadowColor: '#10214A',
-                    shadowOpacity: 0.18,
-                    shadowRadius: 10,
-                    shadowOffset: { width: 0, height: 4 },
-                  },
-                  counter,
-                ]}>
-                <Icon name={orb.icon} size={orb.size * 0.42} color={orb.fg} weight="bold" />
-              </Animated.View>
-            );
-          })}
-        </Animated.View>
-
+    <View className="flex-1" style={{ backgroundColor: palettesLight.surface }}>
+      <View style={{ height: 500 * s, position: 'relative' }}>
+        <Animated.View style={[shape(-60 * s, 40 * s + insets.top, 300 * s, colors.you), a]} />
+        <Animated.View style={[shape(150 * s, 120 * s + insets.top, 260 * s, colors.butter), b]} />
+        <Animated.View style={[shape(40 * s, 300 * s + insets.top, 320 * s, colors.ale, 120 * s, '-12deg'), c]} />
+        <Animated.View style={[shape(250 * s, 330 * s + insets.top, 150 * s, colors.mint), d]} />
         <View
-          pointerEvents="none"
           style={{
             position: 'absolute',
-            left: centre - 44,
-            top: centre - 44,
-            width: 88,
-            height: 88,
-            borderRadius: 44,
-            backgroundColor: colors.ink,
+            left: 96 * s,
+            top: 186 * s + insets.top,
+            width: 180 * s,
+            height: 180 * s,
+            borderRadius: 90 * s,
+            backgroundColor: '#101014',
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Wordmark size={26} color="#F5F3EC" />
+          <Text style={{ fontFamily: fonts.display, fontSize: 30 * s, color: '#FFFFFF', letterSpacing: -1 }}>rounds</Text>
+          <Text style={{ fontSize: 11, color: colors.butter, fontWeight: '800', letterSpacing: 2 }}>LONDON</Text>
         </View>
       </View>
 
       <View className="flex-1 justify-end gap-6 px-6" style={{ paddingBottom: insets.bottom + 20 }}>
-        <View className="gap-1">
-          <Text
-            className="text-ink text-center"
-            style={{ fontFamily: fonts.display, fontSize: 40, lineHeight: 44, letterSpacing: -1.2 }}>
-            Every pub in London.
+        <View className="gap-3">
+          <Text style={{ fontFamily: fonts.display, fontSize: 38, lineHeight: 40, letterSpacing: -1.4, color: '#101014' }}>
+            Pubs.{'\n'}Mates.{'\n'}
+            <Text style={{ color: colors.you }}>Bragging rights.</Text>
           </Text>
-          <Text
-            className="text-ale text-center"
-            style={{ fontFamily: fonts.display, fontSize: 40, lineHeight: 44, letterSpacing: -1.2 }}>
-            Which have you done?
-          </Text>
-          <Text className="text-ink-soft mt-3 text-center text-[17px] leading-6">
-            Log the pubs you go to, turn boroughs yellow, and see where your mates have been.
+          <Text className="text-[16px] leading-6" style={{ color: '#6E6E78' }}>
+            Check in, collect boroughs, and find out who in your group has really done London.
           </Text>
         </View>
         <Button label="Get started" onPress={() => router.push('/sign-in')} />
+        <Text className="text-center text-[14px]" style={{ color: '#6E6E78' }}>
+          Got an invite code? <Text style={{ color: colors.you, fontWeight: '700' }}>Enter it</Text>
+        </Text>
       </View>
     </View>
   );
+}
+
+const palettesLight = { surface: '#FFFFFF' };
+
+function shape(left: number, top: number, size: number, color: string, height?: number, rotate?: string) {
+  return {
+    position: 'absolute' as const,
+    left,
+    top,
+    width: size,
+    height: height ?? size,
+    borderRadius: (height ?? size) / 2,
+    backgroundColor: color,
+    transform: rotate ? [{ rotate }] : undefined,
+  };
 }

@@ -7,13 +7,13 @@ import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BoroughSnapshot } from '@/components/borough-map';
-import { Icon, MapButton, Rating } from '@/components/ui';
+import { Icon, MapButton, Stars } from '@/components/ui';
 import { photoUrl } from '@/lib/checkins';
 import { plural } from '@/lib/format';
 import { LONDON_REGION, getPosition } from '@/lib/location';
 import { useMapPubs, usePubPhotos, type Bounds, type MapPub } from '@/lib/pubs';
 import { useTheme } from '@/lib/theme-provider';
-import { colors } from '@/theme';
+import { colors, fonts } from '@/theme';
 
 const boundsOf = (region: Region): Bounds => ({
   minLat: region.latitude - region.latitudeDelta / 2,
@@ -26,6 +26,9 @@ type Tier = 'me' | 'mate' | 'none';
 type Filter = 'all' | 'me' | 'mate' | 'none';
 
 const tierOf = (pub: MapPub): Tier => (pub.visited_by_me ? 'me' : pub.friend_visits > 0 ? 'mate' : 'none');
+
+const CHIP_COLOR: Record<Filter, string> = { all: '#101014', me: '#FFD23F', mate: '#FF5A3C', none: '#101014' };
+const CHIP_TEXT: Record<Filter, string> = { all: '#FFFFFF', me: '#101014', mate: '#FFFFFF', none: '#FFFFFF' };
 
 const CHIPS: { key: Filter; label: string; icon?: 'checkmark' | 'person.2.fill' | 'circle.dashed' }[] = [
   { key: 'all', label: 'All' },
@@ -56,7 +59,7 @@ export default function MapScreen() {
 
   const current = selected ? (pubs?.find((p) => p.id === selected.id) ?? selected) : null;
   const shown = pubs?.filter((p) => filter === 'all' || tierOf(p) === filter);
-  const tierColor: Record<Tier, string> = { me: colors.gold, mate: colors.mate, none: colors.slate };
+  const tierColor: Record<Tier, string> = { me: colors.you, mate: colors.mates, none: colors.slate };
 
   return (
     <View className="flex-1 bg-canvas">
@@ -96,15 +99,17 @@ export default function MapScreen() {
 
       {/* Resy's top: a search bar and a row of chips. */}
       <View className="absolute left-4 right-4 gap-2" style={{ top: insets.top + 8 }}>
-        <Pressable
-          onPress={() => router.push('/search')}
-          accessibilityRole="search"
-          className="h-12 flex-row items-center gap-3 rounded-lg bg-ink px-4 active:opacity-90"
-          style={shadow}>
-          <Icon name="magnifyingglass" size={18} color={colors.canvas} weight="semibold" />
-          <Text className="text-canvas text-[17px] font-semibold">Search</Text>
-          <Text className="text-[17px]" style={{ color: colors.stoutSoft }}>London pubs</Text>
-        </Pressable>
+        <View>
+          <View className="absolute left-0 right-0 top-[6px] h-[54px] rounded-full bg-ink" />
+          <Pressable
+            onPress={() => router.push('/search')}
+            accessibilityRole="search"
+            className="h-[54px] flex-row items-center gap-3 rounded-full border-2 border-ink bg-surface px-[18px] active:opacity-90">
+            <Icon name="magnifyingglass" size={18} color={colors.ink} weight="bold" />
+            <Text className="text-ink text-[16px] font-bold">Search</Text>
+            <Text className="text-ink-soft text-[16px]">any London pub</Text>
+          </Pressable>
+        </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
           {CHIPS.map((chip) => {
             const on = filter === chip.key;
@@ -114,10 +119,14 @@ export default function MapScreen() {
                 onPress={() => setFilter(chip.key)}
                 accessibilityRole="tab"
                 accessibilityState={{ selected: on }}
-                className={`h-9 flex-row items-center gap-1.5 rounded-full px-4 ${on ? 'bg-ale' : 'bg-ink'}`}
-                style={shadow}>
-                {chip.icon ? <Icon name={chip.icon} size={12} color={colors.canvas} weight="bold" /> : null}
-                <Text className="text-canvas text-[14px] font-bold">{chip.label}</Text>
+                className="h-9 flex-row items-center gap-1.5 rounded-full px-4"
+                style={{
+                  backgroundColor: on ? CHIP_COLOR[chip.key] : colors.surface,
+                  borderWidth: 2,
+                  borderColor: on ? CHIP_COLOR[chip.key] : colors.ink,
+                }}>
+                {chip.icon ? <Icon name={chip.icon} size={12} color={on ? CHIP_TEXT[chip.key] : colors.ink} weight="bold" /> : null}
+                <Text className="text-[14px] font-bold" style={{ color: on ? CHIP_TEXT[chip.key] : colors.ink }}>{chip.label}</Text>
               </Pressable>
             );
           })}
@@ -130,7 +139,7 @@ export default function MapScreen() {
         </ScrollView>
       </View>
 
-      <View className="absolute right-4" style={{ bottom: current ? 300 : 64 }}>
+      <View className="absolute right-4" style={{ bottom: current ? 310 : 64 }}>
         <MapButton icon="location.fill" label="Show my location" onPress={() => void locate()} />
       </View>
 
@@ -145,8 +154,8 @@ export default function MapScreen() {
           </Animated.View>
         ) : (
           <View className="flex-row items-center gap-4 self-center rounded-full bg-surface px-4 py-2" style={shadow}>
-            <Legend color={colors.gold} label="Been" />
-            <Legend color={colors.mate} label="Mates" />
+            <Legend color={colors.you} label="Been" />
+            <Legend color={colors.mates} label="Mates" />
             <Legend color={colors.slate} label="Not yet" />
           </View>
         )}
@@ -186,36 +195,46 @@ function Preview({ pub, onOpen, onCheckIn }: { pub: MapPub; onOpen: () => void; 
   const meta = [pub.checkin_count > 0 ? plural(pub.checkin_count, 'visit') : null, pub.friend_visits > 0 ? plural(pub.friend_visits, 'mate') : null].filter(Boolean);
 
   return (
-    <Pressable onPress={onOpen} accessibilityRole="button" className="overflow-hidden rounded-lg bg-surface active:opacity-95" style={shadow}>
-      {photos.data && photos.data.length > 0 ? (
-        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ height: 150 }}>
-          {photos.data.map((p) => (
-            <Image key={p} source={{ uri: photoUrl(p) }} style={{ width: inner, height: 150 }} contentFit="cover" transition={150} />
-          ))}
-        </ScrollView>
-      ) : (
-        <View style={{ height: 110 }} className="bg-raised">
-          <BoroughSnapshot borough={null} lat={pub.lat} lng={pub.lng} width={inner} height={110} fill={colors.line} />
-        </View>
-      )}
-      <View className="flex-row items-center gap-3 p-4">
-        <View className="flex-1 gap-1">
-          <Text className="text-ink font-display text-[22px] leading-7" style={{ letterSpacing: -0.4 }} numberOfLines={2}>
-            {pub.name}
-          </Text>
-          <View className="flex-row items-center gap-2">
-            <Rating value={pub.avg_rating} count={pub.checkin_count || null} />
-            {meta.length ? (
-              <Text className="text-ink-soft text-[14px]" numberOfLines={1}>
-                · {meta.join(' · ')}
-              </Text>
-            ) : null}
+    <Pressable onPress={onOpen} accessibilityRole="button" className="overflow-hidden rounded-lg active:opacity-95" style={[shadow, { backgroundColor: colors.butter }]}>
+      <View className="p-3 pb-0">
+        {photos.data && photos.data.length > 0 ? (
+          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ height: 120, borderRadius: 14 }}>
+            {photos.data.map((p) => (
+              <Image key={p} source={{ uri: photoUrl(p) }} style={{ width: inner - 24, height: 120, borderRadius: 14 }} contentFit="cover" transition={150} />
+            ))}
+          </ScrollView>
+        ) : (
+          <View style={{ height: 100, borderRadius: 14, overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.5)' }}>
+            <BoroughSnapshot borough={null} lat={pub.lat} lng={pub.lng} width={inner - 24} height={100} fill="rgba(16,16,20,0.08)" dot="#2244FF" />
+          </View>
+        )}
+      </View>
+      <View className="gap-3 p-4">
+        <View className="flex-row items-start justify-between gap-3">
+          <View className="flex-1 gap-1">
+            <Text style={{ fontFamily: fonts.display, fontSize: 21, lineHeight: 24, letterSpacing: -0.5, color: '#101014' }} numberOfLines={2}>
+              {pub.name}
+            </Text>
+            <Text className="text-[13px] font-semibold" style={{ color: '#101014' }} numberOfLines={1}>
+              {meta.length ? meta.join(' · ') : 'Nobody you know has been'}
+            </Text>
+          </View>
+          <View className="items-end gap-0.5">
+            <Text style={{ fontFamily: fonts.display, fontSize: 24, lineHeight: 28, color: '#101014' }}>
+              {pub.avg_rating != null ? Number(pub.avg_rating).toFixed(1) : '–'}
+            </Text>
+            <Stars value={pub.avg_rating} size={11} color="#101014" />
           </View>
         </View>
-        <Pressable onPress={onCheckIn} accessibilityRole="button" className="h-11 flex-row items-center gap-1.5 rounded-full bg-ink px-4 active:opacity-80">
-          <Icon name="mappin.and.ellipse" size={14} color={colors.canvas} weight="semibold" />
-          <Text className="text-canvas text-[15px] font-bold">Check in</Text>
-        </Pressable>
+        <View className="flex-row gap-2">
+          <Pressable onPress={onCheckIn} accessibilityRole="button" className="h-12 flex-1 flex-row items-center justify-center gap-1.5 rounded-full active:opacity-80" style={{ backgroundColor: '#101014' }}>
+            <Icon name="mappin.and.ellipse" size={14} color="#fff" weight="bold" />
+            <Text className="text-[15px] font-bold text-white">Check in</Text>
+          </Pressable>
+          <Pressable onPress={onOpen} accessibilityRole="button" className="h-12 flex-row items-center justify-center rounded-full bg-white px-5 active:opacity-80">
+            <Text className="text-[15px] font-bold" style={{ color: '#101014' }}>Details</Text>
+          </Pressable>
+        </View>
       </View>
     </Pressable>
   );

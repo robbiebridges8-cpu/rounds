@@ -269,3 +269,18 @@ mates; Jubilee grey for the rest. Bricolage Grotesque for display. Ink pill
 buttons as Luma and Patreon do them; Patreon's soft filled inputs; Luma's
 orbit on the welcome screen; Resy's map with a search bar, filter chips and
 a photo card with a red star rating rising from the bottom.
+
+## Signal
+
+**Chosen from three mocked directions on a canvas.** Night Bus (dark, lime,
+condensed capitals), Sunday Papers (paper, serif, cherry) and Signal (white,
+cobalt, coral, butter, mint). Robbie picked Signal. Designing in code and
+reviewing in Expo Go had produced two rounds of safe averages; mockups he
+could react to settled it in one.
+
+**Colour is the brand.** Cobalt is you (boroughs, the week card, the top
+band on your own check-ins). Coral is your mates and the stars. Butter and
+mint are furniture: stat tiles, chips, the map card. Ink is anything you
+press. Unbounded for display, system font for everything else. Pills and
+22 px cards throughout; the map search bar has a hard ink offset shadow.
+Tabs are Map, Feed, Quests, Mates, You. Light by default, dark by toggle.

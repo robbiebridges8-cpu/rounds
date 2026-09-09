@@ -1,11 +1,7 @@
 import '@/global.css';
 
 import { QueryClientProvider } from '@tanstack/react-query';
-import {
-  BricolageGrotesque_600SemiBold,
-  BricolageGrotesque_800ExtraBold,
-  useFonts,
-} from '@expo-google-fonts/bricolage-grotesque';
+import { Unbounded_600SemiBold, Unbounded_800ExtraBold, useFonts } from '@expo-google-fonts/unbounded';
 import * as Notifications from 'expo-notifications';
 import { Stack, useRouter, type Href } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -37,7 +33,7 @@ export default function RootLayout() {
 
 function RootNavigator() {
   const authReady = useAuthRedirect();
-  const [fontsReady] = useFonts({ BricolageGrotesque_800ExtraBold, BricolageGrotesque_600SemiBold });
+  const [fontsReady] = useFonts({ Unbounded_800ExtraBold, Unbounded_600SemiBold });
   const theme = useTheme();
   const ready = authReady && fontsReady && theme.ready;
   const router = useRouter();

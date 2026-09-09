@@ -43,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="challenges"
         options={{
-          title: 'Challenges',
+          title: 'Quests',
           tabBarIcon: ({ color, focused }) => (
             <Icon name={focused ? 'trophy.fill' : 'trophy'} size={24} color={color} />
           ),
@@ -52,7 +52,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="friends"
         options={{
-          title: 'Friends',
+          title: 'Mates',
           tabBarIcon: ({ color, focused }) => (
             <Icon name={focused ? 'person.2.fill' : 'person.2'} size={24} color={color} />
           ),

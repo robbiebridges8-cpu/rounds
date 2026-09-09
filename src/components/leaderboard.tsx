@@ -5,7 +5,7 @@ import { Avatar, Card, EmptyState } from '@/components/ui';
 import type { LeaderboardRow } from '@/lib/social';
 import { colors, fonts } from '@/theme';
 
-const MEDALS = [colors.gold, '#B9B4AD', '#C98C5A'];
+const MEDALS = [colors.you, '#B9B4AD', '#C98C5A'];
 
 export type Metric = 'borough_count' | 'pub_count' | 'month_checkins' | 'badge_count';
 

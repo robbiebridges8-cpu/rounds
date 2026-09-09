@@ -152,7 +152,7 @@ export default function PubScreen() {
           </View>
           {been ? (
             <View className="mt-1 flex-row items-center gap-1.5">
-              <Icon name="checkmark.circle.fill" size={16} color={colors.gold} />
+              <Icon name="checkmark.circle.fill" size={16} color={colors.you} />
               <Text className="text-ink text-[15px] font-semibold">You have been here</Text>
             </View>
           ) : null}
@@ -201,7 +201,7 @@ export default function PubScreen() {
                   <Text className="text-ink flex-1 text-[17px]">{tag.label}</Text>
                   <Text
                     className={`w-8 text-right text-[15px] font-semibold ${
-                      net > 0 ? 'text-mate' : net < 0 ? 'text-danger' : 'text-slate'
+                      net > 0 ? 'text-mates' : net < 0 ? 'text-danger' : 'text-slate'
                     }`}>
                     {net > 0 ? `+${net}` : net}
                   </Text>

@@ -13,8 +13,8 @@ export type ChallengeColor = 'ale' | 'gold' | 'mate' | 'stout' | 'danger';
 
 export const CHALLENGE_COLORS: Record<ChallengeColor, string> = {
   ale: colors.ale,
-  gold: colors.gold,
-  mate: colors.mate,
+  gold: '#E8A400',
+  mate: '#1DB874',
   stout: colors.stout,
   danger: colors.danger,
 };

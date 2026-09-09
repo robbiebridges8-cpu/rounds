@@ -127,7 +127,7 @@ function PersonalWeek({ data }: { data: MyWeek | null }) {
   const isBest = data.this_week > 0 && data.this_week >= data.best_week;
   return (
     <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface px-4 py-3">
-      <Icon name={isBest ? 'sparkles' : 'person.fill'} size={16} color={isBest ? colors.gold : colors.inkSoft} />
+      <Icon name={isBest ? 'sparkles' : 'person.fill'} size={16} color={isBest ? colors.you : colors.inkSoft} />
       <Text className="text-ink flex-1 text-[15px] leading-5">
         <Text className="font-semibold">You this week: </Text>
         {data.this_week === 0

@@ -84,11 +84,10 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
           </View>
         </View>
 
-        <View className="flex-row rounded-lg bg-surface">
-          <StatCell value={stats.data?.pub_count ?? 0} label="Pubs" />
-          <StatCell value={visited.size} label="Boroughs" />
-          <StatCell value={stats.data?.checkin_count ?? 0} label="Check-ins" />
-          <StatCell value={badges.data?.length ?? 0} label="Badges" last />
+        <View className="flex-row gap-2">
+          <StatCell value={stats.data?.pub_count ?? 0} label="Pubs" bg={colors.butter} fg="#101014" />
+          <StatCell value={`${visited.size}`} suffix={`/${BOROUGH_TOTAL}`} label="Boroughs" bg={colors.you} fg="#FFFFFF" />
+          <StatCell value={badges.data?.length ?? 0} label="Badges" bg={colors.mint} fg="#101014" />
         </View>
 
         <View className="flex-row gap-2">
@@ -101,7 +100,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
                 accessibilityRole="tab"
                 accessibilityState={{ selected: on }}
                 className={`h-10 flex-1 items-center justify-center rounded-full ${on ? 'bg-ink' : 'bg-surface'}`}>
-                <Text className={`text-[14px] font-bold ${on ? 'text-canvas' : 'text-ink'}`}>{label}</Text>
+                <Text className={`text-[14px] font-bold ${on ? 'text-white' : 'text-ink'}`}>{label}</Text>
               </Pressable>
             );
           })}
@@ -146,7 +145,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
             ) : null}
 
             <View className="gap-2 rounded-lg bg-surface p-3">
-              <BoroughMap visited={visited} width={inner - 24} stroke={colors.surface} />
+              <BoroughMap visited={visited} width={inner - 24} stroke={colors.surface} empty={colors.canvas} />
               <View className="flex-row items-baseline justify-between px-1">
                 <Text className="text-ink font-display text-[20px]">
                   {visited.size} of {BOROUGH_TOTAL} boroughs
@@ -176,7 +175,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
                   <Button
                     label="Invite a mate"
                     icon="person.badge.plus"
-                    variant="outline"
+                    variant="accent"
                     onPress={() => inviteCode.data && void shareInvite(inviteCode.data, profile.display_name)}
                     disabled={!inviteCode.data}
                   />
@@ -243,13 +242,14 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
   );
 }
 
-function StatCell({ value, label, last }: { value: number | string; label: string; last?: boolean }) {
+function StatCell({ value, suffix, label, bg, fg }: { value: number | string; suffix?: string; label: string; bg: string; fg: string }) {
   return (
-    <View className={`flex-1 items-center py-3 ${last ? '' : 'border-r border-line'}`}>
-      <Text className="text-ink" style={{ fontFamily: fonts.display, fontSize: 22, lineHeight: 26, fontVariant: ['tabular-nums'] }}>
+    <View className="flex-1 rounded-lg px-3.5 py-3.5" style={{ backgroundColor: bg }}>
+      <Text style={{ fontFamily: fonts.display, fontSize: 26, lineHeight: 30, color: fg, fontVariant: ['tabular-nums'] }}>
         {value}
+        {suffix ? <Text style={{ fontSize: 13, opacity: 0.7 }}>{suffix}</Text> : null}
       </Text>
-      <Text className="text-ink-soft text-[10px] font-bold uppercase tracking-wide">{label}</Text>
+      <Text className="text-[10px] font-bold uppercase tracking-wider" style={{ color: fg, opacity: 0.85 }}>{label}</Text>
     </View>
   );
 }

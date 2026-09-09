@@ -70,7 +70,7 @@ export default function NearbyScreen() {
 }
 
 function Dot({ pub }: { pub: NearbyPub }) {
-  if (pub.visited_by_me) return <Icon name="checkmark.circle.fill" size={22} color={colors.gold} />;
-  if (pub.friend_visits > 0) return <Icon name="person.2.circle.fill" size={22} color={colors.mate} />;
+  if (pub.visited_by_me) return <Icon name="checkmark.circle.fill" size={22} color={colors.you} />;
+  if (pub.friend_visits > 0) return <Icon name="person.2.circle.fill" size={22} color={colors.mates} />;
   return <Icon name="circle" size={22} color={colors.line} />;
 }

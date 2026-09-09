@@ -35,6 +35,7 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
 
   return (
     <Card>
+      <View className="h-2" style={{ backgroundColor: isMe ? colors.you : colors.mates }} />
       <Pressable onPress={onOpen} accessibilityRole="button" className="active:bg-raised">
         <View className="flex-row items-center gap-3 px-4 pt-4">
           <Pressable disabled={isMe || !who} onPress={() => who && router.push({ pathname: '/user/[id]', params: { id: who.id } })}>
@@ -80,7 +81,7 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
           <View className="mx-4 mt-3 overflow-hidden rounded-md bg-canvas">
             <BoroughSnapshot borough={post.pubs!.borough} lat={post.pubs!.lat!} lng={post.pubs!.lng!} width={cardWidth - 32} height={120} />
             <View className="absolute bottom-2 left-3 flex-row items-center gap-1.5">
-              <View className="h-2 w-2 rounded-full bg-gold" />
+              <View className="h-2 w-2 rounded-full bg-you" />
               <Text className="text-ink-soft text-[11px] font-bold">{post.pubs!.borough ?? 'London'}</Text>
             </View>
           </View>
@@ -124,11 +125,11 @@ export function PostCard({ post, me, onOpen, onCheers, onReply }: Props) {
         ) : null}
       </Pressable>
 
-      <View className="mt-3 flex-row border-t border-line">
+      <View className="flex-row gap-2 px-4 pb-4 pt-3">
         {hasPhotos ? (
           <Action icon={mineCheers ? 'camera.fill' : 'camera'} label={mineCheers ? 'Cheersed' : 'Cheers'} active={mineCheers} onPress={onCheers} />
         ) : null}
-        <Action icon="bubble.right" label="Reply" onPress={onReply} />
+        <Action icon="bubble.right" label="Reply" onPress={onReply} quiet />
       </View>
     </Card>
   );
@@ -143,11 +144,13 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Action({ icon, label, active, onPress }: { icon: 'camera' | 'camera.fill' | 'bubble.right'; label: string; active?: boolean; onPress: () => void }) {
+function Action({ icon, label, active, quiet, onPress }: { icon: 'camera' | 'camera.fill' | 'bubble.right'; label: string; active?: boolean; quiet?: boolean; onPress: () => void }) {
+  const bg = active ? colors.ale : quiet ? colors.raised : colors.butter;
+  const fg = active ? '#fff' : '#101014';
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" className="h-11 flex-1 flex-row items-center justify-center gap-2 active:bg-raised">
-      <Icon name={icon} size={16} color={active ? colors.ale : colors.inkSoft} weight="semibold" />
-      <Text className={`text-[15px] font-bold ${active ? 'text-ale' : 'text-ink-soft'}`}>{label}</Text>
+    <Pressable onPress={onPress} accessibilityRole="button" className="h-10 flex-row items-center justify-center gap-2 rounded-full px-4 active:opacity-80" style={{ backgroundColor: bg }}>
+      <Icon name={icon} size={15} color={fg} weight="bold" />
+      <Text className="text-[14px] font-bold" style={{ color: fg }}>{label}</Text>
     </Pressable>
   );
 }

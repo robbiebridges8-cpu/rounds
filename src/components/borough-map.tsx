@@ -34,7 +34,7 @@ export function BoroughMap({
           <Path
             key={b.name}
             d={b.d}
-            fill={visited.has(b.name) ? colors.gold : friends?.has(b.name) ? colors.mateTint : empty}
+            fill={visited.has(b.name) ? colors.you : friends?.has(b.name) ? colors.matesTint : empty}
           />
         ))}
       </G>
@@ -56,7 +56,7 @@ export function BoroughSnapshot({
   width,
   height = width * 0.62,
   fill = colors.raised,
-  dot = colors.gold,
+  dot = colors.you,
 }: {
   borough: string | null | undefined;
   lat: number;
