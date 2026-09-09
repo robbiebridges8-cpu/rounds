@@ -305,9 +305,10 @@ that writes digest rows for everyone whose circle did anything.
 0012 drops them. Too early: nobody to sell to and nobody to review claims.
 The design stays in git history for when there is an audience.
 
-**Classics are seeded from memory, not scraped.** Thirty-seven well-known
-pubs got a one-line blurb and a "London classics" quest so a first open has
-somewhere to go. No photos: nothing we could licence cleanly.
+**No seeded copy.** Thirty-seven classic pubs briefly had a one-line blurb
+written from memory. Robbie called them what they were and they came out
+(migration 0013). The London classics quest stays: a list is useful, a
+guidebook voice is not.
 
 **Admin numbers live in one function.** `admin_stats` refuses anyone not on
 the admins table and returns the actives, weekly check-ins, boroughs and top

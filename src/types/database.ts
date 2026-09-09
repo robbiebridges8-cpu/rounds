@@ -597,7 +597,6 @@ export type Database = {
       pubs: {
         Row: {
           address: string | null;
-          blurb: string | null;
           borough: string | null;
           created_at: string;
           created_by: string | null;
@@ -612,7 +611,6 @@ export type Database = {
         };
         Insert: {
           address?: string | null;
-          blurb?: string | null;
           borough?: string | null;
           created_at?: string;
           created_by?: string | null;
@@ -627,7 +625,6 @@ export type Database = {
         };
         Update: {
           address?: string | null;
-          blurb?: string | null;
           borough?: string | null;
           created_at?: string;
           created_by?: string | null;

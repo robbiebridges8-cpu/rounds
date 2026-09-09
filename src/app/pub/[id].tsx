@@ -150,7 +150,6 @@ export default function PubScreen() {
           <View className="mt-1">
             <Rating value={stats?.avg_rating} count={stats?.rating_count || null} size={16} />
           </View>
-          {details.blurb ? <Text className="text-ink mt-2 text-[16px] leading-6">{details.blurb}</Text> : null}
           {been ? (
             <View className="mt-1 flex-row items-center gap-1.5">
               <Icon name="checkmark.circle.fill" size={16} color={colors.you} />
