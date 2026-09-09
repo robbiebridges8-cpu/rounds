@@ -548,6 +548,7 @@ export type Database = {
         Row: {
           down_votes: number;
           net_votes: number | null;
+          osm: boolean;
           pub_id: string;
           tag: string;
           up_votes: number;
@@ -555,6 +556,7 @@ export type Database = {
         Insert: {
           down_votes?: number;
           net_votes?: number | null;
+          osm?: boolean;
           pub_id: string;
           tag: string;
           up_votes?: number;
@@ -562,6 +564,7 @@ export type Database = {
         Update: {
           down_votes?: number;
           net_votes?: number | null;
+          osm?: boolean;
           pub_id?: string;
           tag?: string;
           up_votes?: number;

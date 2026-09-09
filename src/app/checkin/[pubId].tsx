@@ -58,7 +58,10 @@ export default function CheckinScreen() {
   const friends = friendships.data?.friends ?? [];
 
   // Tags others have confirmed come first, so agreeing is one tap.
-  const confirmedCount = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.up_votes ?? 0;
+  const confirmedCount = (slug: string) => {
+    const row = tagStats.data?.find((t) => t.tag === slug);
+    return (row?.up_votes ?? 0) + (row?.osm ? 1 : 0);
+  };
   const tagOrder = [...(tags.data ?? [])].sort((a, b) => confirmedCount(b.slug) - confirmedCount(a.slug) || a.sort_order - b.sort_order);
   const togglePick = (slug: string) => {
     void Haptics.selectionAsync();

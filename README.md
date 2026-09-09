@@ -85,6 +85,8 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 **Friends.** Requests by username, or an eight-character invite code that creates an accepted friendship on the spot. Invite links carry the code. Everything personal is visible only to accepted friends; pub aggregates are visible to everyone.
 
+**Amenities.** Sixteen public tags in two groups, It's got and Good to know, confirmed by tapping a chip. Seeded from OpenStreetMap where it knows (a chip marked "map"), confirmed at check-in or on the pub page, long press for "not any more". Ratings, notes and photos stay friends-only.
+
 **Map legend.** Blue you have been, coral a mate has, grey nobody you know. The same three colours run through the whole app.
 
 **Boroughs.** The 33 London boroughs, drawn from ONS boundaries, fill in as you check in. The profile poster, the share card and the feed's borough snapshots all use the same SVG paths.

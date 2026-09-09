@@ -367,3 +367,19 @@ and their notes as quotes.
 Cheers is the photo back and the big butter pill; Like is a nod; Reply
 opens a box under the post with no navigation. Replies can be liked too.
 The order and the sizes are deliberate: cheers is the thing we want.
+
+## Amenities, the final list
+
+Sixteen, cut from twenty-four with Robbie: Garden, Roof terrace, Riverside,
+Cocktails, Good Guinness, Food, Sunday roast, Shows sport, Pool table,
+Darts, Quiz, Live music, Happy hour; then Dog friendly, Cash only, Step-free.
+Everything cut was either rare, a complaint dressed as a fact, or a
+preference rather than a property (real ale, craft beer, cheap pints).
+
+**Seeded from the map.** Where OpenStreetMap tags a garden, food, dogs, live
+music, sport, step-free access or cocktails, the pub starts with that chip
+marked "map" (a `osm` flag on `pub_tag_stats`, which the vote trigger leaves
+alone). It counts as one when ordering and fades if enough people say "not
+any more". The three layers are now explicit: the record and the amenities
+are public, reviews are friends-only, and a generated public summary of the
+reviews is the planned fourth, once there is volume.

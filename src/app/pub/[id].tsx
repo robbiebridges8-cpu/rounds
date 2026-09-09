@@ -91,6 +91,7 @@ export default function PubScreen() {
 
   const confirmedFor = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.up_votes ?? 0;
   const goneFor = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.down_votes ?? 0;
+  const fromMap = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.osm ?? false;
   const myVoteFor = (slug: string) => myVotes.data?.find((v) => v.tag === slug)?.value ?? 0;
   const confirm = (slug: string) => {
     void Haptics.selectionAsync();
@@ -101,7 +102,8 @@ export default function PubScreen() {
       { text: 'Cancel', style: 'cancel' },
       { text: 'Not any more', style: 'destructive', onPress: () => vote.mutate({ tag: slug, value: -1 }) },
     ]);
-  const group = (g: string) => [...(tags.data ?? [])].filter((t) => t.group === g).sort((a, b) => confirmedFor(b.slug) - confirmedFor(a.slug) || a.sort_order - b.sort_order);
+  const weight = (slug: string) => confirmedFor(slug) + (fromMap(slug) ? 1 : 0);
+  const group = (g: string) => [...(tags.data ?? [])].filter((t) => t.group === g).sort((a, b) => weight(b.slug) - weight(a.slug) || a.sort_order - b.sort_order);
   const totalRatings = (histogram.data ?? []).reduce((a, h) => a + h.n, 0);
   const ratedVisits = (visits.data ?? []).filter((v) => v.rating != null);
   const quotes = (visits.data ?? []).filter((v) => v.note && v.note.trim().length > 0).slice(0, 3);
@@ -235,11 +237,11 @@ export default function PubScreen() {
 
           <View>
             <SectionTitle>It&apos;s got</SectionTitle>
-            <TagChips items={group('has')} confirmedFor={confirmedFor} goneFor={goneFor} myVoteFor={myVoteFor} onConfirm={confirm} onGone={notAnyMore} />
+            <TagChips items={group('has')} confirmedFor={confirmedFor} goneFor={goneFor} fromMap={fromMap} myVoteFor={myVoteFor} onConfirm={confirm} onGone={notAnyMore} />
           </View>
           <View>
             <SectionTitle>Good to know</SectionTitle>
-            <TagChips items={group('know')} confirmedFor={confirmedFor} goneFor={goneFor} myVoteFor={myVoteFor} onConfirm={confirm} onGone={notAnyMore} />
+            <TagChips items={group('know')} confirmedFor={confirmedFor} goneFor={goneFor} fromMap={fromMap} myVoteFor={myVoteFor} onConfirm={confirm} onGone={notAnyMore} />
           </View>
 
           {onLists.data && onLists.data.length > 0 ? (
@@ -306,10 +308,11 @@ type Tag = { slug: string; label: string };
  * Tags as chips. Tap to confirm it is true; the count is how many people
  * have. Long press for "not any more". Nothing to vote against.
  */
-function TagChips({ items, confirmedFor, goneFor, myVoteFor, onConfirm, onGone }: {
+function TagChips({ items, confirmedFor, goneFor, fromMap, myVoteFor, onConfirm, onGone }: {
   items: Tag[];
   confirmedFor: (slug: string) => number;
   goneFor: (slug: string) => number;
+  fromMap: (slug: string) => boolean;
   myVoteFor: (slug: string) => number;
   onConfirm: (slug: string) => void;
   onGone: (slug: string, label: string) => void;
@@ -318,7 +321,9 @@ function TagChips({ items, confirmedFor, goneFor, myVoteFor, onConfirm, onGone }
     <View className="flex-row flex-wrap gap-2">
       {items.map((t) => {
         const n = confirmedFor(t.slug);
-        const gone = goneFor(t.slug) > n;
+        const map = fromMap(t.slug);
+        const known = n > 0 || map;
+        const gone = goneFor(t.slug) > n + (map ? 1 : 0);
         const mine = myVoteFor(t.slug) === 1;
         return (
           <Pressable
@@ -327,12 +332,12 @@ function TagChips({ items, confirmedFor, goneFor, myVoteFor, onConfirm, onGone }
             onLongPress={() => onGone(t.slug, t.label)}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: mine }}
-            accessibilityLabel={`${t.label}${n ? `, confirmed by ${n}` : ''}`}
+            accessibilityLabel={`${t.label}${n ? `, confirmed by ${n}` : map ? ', from the map' : ''}`}
             className="h-9 flex-row items-center gap-1.5 rounded-full px-3.5 active:opacity-80"
-            style={{ backgroundColor: mine ? colors.you : n > 0 ? colors.surface : colors.raised, opacity: gone ? 0.45 : 1 }}>
+            style={{ backgroundColor: mine ? colors.you : known ? colors.surface : colors.raised, opacity: gone ? 0.45 : 1 }}>
             {mine ? <Icon name="checkmark" size={11} color="#fff" weight="bold" /> : null}
-            <Text className="text-[13px] font-bold" style={{ color: mine ? '#fff' : n > 0 ? colors.ink : colors.inkSoft, textDecorationLine: gone ? 'line-through' : 'none' }}>
-              {t.label}{n ? ` · ${n}` : ''}
+            <Text className="text-[13px] font-bold" style={{ color: mine ? '#fff' : known ? colors.ink : colors.inkSoft, textDecorationLine: gone ? 'line-through' : 'none' }}>
+              {t.label}{n ? ` · ${n}` : map ? ' · map' : ''}
             </Text>
           </Pressable>
         );
