@@ -60,7 +60,7 @@ function RootNavigator() {
 
   return (
     <>
-      <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style={theme.scheme === 'light' ? 'dark' : 'light'} />
     <Stack
       screenOptions={{
         headerTintColor: colors.ale,

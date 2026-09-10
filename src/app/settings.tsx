@@ -1,10 +1,11 @@
 import { Stack, useRouter } from 'expo-router';
-import { Alert, ScrollView, Switch, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 
 import { Card, ListRow, SectionTitle } from '@/components/ui';
 import { useIsAdmin } from '@/lib/admin';
 import { deleteAccount, signOut, useProfile } from '@/lib/auth';
-import { useTheme } from '@/lib/theme-provider';
+import { usePref } from '@/lib/prefs';
+import { useTheme, type Scheme } from '@/lib/theme-provider';
 import { colors } from '@/theme';
 
 export default function SettingsScreen() {
@@ -12,6 +13,7 @@ export default function SettingsScreen() {
   const { scheme, setScheme } = useTheme();
   const { data: profile } = useProfile();
   const isAdmin = useIsAdmin();
+  const [pints, setPints] = usePref('pint-pins');
 
   const confirmSignOut = () =>
     Alert.alert('Sign out?', 'Your check-ins stay put.', [
@@ -44,9 +46,28 @@ export default function SettingsScreen() {
         <View>
           <SectionTitle>Look</SectionTitle>
           <Card>
-            <View className="min-h-[52px] flex-row items-center justify-between px-4 py-2">
-              <Text className="text-ink text-[17px] font-semibold">Dark mode</Text>
-              <Switch value={scheme === 'dark'} onValueChange={(v) => setScheme(v ? 'dark' : 'light')} trackColor={{ true: colors.you }} />
+            <View className="flex-row gap-2 p-3">
+              {(
+                [
+                  ['light', 'Light'],
+                  ['dark', 'Dark'],
+                  ['pub', 'Pub'],
+                ] as [Scheme, string][]
+              ).map(([key, label]) => {
+                const on = scheme === key;
+                return (
+                  <Pressable key={key} onPress={() => setScheme(key)} accessibilityRole="radio" accessibilityState={{ selected: on }} className={`h-10 flex-1 items-center justify-center rounded-full ${on ? 'bg-ink' : 'bg-raised'}`}>
+                    <Text className={`text-[14px] font-bold ${on ? 'text-canvas' : 'text-ink'}`}>{label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <View className="min-h-[52px] flex-row items-center justify-between border-t border-line px-4 py-2">
+              <View className="flex-1 pr-3">
+                <Text className="text-ink text-[17px] font-semibold">Pint glass pins</Text>
+                <Text className="text-ink-soft text-[13px]">An experiment. Pubs on the map as pints instead of dots.</Text>
+              </View>
+              <Switch value={pints} onValueChange={setPints} trackColor={{ true: colors.you }} />
             </View>
           </Card>
         </View>

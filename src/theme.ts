@@ -35,7 +35,9 @@ export type Palette = {
   danger: string;
 };
 
-export const palettes: Record<'light' | 'dark', Palette> = {
+export type Scheme = 'light' | 'dark' | 'pub';
+
+export const palettes: Record<Scheme, Palette> = {
   light: {
     canvas: '#F6F5F1',
     surface: '#FFFFFF',
@@ -78,12 +80,34 @@ export const palettes: Record<'light' | 'dark', Palette> = {
     mint: '#8FE6B4',
     danger: '#FF5A3C',
   },
+  // Experiment, 10 September: green and gold, like the inside of a pub.
+  pub: {
+    canvas: '#0F2B22',
+    surface: '#163B2F',
+    raised: '#1E4A3B',
+    line: '#2B5A49',
+    ink: '#F5EBD0',
+    inkSoft: '#B9C9BC',
+    ale: '#D9A521',
+    aleDark: '#B8880F',
+    aleTint: '#3A3410',
+    stout: '#1F5F4A',
+    stoutSoft: '#CDE3D6',
+    you: '#E8B92E',
+    youTint: '#4A3D10',
+    mates: '#FF6E54',
+    matesTint: '#4A2A22',
+    slate: '#4E6A5D',
+    butter: '#F2D06B',
+    mint: '#6FCF97',
+    danger: '#FF6E54',
+  },
 };
 
 /** Live palette. Mutated by ThemeProvider; see applyPalette. */
 export const colors: Palette = { ...palettes.light };
 
-export function applyPalette(scheme: 'light' | 'dark') {
+export function applyPalette(scheme: Scheme) {
   Object.assign(colors, palettes[scheme]);
 }
 

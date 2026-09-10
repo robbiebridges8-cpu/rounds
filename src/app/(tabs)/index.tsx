@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
+import Svg, { Path, Rect } from 'react-native-svg';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -12,6 +13,7 @@ import { photoUrl } from '@/lib/checkins';
 import { plural } from '@/lib/format';
 import { LONDON_REGION, getPosition } from '@/lib/location';
 import { useMapPubs, usePubPhotos, type Bounds, type MapPub } from '@/lib/pubs';
+import { usePref } from '@/lib/prefs';
 import { useTheme } from '@/lib/theme-provider';
 import { colors, fonts } from '@/theme';
 
@@ -41,6 +43,7 @@ export default function MapScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { scheme } = useTheme();
+  const [pints] = usePref('pint-pins');
   const mapRef = useRef<MapView>(null);
   const [bounds, setBounds] = useState<Bounds>(() => boundsOf(LONDON_REGION));
   const [wide, setWide] = useState(true);
@@ -72,7 +75,7 @@ export default function MapScreen() {
         style={StyleSheet.absoluteFill}
         initialRegion={LONDON_REGION}
         mapType={Platform.OS === 'ios' ? 'mutedStandard' : 'standard'}
-        userInterfaceStyle={scheme}
+        userInterfaceStyle={scheme === 'light' ? 'light' : 'dark'}
         showsUserLocation
         showsMyLocationButton={false}
         showsCompass={false}
@@ -98,7 +101,7 @@ export default function MapScreen() {
                 setSelected(pub);
               }}
               zIndex={active ? 3 : tier === 'me' ? 2 : tier === 'mate' ? 1 : 0}>
-              <Pin color={tierColor[tier]} active={active} small={tier === 'none'} />
+              {pints ? <PintPin color={tierColor[tier]} active={active} small={tier === 'none'} /> : <Pin color={tierColor[tier]} active={active} small={tier === 'none'} />}
             </Marker>
           );
         })}
@@ -169,6 +172,22 @@ export default function MapScreen() {
         <Text className="text-ink-soft self-start text-[10px]">© OpenStreetMap contributors</Text>
       </View>
     </View>
+  );
+}
+
+/**
+ * Experiment: a pint glass instead of a dot. The beer is the tier colour,
+ * the head is white, the glass outline is the surface colour.
+ */
+function PintPin({ color, active, small }: { color: string; active: boolean; small: boolean }) {
+  const h = active ? 34 : small ? 18 : 26;
+  const w = h * 0.7;
+  return (
+    <Svg width={w} height={h} viewBox="0 0 14 20">
+      <Path d="M2 3 L12 3 L11 18.5 Q11 19.5 10 19.5 L4 19.5 Q3 19.5 3 18.5 Z" fill={color} stroke={colors.surface} strokeWidth={1.4} strokeLinejoin="round" />
+      <Path d="M2 3 L12 3 L11.6 6.5 L2.4 6.5 Z" fill="#FFFFFF" />
+      <Rect x="4.4" y="8" width="1.4" height="9" rx="0.7" fill="rgba(255,255,255,0.35)" />
+    </Svg>
   );
 }
 

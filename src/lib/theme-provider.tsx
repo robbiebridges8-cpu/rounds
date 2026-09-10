@@ -3,9 +3,9 @@ import { vars } from 'nativewind';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
-import { applyPalette, paletteVars, palettes } from '@/theme';
+import { applyPalette, paletteVars, palettes, type Scheme } from '@/theme';
 
-export type Scheme = 'light' | 'dark';
+export type { Scheme };
 
 const KEY = 'rounds.scheme';
 
@@ -25,7 +25,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(KEY)
       .then((saved) => {
-        if (saved === 'dark' || saved === 'light') setSchemeState(saved);
+        if (saved === 'dark' || saved === 'light' || saved === 'pub') setSchemeState(saved);
       })
       .catch(() => undefined)
       .finally(() => setReady(true));
