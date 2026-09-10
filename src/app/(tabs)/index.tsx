@@ -91,7 +91,7 @@ export default function MapScreen() {
           const active = pub.id === current?.id;
           return (
             <Marker
-              key={pub.id}
+              key={`${pub.id}-${pints ? 'pint' : 'dot'}`}
               identifier={pub.id}
               coordinate={{ latitude: pub.lat, longitude: pub.lng }}
               anchor={{ x: 0.5, y: 0.5 }}
