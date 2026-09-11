@@ -4,6 +4,7 @@ import Svg, { Rect } from 'react-native-svg';
 
 import { Card, EmptyState, ListRow, SectionTitle } from '@/components/ui';
 import { useAdminStats, useIsAdmin } from '@/lib/admin';
+import { useAdminPending } from '@/lib/feedback';
 import { colors, fonts } from '@/theme';
 
 /** The numbers you show an advertiser or a buyer. Admins only. */
@@ -12,6 +13,7 @@ export default function AdminScreen() {
   const { width } = useWindowDimensions();
   const isAdmin = useIsAdmin();
   const stats = useAdminStats(Boolean(isAdmin.data));
+  const pending = useAdminPending(Boolean(isAdmin.data));
   const s = stats.data;
 
   if (isAdmin.isSuccess && !isAdmin.data) {
@@ -25,6 +27,16 @@ export default function AdminScreen() {
         className="flex-1"
         contentContainerClassName="gap-5 px-4 pb-10 pt-2"
         refreshControl={<RefreshControl refreshing={stats.isRefetching} onRefresh={() => void stats.refetch()} />}>
+        <Card>
+          <ListRow
+            title="Inbox"
+            subtitle="Feedback, pub fixes, reports"
+            right={pending.data ? <View className="h-6 min-w-[24px] items-center justify-center rounded-full bg-ale px-2"><Text className="text-[12px] font-bold text-white">{pending.data}</Text></View> : undefined}
+            onPress={() => router.push('/admin/inbox')}
+            last
+          />
+        </Card>
+
         {!s ? (
           <View className="py-10">
             <ActivityIndicator color={colors.ale} />

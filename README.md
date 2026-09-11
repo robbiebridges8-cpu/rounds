@@ -70,9 +70,11 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `challenge/[id]`, `challenge/new`, `challenge/[id]/add` | A quest, creating one, adding pubs to it |
 | `inbox` | Notifications: cheers, replies, tags, the Sunday digest |
 | `invite/[code]` | Deep link target. Accepts the invite if signed in, otherwise remembers it through sign-up |
-| `settings` | Dark mode, privacy policy, admin numbers if you are an admin, sign out, delete account |
+| `settings` | Look, Tell us (feedback), privacy policy, admin inbox and numbers if you are an admin, sign out, delete account |
+| `feedback` | A sheet: bug, idea or something else, a message, an optional screenshot. Device, iOS version and the screen you came from go along automatically |
+| `admin/inbox` | Feedback, pub corrections and reports in one place with a pending count. Tap to open, long press to set a status. Admins only |
 | `privacy` | The policy, rendered from PRIVACY.md |
-| `admin` | Actives, weekly check-ins, boroughs and top pubs for the last 30 days. Admins only |
+| `admin/index` | Actives, weekly check-ins, boroughs and top pubs for the last 30 days. Admins only |
 
 ## Features
 
@@ -106,11 +108,13 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 **Inbox and push.** Every cheers, reply, tag and digest writes a notification row. A database trigger posts the row id to the `send-push` edge function, which looks up the person's Expo tokens and sends. Tokens register once there is an EAS project id; until then the inbox is the whole feature.
 
+**Feedback.** Settings has Tell us. Every submission is a row in `feedback` with the sender, kind, message, screenshot, device and screen. Admins see them in the in-app inbox alongside pub corrections and reports, and can mark each one seen or done. `is_admin()` is the single check behind the admin policies.
+
 **Account deletion.** One RPC deletes the auth user and everything cascades. Required by Apple.
 
 ## Database
 
-Eighteen migrations. The schema in one paragraph: `profiles` and `friendships` (one row per pair, `are_friends()` is the single visibility rule); `pubs_osm` (the OpenStreetMap import, ODbL, never edited) and `pubs` (our record, with a PostGIS geography column); `checkins`, `checkin_photos`, `checkin_tags`, `checkin_guests`; `cheers` and `checkin_comments`; `pub_tags`, `pub_tag_votes` and `pub_tag_stats`; `pub_photos` (one seeded front photo per pub, with its credit); `pub_stats` (public aggregates kept by trigger); `invite_codes`; `challenges`, `challenge_pubs`, `challenge_members`; `lists`, `list_pubs`, `list_follows`; `notifications` and `push_tokens`; `pub_corrections` and `reports`; `admins` and `app_config`.
+Twenty migrations. The schema in one paragraph: `profiles` and `friendships` (one row per pair, `are_friends()` is the single visibility rule); `pubs_osm` (the OpenStreetMap import, ODbL, never edited) and `pubs` (our record, with a PostGIS geography column); `checkins`, `checkin_photos`, `checkin_tags`, `checkin_guests`; `cheers` and `checkin_comments`; `pub_tags`, `pub_tag_votes` and `pub_tag_stats`; `pub_photos` (one seeded front photo per pub, with its credit); `pub_stats` (public aggregates kept by trigger); `invite_codes`; `challenges`, `challenge_pubs`, `challenge_members`; `lists`, `list_pubs`, `list_follows`; `notifications` and `push_tokens`; `pub_corrections` and `reports`; `admins` and `app_config`; `feedback`.
 
 Query functions the app calls: `map_pubs`, `nearby_pubs`, `user_pub_map`, `user_stats`, `friends_leaderboard`, `weekly_summary`, `my_week`, `my_month`, `challenge_list`, `challenge_pub_status`, `user_badges`, `list_index`, `list_pub_status`, `pub_lists`, `accept_invite`, `request_friendship`, `admin_stats`, `delete_my_account`.
 

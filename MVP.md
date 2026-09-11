@@ -58,6 +58,8 @@ Last updated 11 September 2026.
 
 ## Housekeeping
 - [x] Settings: dark mode, privacy policy, sign out
+- [x] Tell us: in-app feedback with a screenshot, read in the admin inbox
+- [x] Admin inbox: feedback, pub fixes, reports, with statuses
 - [x] Admin numbers page
 - [x] Privacy policy, needs a contact email
 - [ ] Apple Developer membership, EAS, TestFlight

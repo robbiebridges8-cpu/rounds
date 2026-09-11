@@ -409,3 +409,19 @@ image strip. Honest beats decorative.
 **Order on the pub page.** Check-in photos first, newest first, then the
 seeded front. A real photo from someone you know beats an archive shot, and
 the archive shot beats nothing.
+
+## Feedback goes in the app, and the admin reads it in the app
+
+TestFlight has its own feedback channel, but it stops at the App Store
+Connect dashboard and only covers testers. From 11 September, Settings has
+"Tell us": bug, idea or other, a message, an optional screenshot. The phone
+model, iOS version, app version and the screen the sender came from are
+attached without asking, because nobody types those and every bug report
+needs them. It lands in a `feedback` table.
+
+The admin inbox is a screen, not a dashboard. Three tabs: feedback, pub
+fixes (the `pub_corrections` table, which the pub page long-press has
+written to since day one), and reports. A count on each. Tap opens the
+thing, long press sets a status. Admin access is one function, `is_admin()`,
+used by every admin policy so there is one place to get it right. Actions on
+the reported thing itself (hide, warn) are backlog until there is a case.

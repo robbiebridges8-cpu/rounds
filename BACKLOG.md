@@ -35,7 +35,7 @@ Last updated 11 September 2026. See README.md for what exists.
 |---|---|---|---|---|---|
 | 14 | Public leaderboard by area: busiest pubs per borough this month, aggregates only | Medium | High | Medium | Content, press, and the first data product a brewer would pay for |
 | 15 | Pub pulse: busiest nights and hours per pub from check-in times, once there is enough data | Low | Medium | Medium | Google's popular times, from people you know. Useful even when not checking in |
-| 16 | Moderation tools: a way to act on `reports` and `pub_corrections` without SQL | Medium | Medium | Small | Both tables exist and fill up; nothing reads them yet |
+| 16 | Moderation tools: act on reports from the inbox (hide a post, warn a user), not just set a status | Low | Medium | Small | The inbox reads `reports` and `pub_corrections` since 11 September; actions on the target are what is left |
 | 17 | Offline check-in queue: save locally, retry on signal | Medium | Medium | Medium | The client id already makes retries safe. Pub wifi is the reason |
 | 18 | Native tabs and expo-maps once on a dev build | Low | Medium | Small | Both are one-file changes noted in DECISIONS.md. Liquid Glass tab bar on iOS 26 |
 | 19 | Rate limiting on invite acceptance, cheers uploads and list creation | Medium | Low | Small | Cheap insurance before strangers arrive |

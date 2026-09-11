@@ -75,8 +75,8 @@ export default function SettingsScreen() {
         <View>
           <SectionTitle>About</SectionTitle>
           <Card>
-            <ListRow title="Privacy policy" onPress={() => router.push('/privacy')} />
-            <ListRow title="Report a problem" subtitle="Long press anything that is wrong" chevron={false} last />
+            <ListRow title="Tell us" subtitle="Broken, confusing, or an idea. A human reads every one." onPress={() => router.push({ pathname: '/feedback', params: { from: 'settings' } })} />
+            <ListRow title="Privacy policy" onPress={() => router.push('/privacy')} last />
           </Card>
         </View>
 
@@ -84,6 +84,7 @@ export default function SettingsScreen() {
           <View>
             <SectionTitle>Admin</SectionTitle>
             <Card>
+              <ListRow title="Inbox" subtitle="Feedback, pub fixes, reports" onPress={() => router.push('/admin/inbox')} />
               <ListRow title="Numbers" subtitle="Actives, check-ins, top pubs" onPress={() => router.push('/admin')} last />
             </Card>
           </View>

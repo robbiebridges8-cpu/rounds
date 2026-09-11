@@ -81,7 +81,9 @@ function RootNavigator() {
       <Stack.Screen name="inbox" options={{ title: 'Inbox' }} />
       <Stack.Screen name="settings" options={{ title: 'Settings' }} />
       <Stack.Screen name="privacy" options={{ title: 'Privacy' }} />
-      <Stack.Screen name="admin" options={{ title: 'Numbers' }} />
+      <Stack.Screen name="admin/index" options={{ title: 'Numbers' }} />
+      <Stack.Screen name="admin/inbox" options={{ title: 'Inbox' }} />
+      <Stack.Screen name="feedback" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.85, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen name="add-pub" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen name="challenge/[id]/index" options={{ title: '' }} />
       <Stack.Screen name="list/[id]/index" options={{ title: '' }} />

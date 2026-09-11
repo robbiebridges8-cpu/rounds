@@ -310,6 +310,53 @@ export type Database = {
           { foreignKeyName: 'comment_likes_user_id_fkey'; columns: ['user_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] },
         ];
       };
+      feedback: {
+        Row: {
+          app_version: string | null;
+          created_at: string;
+          device: string | null;
+          id: string;
+          kind: string;
+          message: string;
+          screen: string | null;
+          screenshot_path: string | null;
+          status: string;
+          user_id: string | null;
+        };
+        Insert: {
+          app_version?: string | null;
+          created_at?: string;
+          device?: string | null;
+          id?: string;
+          kind: string;
+          message: string;
+          screen?: string | null;
+          screenshot_path?: string | null;
+          status?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          app_version?: string | null;
+          created_at?: string;
+          device?: string | null;
+          id?: string;
+          kind?: string;
+          message?: string;
+          screen?: string | null;
+          screenshot_path?: string | null;
+          status?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'feedback_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       friendships: {
         Row: {
           created_at: string;
@@ -857,6 +904,7 @@ export type Database = {
     };
     Views: { [_ in never]: never };
     Functions: {
+      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       accept_invite: {
         Args: { invite: string };
         Returns: {
