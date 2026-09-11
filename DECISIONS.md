@@ -425,3 +425,13 @@ written to since day one), and reports. A count on each. Tap opens the
 thing, long press sets a status. Admin access is one function, `is_admin()`,
 used by every admin policy so there is one place to get it right. Actions on
 the reported thing itself (hide, warn) are backlog until there is a case.
+
+## Pins are pints
+
+The dots were tried at three sizes and two greys and never looked like
+anything. The pint glass experiment behind Settings became the only pin on
+11 September: a glass full of gold beer with a white head where you have
+been, the same glass rimmed coral where a mate has, and an empty grey glass
+where nobody you know has. The beer is one fixed gold on every theme, because
+beer is that colour. The toggle and the dot are gone, as is the prefs store
+that only existed for the toggle.

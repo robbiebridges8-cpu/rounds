@@ -11,7 +11,6 @@ import { Icon, MapButton, Stars } from '@/components/ui';
 import { plural } from '@/lib/format';
 import { LONDON_REGION, getPosition } from '@/lib/location';
 import { useMapPubs, usePubPhotos, type Bounds, type MapPub } from '@/lib/pubs';
-import { usePref } from '@/lib/prefs';
 import { useTheme } from '@/lib/theme-provider';
 import { colors, fonts } from '@/theme';
 
@@ -41,7 +40,6 @@ export default function MapScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { scheme } = useTheme();
-  const [pints] = usePref('pint-pins');
   const mapRef = useRef<MapView>(null);
   const [bounds, setBounds] = useState<Bounds>(() => boundsOf(LONDON_REGION));
   const [wide, setWide] = useState(true);
@@ -64,7 +62,6 @@ export default function MapScreen() {
   const shown = pubs?.filter((p) => filter === 'all' || tierOf(p) === filter);
   // Unvisited dots are a mid grey, not the palette's pale slate: on Apple's
   // muted map the pale one vanished.
-  const tierColor: Record<Tier, string> = { me: colors.you, mate: colors.mates, none: '#8A8A96' };
 
   return (
     <View className="flex-1 bg-canvas">
@@ -89,7 +86,7 @@ export default function MapScreen() {
           const active = pub.id === current?.id;
           return (
             <Marker
-              key={`${pub.id}-${pints ? 'pint' : 'dot'}`}
+              key={pub.id}
               identifier={pub.id}
               coordinate={{ latitude: pub.lat, longitude: pub.lng }}
               anchor={{ x: 0.5, y: 0.5 }}
@@ -99,7 +96,7 @@ export default function MapScreen() {
                 setSelected(pub);
               }}
               zIndex={active ? 3 : tier === 'me' ? 2 : tier === 'mate' ? 1 : 0}>
-              {pints ? <PintPin color={tierColor[tier]} active={active} small={tier === 'none'} /> : <Pin color={tierColor[tier]} active={active} small={tier === 'none'} />}
+              <PintPin tier={tier} active={active} />
             </Marker>
           );
         })}
@@ -162,9 +159,9 @@ export default function MapScreen() {
           </Animated.View>
         ) : (
           <View className="flex-row items-center gap-4 self-center rounded-full bg-surface px-4 py-2" style={shadow}>
-            <Legend color={colors.you} label="Been" />
-            <Legend color={colors.mates} label="Mates" />
-            {!wide ? <Legend color="#8A8A96" label="Not yet" /> : null}
+            <Legend tier="me" label="Been" />
+            <Legend tier="mate" label="Mates" />
+            {!wide ? <Legend tier="none" label="Not yet" /> : null}
           </View>
         )}
         <Text className="text-ink-soft self-start text-[10px]">© OpenStreetMap contributors</Text>
@@ -173,41 +170,28 @@ export default function MapScreen() {
   );
 }
 
+const BEER = '#F5B520';
+const FOAM = '#FFFFFF';
+
 /**
- * Experiment: a pint glass instead of a dot. The beer is the tier colour,
- * the head is white, the glass outline is the surface colour.
+ * Every pub is a pint glass. Where you have been it is full of beer with a
+ * head on it; where a mate has been the glass is full but rimmed coral;
+ * where nobody you know has been it is an empty glass in grey.
  */
-function PintPin({ color, active, small }: { color: string; active: boolean; small: boolean }) {
-  const h = active ? 34 : small ? 18 : 26;
+function PintPin({ tier, active, legend = false }: { tier: Tier; active: boolean; legend?: boolean }) {
+  const h = legend ? 16 : active ? 36 : tier === 'none' ? 18 : 28;
   const w = h * 0.7;
+  const full = tier !== 'none';
+  const outline = tier === 'me' ? colors.ink : tier === 'mate' ? colors.mates : '#8A8A96';
   return (
     <Svg width={w} height={h} viewBox="0 0 14 20">
-      <Path d="M2 3 L12 3 L11 18.5 Q11 19.5 10 19.5 L4 19.5 Q3 19.5 3 18.5 Z" fill={color} stroke={colors.surface} strokeWidth={1.4} strokeLinejoin="round" />
-      <Path d="M2 3 L12 3 L11.6 6.5 L2.4 6.5 Z" fill="#FFFFFF" />
-      <Rect x="4.4" y="8" width="1.4" height="9" rx="0.7" fill="rgba(255,255,255,0.35)" />
+      {/* glass */}
+      <Path d="M2 1.5 L12 1.5 L11 18.5 Q11 19.5 10 19.5 L4 19.5 Q3 19.5 3 18.5 Z" fill={full ? BEER : colors.surface} stroke={outline} strokeWidth={active ? 1.6 : 1.3} strokeLinejoin="round" />
+      {/* head */}
+      {full ? <Path d="M2.3 1.5 L11.7 1.5 L11.4 5 L2.6 5 Z" fill={FOAM} /> : null}
+      {/* shine */}
+      {full ? <Rect x="4.2" y="7" width="1.3" height="9" rx="0.65" fill="rgba(255,255,255,0.45)" /> : null}
     </Svg>
-  );
-}
-
-/** A dot with a light ring, sized by tier. */
-function Pin({ color, active, small }: { color: string; active: boolean; small: boolean }) {
-  const size = active ? 28 : small ? 12 : 18;
-  return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        backgroundColor: color,
-        borderWidth: active ? 4 : 2,
-        borderColor: colors.surface,
-        opacity: 1,
-        shadowColor: '#000',
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
-        shadowOffset: { width: 0, height: 1 },
-      }}
-    />
   );
 }
 
@@ -260,10 +244,10 @@ function Preview({ pub, onOpen, onCheckIn }: { pub: MapPub; onOpen: () => void; 
   );
 }
 
-function Legend({ color, label }: { color: string; label: string }) {
+function Legend({ tier, label }: { tier: Tier; label: string }) {
   return (
     <View className="flex-row items-center gap-1.5">
-      <View className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
+      <PintPin tier={tier} active={false} legend />
       <Text className="text-ink text-xs font-bold">{label}</Text>
     </View>
   );

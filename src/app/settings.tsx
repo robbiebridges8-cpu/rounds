@@ -1,19 +1,16 @@
 import { Stack, useRouter } from 'expo-router';
-import { Alert, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Card, ListRow, SectionTitle } from '@/components/ui';
 import { useIsAdmin } from '@/lib/admin';
 import { deleteAccount, signOut, useProfile } from '@/lib/auth';
-import { usePref } from '@/lib/prefs';
 import { useTheme, type Scheme } from '@/lib/theme-provider';
-import { colors } from '@/theme';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { scheme, setScheme } = useTheme();
   const { data: profile } = useProfile();
   const isAdmin = useIsAdmin();
-  const [pints, setPints] = usePref('pint-pins');
 
   const confirmSignOut = () =>
     Alert.alert('Sign out?', 'Your check-ins stay put.', [
@@ -61,13 +58,6 @@ export default function SettingsScreen() {
                   </Pressable>
                 );
               })}
-            </View>
-            <View className="min-h-[52px] flex-row items-center justify-between border-t border-line px-4 py-2">
-              <View className="flex-1 pr-3">
-                <Text className="text-ink text-[17px] font-semibold">Pint glass pins</Text>
-                <Text className="text-ink-soft text-[13px]">An experiment. Pubs on the map as pints instead of dots.</Text>
-              </View>
-              <Switch value={pints} onValueChange={setPints} trackColor={{ true: colors.you }} />
             </View>
           </Card>
         </View>

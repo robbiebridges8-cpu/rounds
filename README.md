@@ -57,7 +57,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `(auth)/reset` | Forgot password: a six-digit code by email, then a new password. No link to click |
 | `(auth)/onboarding` | Username, display name, optional avatar |
 | `(auth)/first-pubs` | Tick the pubs you already know, from nearby or search, so the map is never empty |
-| `(tabs)/index` | Apple Maps. Search bar, chips for All / Been / Mates / Not yet, dot pins by tier, a butter card with photos and Check in when you tap one. At city zoom only pubs with any check-ins show |
+| `(tabs)/index` | Apple Maps. Search bar, chips for All / Been / Mates / Not yet, a pint glass per pub (full of beer where you have been, coral-rimmed where a mate has, empty where nobody you know has), a butter card with photos and Check in when you tap one. At city zoom only pubs with any check-ins show |
 | `(tabs)/feed` | The week card, a personal "you this week" line, an overtake card if a mate passed you, then posts as cards with cheers and reply |
 | `(tabs)/challenges` | Explore: lists (taste, followable) above quests (finish lines with badges) |
 | `(tabs)/friends` | Leaderboard with a metric picker (boroughs, pubs, this month, badges), requests, friends, invite |
@@ -95,7 +95,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 **Amenities.** Sixteen public tags in two groups, It's got and Good to know, confirmed by tapping a chip. Seeded from OpenStreetMap where it knows (a chip marked "map"), confirmed at check-in or on the pub page, long press for "not any more". Ratings, notes and photos stay friends-only.
 
-**Map legend.** Blue you have been, coral a mate has, grey nobody you know. The same three colours run through the whole app.
+**Map legend.** Every pub is a pint glass. Full of gold beer with a head where you have been, full with a coral rim where a mate has, an empty grey glass where nobody you know has. Blue for you and coral for mates still run through the rest of the app.
 
 **Boroughs.** The 33 London boroughs, drawn from ONS boundaries, fill in as you check in. The profile poster, the share card and the feed's borough snapshots all use the same SVG paths.
 
