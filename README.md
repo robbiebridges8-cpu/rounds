@@ -114,7 +114,7 @@ Eighteen migrations. The schema in one paragraph: `profiles` and `friendships` (
 
 Query functions the app calls: `map_pubs`, `nearby_pubs`, `user_pub_map`, `user_stats`, `friends_leaderboard`, `weekly_summary`, `my_week`, `my_month`, `challenge_list`, `challenge_pub_status`, `user_badges`, `list_index`, `list_pub_status`, `pub_lists`, `accept_invite`, `request_friendship`, `admin_stats`, `delete_my_account`.
 
-3,593 pubs are loaded, 3,143 of them inside a borough.
+3,593 pubs are loaded, 3,143 of them inside a borough. 2,886 have a front photo from Wikimedia Commons, seeded 11 September 2026.
 
 ## Not done
 

@@ -253,9 +253,14 @@ async function main() {
   const cache: Record<string, CacheEntry> = existsSync(CACHE_FILE) ? JSON.parse(readFileSync(CACHE_FILE, 'utf8')) : {};
   const saveCache = () => writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 1));
 
-  const { data: done, error: doneError } = await supabase.from('pub_photos').select('pub_id');
-  if (doneError) throw doneError;
-  const have = new Set(done.map((d) => d.pub_id));
+  // PostgREST caps a select at 1,000 rows, so page through both tables.
+  const have = new Set<string>();
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabase.from('pub_photos').select('pub_id').order('pub_id').range(from, from + 999);
+    if (error) throw error;
+    for (const row of data) have.add(row.pub_id);
+    if (data.length < 1000) break;
+  }
 
   const pubs: { id: string; name: string; lat: number; lng: number; borough: string | null }[] = [];
   for (let from = 0; ; from += 1000) {
