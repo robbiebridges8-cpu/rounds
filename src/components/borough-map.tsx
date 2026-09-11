@@ -39,7 +39,7 @@ export function BoroughMap({
           <Path
             key={b.name}
             d={b.d}
-            fill={visited.has(b.name) ? colors.you : friends?.has(b.name) ? colors.matesTint : empty}
+            fill={visited.has(b.name) ? colors.butter : friends?.has(b.name) ? colors.matesTint : empty}
           />
         ))}
       </G>
