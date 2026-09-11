@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { Alert, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BOROUGH_TOTAL, BoroughMap } from '@/components/borough-map';
+import { BOROUGH_TOTAL, NIGHT, StarMap } from '@/components/borough-map';
 import { BadgeRow } from '@/components/challenge-card';
 import { Diary } from '@/components/diary';
 import { ShareCard, shareCard } from '@/components/share-card';
@@ -77,7 +77,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
   const inner = width - 32;
   const heroHeight = Math.round(width * 1.2);
   const tagline =
-    visited.size === 0 ? 'Nothing yellow yet' : visited.size < 10 ? 'Just getting going' : visited.size < 20 ? 'Proper Londoner' : visited.size < BOROUGH_TOTAL ? 'Frighteningly thorough' : 'The whole city';
+    visited.size === 0 ? 'No stars yet' : visited.size < 10 ? 'Just getting going' : visited.size < 20 ? 'Proper Londoner' : visited.size < BOROUGH_TOTAL ? 'Frighteningly thorough' : 'The whole city';
 
   return (
     <>
@@ -87,9 +87,9 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
         contentContainerClassName="pb-10"
         refreshControl={<RefreshControl refreshing={stats.isRefetching || pubs.isRefetching} onRefresh={refresh} tintColor="#fff" />}>
         {/* The poster */}
-        <View style={{ height: heroHeight, backgroundColor: colors.you, overflow: 'hidden' }}>
+        <View style={{ height: heroHeight, backgroundColor: NIGHT, overflow: 'hidden' }}>
           <View style={{ position: 'absolute', left: -width * 0.08, top: insets.top + 92 }}>
-            <BoroughMap visited={visited} width={width * 1.16} stroke={colors.you} empty="#1A36D6" friends={new Set()} />
+            <StarMap pubs={pubs.data ?? []} visited={visited} width={width * 1.16} />
           </View>
           <View style={{ position: 'absolute', left: 20, top: insets.top + 56, gap: 2 }}>
             <Text style={{ fontSize: 11, fontWeight: '800', letterSpacing: 2, color: colors.butter }}>

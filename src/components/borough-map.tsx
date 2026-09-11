@@ -44,6 +44,44 @@ export function BoroughMap({
 
 export const BOROUGH_TOTAL = BOROUGHS.length;
 
+export const NIGHT = '#0D1233';
+
+type StarPub = { lat: number; lng: number; visits: number };
+
+/** A four-point star centred on 0,0. */
+function starPath(r: number): string {
+  const k = r * 0.3;
+  return `M0,${-r} L${k},${-k} L${r},0 L${k},${k} L0,${r} L${-k},${k} L${-r},0 L${-k},${-k} Z`;
+}
+
+/**
+ * The night-sky map: London as faint outlines on deep navy, and a star for
+ * every pub you have been to, bigger the more you go back. The profile poster.
+ */
+export function StarMap({ pubs, visited, width, star = colors.butter }: { pubs: readonly StarPub[]; visited: ReadonlySet<string>; width: number; star?: string }) {
+  const sorted = [...pubs].sort((a, b) => a.visits - b.visits);
+  return (
+    <Svg width={width} height={width * ASPECT} viewBox={BOROUGH_VIEWBOX}>
+      <G stroke="rgba(255,255,255,0.16)" strokeWidth={2} strokeLinejoin="round">
+        {BOROUGHS.map((b) => (
+          <Path key={b.name} d={b.d} fill={visited.has(b.name) ? 'rgba(255,255,255,0.05)' : 'transparent'} />
+        ))}
+      </G>
+      {sorted.map((pub, i) => {
+        const [x, y] = projectToBoroughMap(pub.lng, pub.lat);
+        const r = 9 + Math.min(4, Math.log2(Math.max(1, pub.visits))) * 4;
+        return (
+          <G key={i} x={x} y={y}>
+            <Circle r={r * 1.6} fill={star} opacity={0.18} />
+            <Path d={starPath(r)} fill={star} />
+            <Circle r={r * 0.22} fill="#fff" opacity={0.9} />
+          </G>
+        );
+      })}
+    </Svg>
+  );
+}
+
 /**
  * One borough, cropped to fit, with a dot where the pub is. The Strava map
  * snapshot, except it is a silhouette of Hackney. Falls back to the whole
