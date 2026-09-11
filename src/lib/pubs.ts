@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { Coords } from '@/lib/location';
+import { photoUrl } from '@/lib/checkins';
 import { supabase } from '@/lib/supabase';
 import type { FnReturns, Tables } from '@/types/database';
 
@@ -166,20 +167,61 @@ export function usePubVisits(pubId: string | undefined) {
 }
 
 /** Up to five photos from check-ins you can see at this pub. */
+export type PubPhoto = {
+  /** Public URL, ready for an Image. */
+  uri: string;
+  /** Present on a seeded front photo: who took it and under what licence. */
+  credit: { author: string | null; licence: string; sourceUrl: string } | null;
+};
+
+export function frontPhotoUrl(storagePath: string): string {
+  return supabase.storage.from('pub-photos').getPublicUrl(storagePath).data.publicUrl;
+}
+
+function creditFor(row: Pick<Tables<'pub_photos'>, 'author' | 'licence' | 'source_url'>): PubPhoto['credit'] {
+  return { author: row.author, licence: row.licence, sourceUrl: row.source_url };
+}
+
+/**
+ * Photos for a pub page or map card: your and your mates' check-in photos,
+ * newest first, then the seeded front photo if there is one. Anyone who has
+ * never had a visit still gets the front of the building.
+ */
 export function usePubPhotos(pubId: string | undefined) {
   return useQuery({
     queryKey: ['pub-photos', pubId],
     enabled: Boolean(pubId),
     staleTime: 5 * 60_000,
-    queryFn: async (): Promise<string[]> => {
-      const { data, error } = await supabase
-        .from('checkin_photos')
-        .select('storage_path, checkins!inner(pub_id)')
-        .eq('checkins.pub_id', pubId!)
-        .order('created_at', { ascending: false })
-        .limit(5);
+    queryFn: async (): Promise<PubPhoto[]> => {
+      const [mine, front] = await Promise.all([
+        supabase
+          .from('checkin_photos')
+          .select('storage_path, checkins!inner(pub_id)')
+          .eq('checkins.pub_id', pubId!)
+          .order('created_at', { ascending: false })
+          .limit(5),
+        supabase.from('pub_photos').select('storage_path, author, licence, source_url').eq('pub_id', pubId!).maybeSingle(),
+      ]);
+      if (mine.error) throw mine.error;
+      if (front.error) throw front.error;
+      const photos: PubPhoto[] = mine.data.map((row) => ({ uri: photoUrl(row.storage_path), credit: null }));
+      if (front.data) photos.push({ uri: frontPhotoUrl(front.data.storage_path), credit: creditFor(front.data) });
+      return photos;
+    },
+  });
+}
+
+/** Front photos for a handful of pubs at once, keyed by pub id. Profile tiles. */
+export function useFrontPhotos(pubIds: string[]) {
+  const key = [...pubIds].sort();
+  return useQuery({
+    queryKey: ['front-photos', key],
+    enabled: key.length > 0,
+    staleTime: 30 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('pub_photos').select('pub_id, storage_path').in('pub_id', key);
       if (error) throw error;
-      return data.map((row) => row.storage_path);
+      return new Map(data.map((row) => [row.pub_id, frontPhotoUrl(row.storage_path)]));
     },
   });
 }

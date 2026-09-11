@@ -383,3 +383,29 @@ alone). It counts as one when ordering and fades if enough people say "not
 any more". The three layers are now explicit: the record and the amenities
 are public, reviews are friends-only, and a generated public summary of the
 reviews is the planned fourth, once there is volume.
+
+## Pictures: fill, then remove the stand-ins
+
+Every pub without a photo showed a borough silhouette in cobalt, and it
+looked like what it was. Two moves on 11 September.
+
+**Fill from Wikimedia Commons.** Commons mirrors the Geograph archive, which
+has photographed most pubs in Britain, and it needs no API key. The seed
+script searches by coordinates within 70 m and matches on the pub's name in
+the file title (trusted) or description (only if the camera was within 120
+m), with a text search fallback held to the same distance rule. Plaques,
+signs, interiors and details are marked down. Only CC BY, CC BY-SA, CC0 and
+public domain files are taken; a 1280 px copy lives in our bucket so the app
+never hotlinks Wikimedia. The credit sits under the hero and opens the file
+page. Geograph's own API was the alternative; it needs a key and adds
+nothing Commons lacks.
+
+**Remove every placeholder.** Pub page, map card, feed card and favourite
+tiles no longer draw anything that pretends to be a picture. A pub with no
+photo at all gets a short cobalt masthead with the name and pills. The feed
+card without a photo is a text card. The map card without a photo has no
+image strip. Honest beats decorative.
+
+**Order on the pub page.** Check-in photos first, newest first, then the
+seeded front. A real photo from someone you know beats an archive shot, and
+the archive shot beats nothing.

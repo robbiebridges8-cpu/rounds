@@ -2,10 +2,9 @@ import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { ActionSheetIOS, ActivityIndicator, Alert, Platform, Pressable, RefreshControl, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { ActionSheetIOS, ActivityIndicator, Alert, Linking, Platform, Pressable, RefreshControl, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BoroughSnapshot } from '@/components/borough-map';
 import { Avatar, Body, Button, Card, EmptyState, Icon, ListRow, SectionTitle, Stars } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
@@ -87,7 +86,9 @@ export default function PubScreen() {
   const mates = new Set(visits.data?.filter((v) => v.user_id !== me).map((v) => v.user_id));
   const been = visits.data?.some((v) => v.user_id === me) ?? false;
   const hero = photos.data?.[0];
-  const heroHeight = Math.round(width * 0.85);
+  // With a photo the hero is a picture. Without one it is a short cobalt
+  // masthead: no stand-in image, just the name and the pills.
+  const heroHeight = hero ? Math.round(width * 0.85) : insets.top + 168;
 
   const confirmedFor = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.up_votes ?? 0;
   const goneFor = (slug: string) => tagStats.data?.find((t) => t.tag === slug)?.down_votes ?? 0;
@@ -130,12 +131,8 @@ export default function PubScreen() {
         {/* Hero */}
         <View style={{ height: heroHeight, backgroundColor: colors.you, overflow: 'hidden' }}>
           {hero ? (
-            <Image source={{ uri: photoUrl(hero) }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} contentFit="cover" transition={200} />
-          ) : (
-            <View style={{ position: 'absolute', right: -30, top: insets.top + 40, opacity: 0.9 }}>
-              <BoroughSnapshot borough={details.borough} lat={details.lat} lng={details.lng} width={260} height={200} fill="#1A36D6" dot={colors.butter} />
-            </View>
-          )}
+            <Image source={{ uri: hero.uri }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} contentFit="cover" transition={200} />
+          ) : null}
           <LinearGradient colors={['rgba(0,0,0,0.35)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 70 }} />
           <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.82)']} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 16, paddingTop: 70, paddingBottom: 18, gap: 8 }}>
             <Text style={{ fontSize: 11, fontWeight: '800', letterSpacing: 2, color: colors.butter }}>
@@ -168,10 +165,18 @@ export default function PubScreen() {
 
           {details.address ? <Body>{details.address}</Body> : null}
 
+          {hero?.credit ? (
+            <Pressable onPress={() => void Linking.openURL(hero.credit!.sourceUrl)} accessibilityRole="link" hitSlop={6}>
+              <Text className="text-ink-soft text-[12px]">
+                Photo: {[hero.credit.author, hero.credit.licence].filter(Boolean).join(', ')}, via Wikimedia Commons
+              </Text>
+            </Pressable>
+          ) : null}
+
           {photos.data && photos.data.length > 1 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-4" contentContainerClassName="gap-2 px-4">
               {photos.data.slice(1).map((p) => (
-                <Image key={p} source={{ uri: photoUrl(p) }} style={{ width: 120, height: 120, borderRadius: 14 }} contentFit="cover" transition={150} />
+                <Image key={p.uri} source={{ uri: p.uri }} style={{ width: 120, height: 120, borderRadius: 14 }} contentFit="cover" transition={150} />
               ))}
             </ScrollView>
           ) : null}

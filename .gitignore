@@ -48,3 +48,4 @@ example
 
 # cached seed data
 scripts/data/*.geojson
+scripts/data/commons-photos.json

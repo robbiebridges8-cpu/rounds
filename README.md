@@ -19,6 +19,7 @@ Useful scripts:
 | `pnpm typecheck` | TypeScript, no emit |
 | `pnpm lint` | ESLint via Expo |
 | `pnpm seed:pubs --bbox london` | Pull every named pub in Greater London from OpenStreetMap into the database |
+| `pnpm seed:photos` | Find a front photo for every pub on Wikimedia Commons and store a copy with its credit. `--dry` to preview, `--limit N` for a taste |
 | `pnpm build:boroughs` | Regenerate the borough SVG paths from the ONS boundaries |
 | `pnpm build:privacy` | Regenerate the in-app privacy text from PRIVACY.md |
 | `CI=1 npx expo export --platform ios --dev` | Prove the bundle builds. `CI=1` is required or NativeWind's watcher keeps it alive |
@@ -85,6 +86,8 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 **Friends.** Requests by username, or an eight-character invite code that creates an accepted friendship on the spot. Invite links carry the code. Everything personal is visible only to accepted friends; pub aggregates are visible to everyone.
 
+**Front photos.** Most pubs start with a photo of the outside, found on Wikimedia Commons by location and name and credited under the hero. The newest check-in photo takes over once there is one. A pub with neither shows a short cobalt masthead, not a stand-in picture.
+
 **Amenities.** Sixteen public tags in two groups, It's got and Good to know, confirmed by tapping a chip. Seeded from OpenStreetMap where it knows (a chip marked "map"), confirmed at check-in or on the pub page, long press for "not any more". Ratings, notes and photos stay friends-only.
 
 **Map legend.** Blue you have been, coral a mate has, grey nobody you know. The same three colours run through the whole app.
@@ -107,7 +110,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 ## Database
 
-Fifteen migrations. The schema in one paragraph: `profiles` and `friendships` (one row per pair, `are_friends()` is the single visibility rule); `pubs_osm` (the OpenStreetMap import, ODbL, never edited) and `pubs` (our record, with a PostGIS geography column); `checkins`, `checkin_photos`, `checkin_tags`, `checkin_guests`; `cheers` and `checkin_comments`; `pub_tags`, `pub_tag_votes` and `pub_tag_stats`; `pub_stats` (public aggregates kept by trigger); `invite_codes`; `challenges`, `challenge_pubs`, `challenge_members`; `lists`, `list_pubs`, `list_follows`; `notifications` and `push_tokens`; `pub_corrections` and `reports`; `admins` and `app_config`.
+Eighteen migrations. The schema in one paragraph: `profiles` and `friendships` (one row per pair, `are_friends()` is the single visibility rule); `pubs_osm` (the OpenStreetMap import, ODbL, never edited) and `pubs` (our record, with a PostGIS geography column); `checkins`, `checkin_photos`, `checkin_tags`, `checkin_guests`; `cheers` and `checkin_comments`; `pub_tags`, `pub_tag_votes` and `pub_tag_stats`; `pub_photos` (one seeded front photo per pub, with its credit); `pub_stats` (public aggregates kept by trigger); `invite_codes`; `challenges`, `challenge_pubs`, `challenge_members`; `lists`, `list_pubs`, `list_follows`; `notifications` and `push_tokens`; `pub_corrections` and `reports`; `admins` and `app_config`.
 
 Query functions the app calls: `map_pubs`, `nearby_pubs`, `user_pub_map`, `user_stats`, `friends_leaderboard`, `weekly_summary`, `my_week`, `my_month`, `challenge_list`, `challenge_pub_status`, `user_badges`, `list_index`, `list_pub_status`, `pub_lists`, `accept_invite`, `request_friendship`, `admin_stats`, `delete_my_account`.
 

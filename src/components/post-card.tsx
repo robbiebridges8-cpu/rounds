@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View, useWindowDimensions } from 'react-native';
 
-import { BoroughSnapshot } from '@/components/borough-map';
 import { Avatar, Card, Icon, Stars } from '@/components/ui';
 import { photoUrl } from '@/lib/checkins';
 import { useLikePost, useLikeReply, useReply, type FeedPost } from '@/lib/feed';
@@ -41,7 +40,6 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
   const liked = post.checkin_likes.some((l) => l.user_id === me);
   const replies = expanded ? post.checkin_comments : post.checkin_comments.slice(-2);
   const cardWidth = width - 32;
-  const canSnapshot = post.pubs && post.pubs.lat != null && post.pubs.lng != null;
 
   const toggleLike = () => {
     void Haptics.selectionAsync();
@@ -102,14 +100,6 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
               <Image key={photo.id} source={{ uri: photoUrl(photo.storage_path) }} style={{ width: post.checkin_photos.length === 1 ? cardWidth - 32 : 240, height: post.checkin_photos.length === 1 ? (cardWidth - 32) * 0.72 : 240, borderRadius: 12 }} contentFit="cover" transition={150} />
             ))}
           </ScrollView>
-        ) : canSnapshot ? (
-          <View className="mx-4 mt-3 overflow-hidden rounded-md bg-canvas">
-            <BoroughSnapshot borough={post.pubs!.borough} lat={post.pubs!.lat!} lng={post.pubs!.lng!} width={cardWidth - 32} height={120} />
-            <View className="absolute bottom-2 left-3 flex-row items-center gap-1.5">
-              <View className="h-2 w-2 rounded-full bg-you" />
-              <Text className="text-ink-soft text-[11px] font-bold">{post.pubs!.borough ?? 'London'}</Text>
-            </View>
-          </View>
         ) : null}
 
         {!post.verified && post.distance_m != null ? (

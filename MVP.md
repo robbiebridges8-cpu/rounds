@@ -2,7 +2,7 @@
 
 Everything in the app today, one line each. Tick means built and working in Expo Go. A dash means built but waiting on something outside the code.
 
-Last updated 10 September 2026.
+Last updated 11 September 2026.
 
 ## Getting in
 - [x] Welcome screen
@@ -20,6 +20,7 @@ Last updated 10 September 2026.
 - [x] Search by name
 - [x] Add a missing pub
 - [x] Pub page: hero photo, rating, who's been, ratings distribution, mates' quotes
+- [x] Front photo for most pubs from Wikimedia Commons, credited; no placeholder pictures anywhere
 - [x] Amenities: 16 tags, confirm by tap, seeded from OpenStreetMap
 - [x] Report a problem with a pub
 

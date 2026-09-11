@@ -44,6 +44,28 @@ which requires attribution:
 The downloaded GeoJSON is cached at `scripts/data/london-boroughs.geojson` and
 is gitignored: it is a build input, not source.
 
+## Pub front photos (Wikimedia Commons)
+
+`scripts/seed-photos.ts` looks for a photograph of the front of each pub on
+Wikimedia Commons, which also mirrors the Geograph archive. It takes only
+files marked CC BY, CC BY-SA, CC0 or public domain; anything with a
+non-commercial or no-derivatives clause is skipped in code. A resized copy
+(1280 px wide) is stored in the public `pub-photos` bucket, and the row in
+`pub_photos` keeps the author, the licence name and URL, and a link to the
+file page.
+
+### Attribution
+
+The pub page shows "Photo: author, licence, via Wikimedia Commons" under the
+hero whenever the seeded photo is the one on screen, and tapping it opens the
+file page. That satisfies BY. Resizing is the only change we make, and the
+copy stays under the original licence, which satisfies SA. If a seeded photo
+is ever used on a share card or anywhere off the pub page, the credit has to
+go with it.
+
+A photo taken by a user in the app replaces the seeded one on screen as soon
+as there is one; the seeded row stays as the fallback.
+
 ## Google
 
 We do not use Google Places. Their terms forbid caching most of their content,

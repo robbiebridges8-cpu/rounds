@@ -7,9 +7,7 @@ import Svg, { Path, Rect } from 'react-native-svg';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BoroughSnapshot } from '@/components/borough-map';
 import { Icon, MapButton, Stars } from '@/components/ui';
-import { photoUrl } from '@/lib/checkins';
 import { plural } from '@/lib/format';
 import { LONDON_REGION, getPosition } from '@/lib/location';
 import { useMapPubs, usePubPhotos, type Bounds, type MapPub } from '@/lib/pubs';
@@ -222,19 +220,15 @@ function Preview({ pub, onOpen, onCheckIn }: { pub: MapPub; onOpen: () => void; 
 
   return (
     <Pressable onPress={onOpen} accessibilityRole="button" className="overflow-hidden rounded-lg active:opacity-95" style={[shadow, { backgroundColor: colors.butter }]}>
-      <View className="p-3 pb-0">
-        {photos.data && photos.data.length > 0 ? (
+      {photos.data && photos.data.length > 0 ? (
+        <View className="p-3 pb-0">
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ height: 120, borderRadius: 14 }}>
             {photos.data.map((p) => (
-              <Image key={p} source={{ uri: photoUrl(p) }} style={{ width: inner - 24, height: 120, borderRadius: 14 }} contentFit="cover" transition={150} />
+              <Image key={p.uri} source={{ uri: p.uri }} style={{ width: inner - 24, height: 120, borderRadius: 14 }} contentFit="cover" transition={150} />
             ))}
           </ScrollView>
-        ) : (
-          <View style={{ height: 100, borderRadius: 14, overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.5)' }}>
-            <BoroughSnapshot borough={null} lat={pub.lat} lng={pub.lng} width={inner - 24} height={100} fill="rgba(16,16,20,0.08)" dot="#2244FF" />
-          </View>
-        )}
-      </View>
+        </View>
+      ) : null}
       <View className="gap-3 p-4">
         <View className="flex-row items-start justify-between gap-3">
           <View className="flex-1 gap-1">

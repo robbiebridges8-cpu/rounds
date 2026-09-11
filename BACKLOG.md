@@ -4,7 +4,7 @@ Ordered by priority. Priority is a judgement from urgency (does waiting cost us)
 
 Scale: urgency and value are High / Medium / Low; effort is Small (a day or less), Medium (a few days), Large (a week or more).
 
-Last updated 9 September 2026. See README.md for what exists.
+Last updated 11 September 2026. See README.md for what exists.
 
 ## P0. This week. Everything else is guesswork until these are done.
 
@@ -26,7 +26,7 @@ Last updated 9 September 2026. See README.md for what exists.
 | 9 | Share card carries a QR code that opens the app or the App Store | Medium | High | Small | Every story post becomes a door once the store listing exists |
 | 10 | Pub crawls: a route, a night, a group; who made it to which stop; a recap card | Medium | High | Large | One crawl brings in a whole group at once. The biggest growth mechanic on the list |
 | 11 | Live layer on the map: mates' avatars on the pub they checked into in the last three hours, a strip of who is out | Medium | High | Medium | A reason to open the app at 8pm rather than the morning after |
-| 12 | Photos on pub pages more aggressively: prompt at check-in when a pub has none, show the freshest across the top | Medium | Medium | Small | Pubs with no photo look abandoned. Hero page already uses the first photo |
+| 12 | Prompt for a photo at check-in when a pub has no user photo yet | Medium | Medium | Small | Front photos from Commons cover most pubs now; this fills the rest and freshens the ones that are dated |
 | 13 | Boroughs as a finishable game: progress bar everyone sees, "London Complete" badge, a real reward | Medium | Medium | Medium | Thirty-three is finishable, and the race to finish first is a year of engagement |
 
 ## P2. Next month. Product depth and the pitch.
@@ -53,7 +53,7 @@ One optional structured question at check-in, rotating, never all at once. Show 
 | 32 | Busyness at check-in: Quiet / Steady / Rammed, aggregated by day and hour | Low | High | Small | Popular times from people inside. Feeds the live layer |
 | 33 | What you drank: drink and brand, recent ones suggested first | Low | Medium | Medium | Friends see it on the post; publicly "what people drink here"; personally, share-card stats |
 | 34 | Best for: After work, Big group, Date, Match day, Sunday, Solo pint, Last one before the train | Low | Medium | Small | Confirmable like amenities. Makes search occasion-aware |
-| 35 | Front photo: one photo of the outside per pub, used as the hero when nobody has taken one inside | Low | Medium | Small | Fixes blank pubs for good |
+| 35 | Front photo from users: replace or add the outside shot for pubs Commons does not have | Low | Medium | Small | Seeded from Commons on 11 September; the user path is what is left |
 | 36 | Still open? prompt for pubs with no check-in in a year, asked of the next person nearby | Low | Medium | Small | Keeps the record honest without a team |
 | 37 | Open now? yes/no when standing outside, quietly correcting imported hours | Low | Low | Small | |
 | 38 | Corrections with upvotes: three people saying the same fix applies it | Low | Medium | Small | Reports table exists |

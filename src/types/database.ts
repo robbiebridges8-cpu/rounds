@@ -506,6 +506,59 @@ export type Database = {
           },
         ];
       };
+      pub_photos: {
+        Row: {
+          author: string | null;
+          created_at: string;
+          height: number | null;
+          id: string;
+          licence: string;
+          licence_url: string | null;
+          pub_id: string;
+          source: string;
+          source_title: string | null;
+          source_url: string;
+          storage_path: string;
+          width: number | null;
+        };
+        Insert: {
+          author?: string | null;
+          created_at?: string;
+          height?: number | null;
+          id?: string;
+          licence: string;
+          licence_url?: string | null;
+          pub_id: string;
+          source: string;
+          source_title?: string | null;
+          source_url: string;
+          storage_path: string;
+          width?: number | null;
+        };
+        Update: {
+          author?: string | null;
+          created_at?: string;
+          height?: number | null;
+          id?: string;
+          licence?: string;
+          licence_url?: string | null;
+          pub_id?: string;
+          source?: string;
+          source_title?: string | null;
+          source_url?: string;
+          storage_path?: string;
+          width?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pub_photos_pub_id_fkey';
+            columns: ['pub_id'];
+            isOneToOne: true;
+            referencedRelation: 'pubs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       pub_stats: {
         Row: {
           avg_rating: number | null;

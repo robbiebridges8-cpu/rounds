@@ -14,6 +14,7 @@ import type { Profile } from '@/lib/auth';
 import { useBadges } from '@/lib/challenges';
 import { photoUrl, useUserCheckins, useUserPubs, useUserStats } from '@/lib/checkins';
 import { plural } from '@/lib/format';
+import { useFrontPhotos } from '@/lib/pubs';
 import { shareInvite, useInviteCode } from '@/lib/invites';
 import { useMyMonth } from '@/lib/social';
 import { colors, fonts } from '@/theme';
@@ -71,6 +72,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
     .filter((p) => p.latest_rating != null)
     .sort((a, b) => Number(b.latest_rating) - Number(a.latest_rating) || b.visits - a.visits)
     .slice(0, 4);
+  const fronts = useFrontPhotos(favourites.map((p) => p.pub_id));
 
   const inner = width - 32;
   const heroHeight = Math.round(width * 1.2);
@@ -149,11 +151,12 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
                   <View className="flex-row gap-2">
                     {favourites.map((p, index) => {
                       const tile = (inner - 6 * 3) / 4;
-                      const photo = photoFor.get(p.pub_id);
+                      const mine = photoFor.get(p.pub_id);
+                      const uri = mine ? photoUrl(mine) : fronts.data?.get(p.pub_id);
                       return (
                         <Pressable key={p.pub_id} onPress={() => router.push({ pathname: '/pub/[id]', params: { id: p.pub_id } })} accessibilityRole="button" className="overflow-hidden rounded-md bg-raised" style={{ width: tile, height: tile * 1.3 }}>
-                          {photo ? (
-                            <Image source={{ uri: photoUrl(photo) }} style={{ width: '100%', height: '100%' }} contentFit="cover" />
+                          {uri ? (
+                            <Image source={{ uri }} style={{ width: '100%', height: '100%' }} contentFit="cover" />
                           ) : (
                             <View className="flex-1 items-center justify-center px-2">
                               <Text style={{ fontFamily: fonts.display, fontSize: 12, lineHeight: 15, color: colors.ink, textAlign: 'center' }} numberOfLines={4}>{p.name}</Text>
