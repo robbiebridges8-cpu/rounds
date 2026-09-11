@@ -22,6 +22,14 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "6811118445",
+        "ascApiKeyPath": "/Users/robbiebridges/apple/AuthKey_PL6L9NA5WB.p8",
+        "ascApiKeyIssuerId": "d78fb3e5-fd90-49e6-90c2-4229a3cf3cfb",
+        "ascApiKeyId": "PL6L9NA5WB",
+        "appleTeamId": "3LSX7D4Y4G"
+      }
+    }
   }
 }
