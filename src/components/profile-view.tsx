@@ -77,7 +77,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
   const inner = width - 32;
   const heroHeight = Math.round(width * 1.2);
   const tagline =
-    visited.size === 0 ? 'Nothing gold yet' : visited.size < 10 ? 'Just getting going' : visited.size < 20 ? 'Proper Londoner' : visited.size < BOROUGH_TOTAL ? 'Frighteningly thorough' : 'The whole city';
+    visited.size === 0 ? 'Nothing blue yet' : visited.size < 10 ? 'Just getting going' : visited.size < 20 ? 'Proper Londoner' : visited.size < BOROUGH_TOTAL ? 'Frighteningly thorough' : 'The whole city';
 
   return (
     <>
