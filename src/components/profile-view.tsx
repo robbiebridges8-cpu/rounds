@@ -89,7 +89,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
         {/* The poster */}
         <View style={{ height: heroHeight, backgroundColor: colors.canvas, overflow: 'hidden' }}>
           <View style={{ position: 'absolute', left: -width * 0.08, top: insets.top + 92 }}>
-            <BoroughMap visited={visited} width={width * 1.16} stroke={colors.canvas} empty={colors.raised} pubs={pubs.data ?? []} dot={colors.butter} />
+            <BoroughMap visited={visited} width={width * 1.16} stroke={colors.canvas} empty={colors.raised} />
           </View>
           <View style={{ position: 'absolute', left: 20, top: insets.top + 56, gap: 2 }}>
             <Text style={{ fontSize: 11, fontWeight: '800', letterSpacing: 2, color: colors.ale }}>

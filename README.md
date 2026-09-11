@@ -61,7 +61,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `(tabs)/feed` | The week card, a personal "you this week" line, an overtake card if a mate passed you, then posts as cards with cheers and reply |
 | `(tabs)/challenges` | Explore: lists (taste, followable) above quests (finish lines with badges) |
 | `(tabs)/friends` | Leaderboard with a metric picker (boroughs, pubs, this month, badges), requests, friends, invite |
-| `(tabs)/you` | The poster: the fill-in map on the white ground, cobalt where you have been, a butter dot per pub, your borough count, stats strip, Overview / Pubs / Diary tabs, share and invite |
+| `(tabs)/you` | The poster: the fill-in map on the white ground, cobalt where you have been, your borough count, stats strip, Overview / Pubs / Diary tabs, share and invite |
 | `pub/[id]` | Hero photo with the name over it, rating and who's-been pills, Check in, add to a list, tag votes, lists it is on, visits |
 | `checkin/[pubId]` | Camera first. Take or pick a photo, or skip, then stars, who was here, a note, laid over the photo |
 | `post/[id]` | One check-in: cheers gallery, replies, a reply box, delete if it is yours, "add it to my map" if you were tagged |
