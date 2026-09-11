@@ -12,3 +12,9 @@ minimumReleaseAgeExclude:
   - expo-modules-jsi@57.1.0
   - expo-router@57.0.20
   - expo@57.0.21
+  - expo-eas-client@57.0.4
+  - expo-json-utils@57.0.2
+  - expo-manifests@57.0.2
+  - expo-structured-headers@57.0.1
+  - expo-updates-interface@57.0.2
+  - expo-updates@57.0.22

@@ -10,7 +10,10 @@
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.robbiebridges.rounds",
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +23,17 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.robbiebridges.rounds"
+      "package": "com.robbiebridges.rounds",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "output": "static",
@@ -56,11 +69,30 @@
         {
           "cameraPermission": "Rounds uses the camera so a check-in starts with a photo of where you are."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#2244FF"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "10993bfb-48d4-4eda-a15f-fb479eec2a71"
+      }
+    },
+    "owner": "robbiebridges",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/10993bfb-48d4-4eda-a15f-fb479eec2a71"
     }
   }
 }

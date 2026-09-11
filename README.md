@@ -23,12 +23,15 @@ Useful scripts:
 | `pnpm build:boroughs` | Regenerate the borough SVG paths from the ONS boundaries |
 | `pnpm build:privacy` | Regenerate the in-app privacy text from PRIVACY.md |
 | `CI=1 npx expo export --platform ios --dev` | Prove the bundle builds. `CI=1` is required or NativeWind's watcher keeps it alive |
+| `npx eas build -p ios --profile production` | Cloud build for TestFlight. Needs the Apple account the first time, for signing |
+| `npx eas submit -p ios --latest` | Send the last build to TestFlight |
+| `npx eas update --channel production --message "..."` | Ship a JavaScript-only change to installed builds without a new build |
 
 ## Stack
 
 - **Expo SDK 57**, React Native 0.86, expo-router with typed routes, NativeWind 4 on Tailwind 3.4.
 - **Supabase** in London (eu-west-2): Postgres with PostGIS, row level security on every table, storage buckets for photos, one edge function, pg_cron and pg_net.
-- **Expo Go** is the test target. That rules out native tabs, expo-maps and push token registration until there is an Apple Developer membership and an EAS project. The code for all three is in place and dormant.
+- **EAS** project `@robbiebridges/rounds` (id in app.json). Builds go to TestFlight through `eas build` and `eas submit`; JavaScript changes go out with `eas update` on the `production` channel, runtime version follows the app version. Push token registration is live now that the project id exists. Native tabs and expo-maps are still one-file changes waiting for a dev build.
 - **Git**: `main` on GitHub at robbiebridges8-cpu/rounds. Every migration is committed under `supabase/migrations/` and applied through the Supabase connection with identical SQL.
 
 ## The look: Signal
