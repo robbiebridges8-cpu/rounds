@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { Alert, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BOROUGH_TOTAL, NIGHT, StarMap } from '@/components/borough-map';
+import { BOROUGH_TOTAL, BoroughMap } from '@/components/borough-map';
 import { BadgeRow } from '@/components/challenge-card';
 import { Diary } from '@/components/diary';
 import { ShareCard, shareCard } from '@/components/share-card';
@@ -77,7 +77,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
   const inner = width - 32;
   const heroHeight = Math.round(width * 1.2);
   const tagline =
-    visited.size === 0 ? 'No stars yet' : visited.size < 10 ? 'Just getting going' : visited.size < 20 ? 'Proper Londoner' : visited.size < BOROUGH_TOTAL ? 'Frighteningly thorough' : 'The whole city';
+    visited.size === 0 ? 'Nothing blue yet' : visited.size < 10 ? 'Just getting going' : visited.size < 20 ? 'Proper Londoner' : visited.size < BOROUGH_TOTAL ? 'Frighteningly thorough' : 'The whole city';
 
   return (
     <>
@@ -85,30 +85,28 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
         className="flex-1"
         contentInsetAdjustmentBehavior="never"
         contentContainerClassName="pb-10"
-        refreshControl={<RefreshControl refreshing={stats.isRefetching || pubs.isRefetching} onRefresh={refresh} tintColor="#fff" />}>
+        refreshControl={<RefreshControl refreshing={stats.isRefetching || pubs.isRefetching} onRefresh={refresh} tintColor={colors.ink} />}>
         {/* The poster */}
-        <View style={{ height: heroHeight, backgroundColor: NIGHT, overflow: 'hidden' }}>
+        <View style={{ height: heroHeight, backgroundColor: colors.canvas, overflow: 'hidden' }}>
           <View style={{ position: 'absolute', left: -width * 0.08, top: insets.top + 92 }}>
-            <StarMap pubs={pubs.data ?? []} visited={visited} width={width * 1.16} />
+            <BoroughMap visited={visited} width={width * 1.16} stroke={colors.canvas} empty={colors.raised} pubs={pubs.data ?? []} dot={colors.butter} />
           </View>
           <View style={{ position: 'absolute', left: 20, top: insets.top + 56, gap: 2 }}>
-            <Text style={{ fontSize: 11, fontWeight: '800', letterSpacing: 2, color: colors.butter }}>
+            <Text style={{ fontSize: 11, fontWeight: '800', letterSpacing: 2, color: colors.ale }}>
               @{profile.username.toUpperCase()}
             </Text>
-            <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 34, letterSpacing: -1.2, color: '#fff' }} numberOfLines={2}>
+            <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 34, letterSpacing: -1.2, color: colors.ink }} numberOfLines={2}>
               {possessive(profile.display_name)} London
             </Text>
           </View>
           <View style={{ position: 'absolute', right: 16, top: insets.top + 56 }}>
-            <View style={{ padding: 3, borderRadius: 30, backgroundColor: '#fff' }}>
-              <Avatar url={profile.avatar_url} name={profile.display_name} size={46} />
-            </View>
+            <Avatar url={profile.avatar_url} name={profile.display_name} size={46} />
           </View>
           <View style={{ position: 'absolute', left: 20, bottom: 18, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
-            <Text style={{ fontFamily: fonts.display, fontSize: 64, lineHeight: 66, letterSpacing: -3, color: colors.butter }}>{visited.size}</Text>
+            <Text style={{ fontFamily: fonts.display, fontSize: 64, lineHeight: 66, letterSpacing: -3, color: colors.you }}>{visited.size}</Text>
             <View style={{ paddingBottom: 12 }}>
-              <Text style={{ color: '#fff', fontWeight: '800', fontSize: 14 }}>of {BOROUGH_TOTAL} boroughs</Text>
-              <Text style={{ color: '#fff', fontSize: 12, opacity: 0.8 }}>{tagline}</Text>
+              <Text style={{ color: colors.ink, fontWeight: '800', fontSize: 14 }}>of {BOROUGH_TOTAL} boroughs</Text>
+              <Text style={{ color: colors.inkSoft, fontSize: 12 }}>{tagline}</Text>
             </View>
           </View>
         </View>

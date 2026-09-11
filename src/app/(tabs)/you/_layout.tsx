@@ -7,7 +7,7 @@ export default function YouLayout() {
     <Stack
       screenOptions={{
         headerTransparent: true,
-        headerTintColor: '#FFFFFF',
+        headerTintColor: colors.ink,
         headerTitle: '',
         headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.canvas },
