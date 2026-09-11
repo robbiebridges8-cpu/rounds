@@ -33,7 +33,8 @@ const USER_AGENT = 'Rounds/0.1 (https://github.com/robbiebridges8-cpu/rounds; pu
 const GEO_RADIUS_M = 70;
 const TEXT_RADIUS_M = 250;
 const THUMB_WIDTH = 1280;
-const CONCURRENCY = 4;
+// Six is what Wikimedia tolerates from one client without 429s on the image downloads.
+const CONCURRENCY = Number(process.env.SEED_CONCURRENCY ?? 6);
 
 type Args = { limit: number; dry: boolean };
 
@@ -107,16 +108,23 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
 async function commons(params: Record<string, string>): Promise<any> {
   const url = new URL(API);
   url.search = new URLSearchParams({ action: 'query', format: 'json', formatversion: '2', ...params }).toString();
-  for (let attempt = 0; attempt < 4; attempt++) {
+  const res = await fetchWithBackoff(url.toString());
+  return res.json();
+}
+
+/** Wikimedia answers 429 when it wants a breather. Wait, then try again. */
+async function fetchWithBackoff(url: string): Promise<Response> {
+  for (let attempt = 0; attempt < 6; attempt++) {
     const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
-    if (res.ok) return res.json();
+    if (res.ok) return res;
     if (res.status === 429 || res.status >= 500) {
-      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+      const retryAfter = Number(res.headers.get('retry-after')) || 0;
+      await new Promise((r) => setTimeout(r, Math.max(retryAfter * 1000, 3000 * (attempt + 1))));
       continue;
     }
-    throw new Error(`Commons ${res.status} for ${url}`);
+    throw new Error(`${res.status} for ${url}`);
   }
-  throw new Error(`Commons kept failing for ${url}`);
+  throw new Error(`kept failing: ${url}`);
 }
 
 const IMAGEINFO = {
@@ -279,8 +287,7 @@ async function main() {
         console.log(`  ${pub.name} (${pub.borough ?? '?'}) <- ${best.title} [${best.licence}${best.distance != null ? `, ${Math.round(best.distance)} m` : ''}] ${best.score.toFixed(1)}`);
         if (args.dry) continue;
 
-        const res = await fetch(best.thumbUrl, { headers: { 'User-Agent': USER_AGENT } });
-        if (!res.ok) throw new Error(`download ${res.status}`);
+        const res = await fetchWithBackoff(best.thumbUrl);
         const bytes = Buffer.from(await res.arrayBuffer());
         const path = `${pub.id}.jpg`;
         const upload = await supabase.storage.from('pub-photos').upload(path, bytes, { contentType: 'image/jpeg', upsert: true });
