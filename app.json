@@ -8,7 +8,6 @@
     "scheme": "rounds",
     "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.robbiebridges.rounds",
       "supportsTablet": false,
       "infoPlist": {
