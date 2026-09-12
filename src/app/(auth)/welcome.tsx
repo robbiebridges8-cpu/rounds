@@ -1,12 +1,13 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { Text, View, useWindowDimensions } from 'react-native';
+import { Alert, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { APP_NAME } from '@/lib/brand';
+import { savePendingInvite } from '@/lib/invites';
 
 /**
  * The first thing you see. Four big colour shapes, the wordmark in an ink
@@ -15,6 +16,24 @@ import { APP_NAME } from '@/lib/brand';
  */
 export default function Welcome() {
   const router = useRouter();
+
+  // The eight characters from a mate's invite. Kept until the account exists,
+  // then applied, the same way a tapped invite link is.
+  const enterCode = () =>
+    Alert.prompt('Invite code', 'The eight characters from your mate’s invite.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Continue',
+        onPress: (value?: string) => {
+          const code = (value ?? '').trim().toUpperCase();
+          if (code.length !== 8) {
+            Alert.alert('That does not look right', 'Invite codes are eight characters.');
+            return;
+          }
+          void savePendingInvite(code).then(() => router.push('/sign-in'));
+        },
+      },
+    ]);
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const t = useSharedValue(0);
@@ -69,7 +88,10 @@ export default function Welcome() {
         </View>
         <Button label="Get started" onPress={() => router.push('/sign-in')} />
         <Text className="text-center text-[14px]" style={{ color: '#6E6E78' }}>
-          Got an invite code? <Text style={{ color: colors.you, fontWeight: '700' }}>Enter it</Text>
+          Got an invite code?{' '}
+          <Text style={{ color: colors.you, fontWeight: '700' }} onPress={enterCode} accessibilityRole="button">
+            Enter it
+          </Text>
         </Text>
       </View>
     </View>
