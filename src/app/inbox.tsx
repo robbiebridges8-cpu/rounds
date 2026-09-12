@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } 
 import { Avatar, Card, EmptyState, Icon } from '@/components/ui';
 import { formatWhen } from '@/lib/format';
 import { useInbox, useMarkRead, type InboxItem } from '@/lib/inbox';
+import { useAcceptTag, useDeclineTag, useMyTags } from '@/lib/feed';
 import { colors } from '@/theme';
 import { usePull } from '@/lib/refresh';
 
@@ -26,6 +27,9 @@ function destination(n: InboxItem): Href {
 export default function InboxScreen() {
   const router = useRouter();
   const inbox = useInbox();
+  const myTags = useMyTags();
+  const acceptTag = useAcceptTag();
+  const declineTag = useDeclineTag();
   const pull = usePull(() => Promise.all([inbox.refetch()]));
   const markRead = useMarkRead();
 
@@ -70,6 +74,20 @@ export default function InboxScreen() {
                     <Text className="text-ink-soft text-[14px]" numberOfLines={2}>
                       {n.body}
                     </Text>
+                    {n.kind === 'tag' && n.checkin_id ? (
+                      myTags.data?.has(n.checkin_id) && myTags.data.get(n.checkin_id) == null ? (
+                        <View className="mt-2 flex-row gap-2">
+                          <Pressable onPress={() => acceptTag.mutate(n.checkin_id!)} accessibilityRole="button" className="h-9 flex-row items-center rounded-full px-4" style={{ backgroundColor: colors.ink }}>
+                            <Text className="text-[13px] font-bold" style={{ color: colors.canvas }}>Yes, I was there</Text>
+                          </Pressable>
+                          <Pressable onPress={() => declineTag.mutate(n.checkin_id!)} accessibilityRole="button" className="h-9 flex-row items-center rounded-full bg-raised px-4">
+                            <Text className="text-ink text-[13px] font-bold">No</Text>
+                          </Pressable>
+                        </View>
+                      ) : myTags.data?.get(n.checkin_id) ? (
+                        <Text className="text-you mt-1 text-[12px] font-bold">You were there</Text>
+                      ) : null
+                    ) : null}
                     <Text className="text-ink-soft mt-0.5 text-[12px]">{formatWhen(n.created_at)}</Text>
                   </View>
                   {!n.read_at ? <View className="h-2.5 w-2.5 rounded-full bg-ale" /> : null}

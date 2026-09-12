@@ -455,3 +455,16 @@ quests moved over with everyone's progress. A crawl is a list whose pubs are
 numbered stops, with the walking time between them and a Share button. No
 going or maybe, no arrivals, no time window, no voting: the route and the
 link. The quest tables, screens and the icon picker are gone.
+
+## A tag is a question
+
+Until 13 September a tag put a post in front of the tagged person and offered
+"add it to my map", which made a second, empty post. Now the tag waits for a
+yes. Yes accepts it, creates a shadow check-in that points at the original
+(so every count, map and list works with no other change, and it never shows
+as a post), and marks the tag surfaced so the original post appears in the
+tagged person's friends' feeds too. If they already had their own check-in at
+that pub within twelve hours, the tag is accepted but not surfaced, because
+their own post already covers it. No deletes the tag and the shadow with it.
+Visibility runs through one security-definer function so the check-ins policy
+can ask about tags without recursing into their own policy.

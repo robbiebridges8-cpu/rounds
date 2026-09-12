@@ -69,8 +69,8 @@ function DiaryRow({ checkin, mine, last }: { checkin: UserCheckin; mine: boolean
 
   return (
     <Pressable
-      onPress={() => router.push({ pathname: '/post/[id]', params: { id: checkin.id } })}
-      onLongPress={mine ? actions : undefined}
+      onPress={() => router.push({ pathname: '/post/[id]', params: { id: checkin.original?.id ?? checkin.id } })}
+      onLongPress={mine && !checkin.original ? actions : undefined}
       accessibilityRole="button"
       className="flex-row items-center gap-3 pl-3 active:bg-raised">
       <View className="w-11 items-center rounded-md bg-raised py-1.5">
@@ -84,6 +84,7 @@ function DiaryRow({ checkin, mine, last }: { checkin: UserCheckin; mine: boolean
           <Text className="text-ink text-[17px] font-semibold" numberOfLines={1}>
             {checkin.pubs?.name ?? 'A pub'}
           </Text>
+          {checkin.original ? <Text className="text-ink-soft text-[13px]">{`Tagged by ${checkin.original.profiles?.display_name ?? 'a mate'}`}</Text> : null}
           {checkin.rating ? <Stars value={checkin.rating} size={12} /> : null}
           {checkin.note ? (
             <Text className="text-ink-soft text-[13px]" numberOfLines={1}>
@@ -92,7 +93,7 @@ function DiaryRow({ checkin, mine, last }: { checkin: UserCheckin; mine: boolean
           ) : null}
         </View>
         {photo ? <Image source={{ uri: photoUrl(photo.storage_path) }} style={{ width: 44, height: 44, borderRadius: 8 }} contentFit="cover" /> : null}
-        {mine ? (
+        {mine && !checkin.original ? (
           <Pressable onPress={actions} hitSlop={10} accessibilityRole="button" accessibilityLabel="Edit or delete">
             <Icon name="ellipsis" size={16} color={colors.inkSoft} />
           </Pressable>

@@ -21,6 +21,8 @@ export type NewCheckin = {
 export type UserCheckin = Tables<'checkins'> & {
   pubs: Pick<Tables<'pubs'>, 'id' | 'name' | 'borough'> | null;
   checkin_photos: Tables<'checkin_photos'>[];
+  /** Set on a tagged visit: the mate's post this came from. */
+  original: { id: string; user_id: string; profiles: Pick<Tables<'profiles'>, 'display_name'> | null } | null;
 };
 
 export function photoUrl(storagePath: string): string {
@@ -124,7 +126,15 @@ export function useUserCheckins(userId: string | undefined) {
         .order('created_at', { ascending: false })
         .limit(50);
       if (error) throw error;
-      return data as UserCheckin[];
+      // Tagged visits point at a mate's post. A self-join embed is ambiguous
+      // to PostgREST, so fetch the originals in one extra query.
+      const originalIds = data.map((c) => c.tagged_from).filter((id): id is string => Boolean(id));
+      const originals = new Map<string, UserCheckin['original']>();
+      if (originalIds.length) {
+        const { data: rows } = await supabase.from('checkins').select('id, user_id, profiles!checkins_user_id_fkey(display_name)').in('id', originalIds);
+        for (const r of rows ?? []) originals.set(r.id, { id: r.id, user_id: r.user_id, profiles: r.profiles });
+      }
+      return data.map((c) => ({ ...c, original: c.tagged_from ? (originals.get(c.tagged_from) ?? null) : null })) as UserCheckin[];
     },
   });
 }

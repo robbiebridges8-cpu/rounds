@@ -6,7 +6,7 @@ import { PostCard } from '@/components/post-card';
 import { Button, EmptyState, Icon, SectionTitle } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
-import { useClaimVisit, useDeleteCheckin, useMyVisitNear, usePost, useRemoveCheers } from '@/lib/feed';
+import { useAcceptTag, useDeclineTag, useDeleteCheckin, usePost, useRemoveCheers } from '@/lib/feed';
 import { openPhotos } from '@/lib/photo-viewer';
 import { colors } from '@/theme';
 
@@ -18,8 +18,8 @@ export default function PostScreen() {
   const post = usePost(id);
   const removeCheers = useRemoveCheers();
   const deleteCheckin = useDeleteCheckin();
-  const claimVisit = useClaimVisit();
-  const alreadyThere = useMyVisitNear(post.data?.pubs?.id, post.data?.created_at);
+  const acceptTag = useAcceptTag();
+  const declineTag = useDeclineTag();
 
   if (post.isPending) {
     return (
@@ -33,6 +33,7 @@ export default function PostScreen() {
   const data = post.data;
   const mine = data.user_id === me;
   const taggedMe = data.checkin_tags.some((t) => t.user_id === me);
+  const myTag = data.checkin_tags.find((t) => t.user_id === me);
 
   const confirmDelete = () =>
     Alert.alert('Delete this check-in?', 'Photos, cheers and replies go with it.', [
@@ -87,19 +88,24 @@ export default function PostScreen() {
             expanded
           />
 
-          {taggedMe && data.pubs && alreadyThere.data === false ? (
-            <Button
-              label="You were here? Add it to your map"
-              icon="mappin.and.ellipse"
-              variant="accent"
-              onPress={() =>
-                claimVisit.mutate(
-                  { pubId: data.pubs!.id, at: data.created_at },
-                  { onSuccess: (r) => Alert.alert(r === 'added' ? 'Added' : 'Already on your map', r === 'added' ? 'It is on your map and counts for your boroughs.' : 'You checked in there that night.') },
-                )
-              }
-              loading={claimVisit.isPending}
-            />
+          {taggedMe && data.pubs ? (
+            myTag?.accepted_at ? (
+              <View className="flex-row items-center gap-2 rounded-lg bg-surface px-4 py-3">
+                <Icon name="checkmark.circle.fill" size={18} color={colors.you} />
+                <Text className="text-ink flex-1 text-[15px] font-semibold">You were there. It counts for you.</Text>
+              </View>
+            ) : (
+              <View className="gap-2 rounded-lg px-4 py-4" style={{ backgroundColor: colors.butter }}>
+                <Text className="text-[16px] font-bold" style={{ color: '#101014' }}>Were you there?</Text>
+                <Text className="text-[13px]" style={{ color: '#101014', opacity: 0.75 }}>Yes puts it on your map and shows your mates.</Text>
+                <View className="mt-1 flex-row gap-2">
+                  <View className="flex-1">
+                    <Button label="Yes, I was there" onPress={() => acceptTag.mutate(data.id, { onSuccess: (r) => Alert.alert(r === 'added' ? 'On your map' : 'Counted', r === 'added' ? 'It counts for your pubs and boroughs.' : 'You had already logged that night yourself.') })} loading={acceptTag.isPending} />
+                  </View>
+                  <Button label="No" variant="quiet" onPress={() => declineTag.mutate(data.id)} loading={declineTag.isPending} />
+                </View>
+              </View>
+            )
           ) : null}
 
           {data.cheers.length > 0 ? (

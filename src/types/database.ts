@@ -107,9 +107,9 @@ export type Database = {
         ];
       };
       checkin_tags: {
-        Row: { checkin_id: string; created_at: string; user_id: string };
-        Insert: { checkin_id: string; created_at?: string; user_id: string };
-        Update: { checkin_id?: string; created_at?: string; user_id?: string };
+        Row: { accepted_at: string | null; checkin_id: string; created_at: string; surfaced: boolean; user_id: string };
+        Insert: { accepted_at?: string | null; checkin_id: string; created_at?: string; surfaced?: boolean; user_id: string };
+        Update: { accepted_at?: string | null; checkin_id?: string; created_at?: string; surfaced?: boolean; user_id?: string };
         Relationships: [
           {
             foreignKeyName: 'checkin_tags_checkin_id_fkey';
@@ -147,6 +147,7 @@ export type Database = {
           note: string | null;
           pub_id: string;
           rating: number | null;
+          tagged_from: string | null;
           user_id: string;
           verified: boolean;
         };
@@ -160,6 +161,7 @@ export type Database = {
           note?: string | null;
           pub_id: string;
           rating?: number | null;
+          tagged_from?: string | null;
           user_id: string;
           verified?: boolean;
         };
@@ -173,10 +175,18 @@ export type Database = {
           note?: string | null;
           pub_id?: string;
           rating?: number | null;
+          tagged_from?: string | null;
           user_id?: string;
           verified?: boolean;
         };
         Relationships: [
+          {
+            foreignKeyName: 'checkins_tagged_from_fkey';
+            columns: ['tagged_from'];
+            isOneToOne: false;
+            referencedRelation: 'checkins';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'checkins_pub_id_fkey';
             columns: ['pub_id'];
@@ -839,6 +849,8 @@ export type Database = {
     Views: { [_ in never]: never };
     Functions: {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      accept_tag: { Args: { p_checkin: string }; Returns: string };
+      surfaced_for: { Args: { p_checkin: string; p_viewer: string }; Returns: boolean };
       accept_invite: {
         Args: { invite: string };
         Returns: {

@@ -1,5 +1,4 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as Crypto from 'expo-crypto';
 
 import type { Profile } from '@/lib/auth';
 import { compress, uploadImage, type PickedImage } from '@/lib/images';
@@ -40,6 +39,7 @@ export function useFeed() {
       let query = supabase
         .from('checkins')
         .select(SELECT)
+        .is('tagged_from', null)
         .order('created_at', { ascending: false })
         .limit(PAGE);
       if (pageParam) query = query.lt('created_at', pageParam);
@@ -178,58 +178,51 @@ export function useUpdateCheckin() {
 }
 
 /** "You were here?" A tagged mate adds the visit to their own map. */
-/** Do I already have a check-in at this pub within twelve hours of a moment? */
-export function useMyVisitNear(pubId: string | undefined, at: string | undefined) {
-  const { session } = useSession();
-  const me = session?.user.id;
-  return useQuery({
-    queryKey: ['my-visit-near', pubId, at, me],
-    enabled: Boolean(pubId && at && me),
-    queryFn: async () => {
-      const t = new Date(at!).getTime();
-      const { data, error } = await supabase
-        .from('checkins')
-        .select('id')
-        .eq('user_id', me!)
-        .eq('pub_id', pubId!)
-        .gte('created_at', new Date(t - 12 * 3600_000).toISOString())
-        .lte('created_at', new Date(t + 12 * 3600_000).toISOString())
-        .limit(1);
+/** Yes, I was there. The database does the rest: the tag is accepted, the
+ * pub counts for you, and the post reaches your friends unless you already
+ * logged that night yourself. */
+export function useAcceptTag() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (checkinId: string) => {
+      const { data, error } = await supabase.rpc('accept_tag', { p_checkin: checkinId });
       if (error) throw error;
-      return data.length > 0;
+      return data as 'added' | 'already';
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries();
     },
   });
 }
 
-export function useClaimVisit() {
+/** No, I wasn't. The tag goes, quietly. */
+export function useDeclineTag() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ pubId, at }: { pubId: string; at: string }) => {
+    mutationFn: async (checkinId: string) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      const t = new Date(at).getTime();
-      const { data: existing } = await supabase
-        .from('checkins')
-        .select('id')
-        .eq('user_id', session!.user.id)
-        .eq('pub_id', pubId)
-        .gte('created_at', new Date(t - 12 * 3600_000).toISOString())
-        .lte('created_at', new Date(t + 12 * 3600_000).toISOString())
-        .limit(1);
-      if (existing && existing.length > 0) return 'already' as const;
-      // Dated to their night, so it lands on the same day in your diary.
-      const { error } = await supabase.from('checkins').insert({
-        user_id: session!.user.id,
-        pub_id: pubId,
-        client_id: Crypto.randomUUID(),
-        created_at: at,
-      });
+      const { error } = await supabase.from('checkin_tags').delete().match({ checkin_id: checkinId, user_id: session!.user.id });
       if (error) throw error;
-      return 'added' as const;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries();
+    },
+  });
+}
+
+/** Every tag on me, keyed by check-in, with whether I have said yes. */
+export function useMyTags() {
+  const { session } = useSession();
+  const me = session?.user.id;
+  return useQuery({
+    queryKey: ['my-tags', me],
+    enabled: Boolean(me),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('checkin_tags').select('checkin_id, accepted_at').eq('user_id', me!);
+      if (error) throw error;
+      return new Map(data.map((t) => [t.checkin_id, t.accepted_at]));
     },
   });
 }

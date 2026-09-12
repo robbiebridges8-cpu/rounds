@@ -157,6 +157,7 @@ export function usePubVisits(pubId: string | undefined) {
       const { data, error } = await supabase
         .from('checkins')
         .select('*, profiles!checkins_user_id_fkey(*), checkin_photos(*)')
+        .is('tagged_from', null)
         .eq('pub_id', pubId!)
         .order('created_at', { ascending: false })
         .limit(50);
