@@ -30,7 +30,7 @@ Useful scripts:
 
 - **Expo SDK 57**, React Native 0.86, expo-router with typed routes, NativeWind 4 on Tailwind 3.4.
 - **Supabase** in London (eu-west-2): Postgres with PostGIS, row level security on every table, storage buckets for photos, one edge function, pg_cron and pg_net.
-- **EAS** project `@robbiebridges/rounds` (id in app.json). Builds go to TestFlight through `eas build` and `eas submit`; JavaScript changes go out with `eas update` on the `production` channel, runtime version follows the app version. Push token registration is live now that the project id exists. Native tabs and expo-maps are still one-file changes waiting for a dev build.
+- **EAS** project `@robbiebridges/rounds` (id in app.json). Builds go to TestFlight through `eas build` and `eas submit`; JavaScript changes go out with `eas update` on the `production` channel, runtime version follows the app version. Push is live end to end: the Apple push key is on EAS and a test notification was delivered on 12 September. Native tabs and expo-maps are still one-file changes waiting for a dev build.
 - **Git**: `main` on GitHub at robbiebridges8-cpu/rounds. Every migration is committed under `supabase/migrations/` and applied through the Supabase connection with identical SQL.
 
 ## The look: Signal
@@ -125,7 +125,7 @@ Query functions the app calls: `map_pubs`, `nearby_pubs`, `user_pub_map`, `user_
 
 ## Not done
 
-- No Apple Developer membership yet, so no TestFlight, no native tabs, no expo-maps, and push delivery is wired but dormant.
+- On TestFlight since 12 September as Pub'd. Native tabs and expo-maps are still one-file changes waiting for a dev build.
 - Nobody but the author has used it. The first evening of real use will reorder the roadmap.
 - No offline queue for check-ins, though the client id makes one safe to add.
 - Pub claims for landlords and brands were built and removed; the design is in git history at commit 92f7ba2.

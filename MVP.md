@@ -40,7 +40,7 @@ Last updated 11 September 2026.
 - [x] Reply inline under a post
 - [x] Post page with the cheers gallery and thread
 - [x] Inbox for cheers, replies, tags and the weekly digest
-- [x] Push notifications: pipeline built, tokens register now the EAS project id exists. First real delivery lands with the TestFlight build
+- [x] Push notifications: delivered end to end on the TestFlight build, 12 September
 
 ## Game
 - [x] 33 boroughs filling in as you check in
@@ -63,4 +63,4 @@ Last updated 11 September 2026.
 - [x] Admin numbers page
 - [x] Privacy policy, contact email set
 - [x] Apple Developer membership applied for on the web, 11 September; EAS project and build profiles configured
-- [ ] First TestFlight build, once Apple activates the membership
+- [x] TestFlight: build 11 live for internal testers; public link waiting on Apple's beta review
