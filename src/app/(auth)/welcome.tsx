@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui';
 import { colors, fonts } from '@/theme';
+import { APP_NAME } from '@/lib/brand';
 
 /**
  * The first thing you see. Four big colour shapes, the wordmark in an ink
@@ -51,7 +52,7 @@ export default function Welcome() {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Text style={{ fontFamily: fonts.display, fontSize: 30 * s, color: '#FFFFFF', letterSpacing: -1 }}>rounds</Text>
+          <Text style={{ fontFamily: fonts.display, fontSize: 30 * s, color: '#FFFFFF', letterSpacing: -1 }}>{APP_NAME.toLowerCase()}</Text>
           <Text style={{ fontSize: 11, color: colors.butter, fontWeight: '800', letterSpacing: 2 }}>LONDON</Text>
         </View>
       </View>
@@ -60,10 +61,10 @@ export default function Welcome() {
         <View className="gap-3">
           <Text style={{ fontFamily: fonts.display, fontSize: 38, lineHeight: 40, letterSpacing: -1.4, color: '#101014' }}>
             Pubs.{'\n'}Mates.{'\n'}
-            <Text style={{ color: colors.you }}>Bragging rights.</Text>
+            <Text style={{ color: colors.you }}>London.</Text>
           </Text>
           <Text className="text-[16px] leading-6" style={{ color: '#6E6E78' }}>
-            Check in, collect boroughs, and find out who in your group has really done London.
+            Check in, fill in the boroughs, see where your mates have been.
           </Text>
         </View>
         <Button label="Get started" onPress={() => router.push('/sign-in')} />

@@ -53,7 +53,7 @@ export default function InviteScreen() {
           <>
             <Avatar url={done.avatar} name={done.name} size={96} />
             <Heading>You and {done.name} are now friends</Heading>
-            <Body>Their pubs are green on your map from now on.</Body>
+            <Body>Their pubs are on your map now.</Body>
             <View className="w-full pt-4">
               <Button label="See your friends" onPress={() => router.replace('/friends')} />
             </View>

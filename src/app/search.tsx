@@ -39,7 +39,7 @@ export default function SearchScreen() {
 
       <ScrollView className="flex-1" contentContainerClassName="px-4 pb-10" keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         {!searching ? (
-          <EmptyState icon="magnifyingglass" title="Type a pub name" body="Two letters is enough to start." />
+          <EmptyState icon="magnifyingglass" title="Type a pub name" />
         ) : results.isPending ? (
           <View className="py-10">
             <ActivityIndicator color={colors.ale} />
@@ -60,7 +60,7 @@ export default function SearchScreen() {
             ))}
           </Card>
         ) : (
-          <EmptyState icon="mappin.slash" title="No pub by that name" body="Try fewer words, or the street it is on.">
+          <EmptyState icon="mappin.slash" title="No pub by that name" body="Try fewer words.">
             <Pressable onPress={() => router.push('/add-pub')} accessibilityRole="button" className="mt-3 h-11 flex-row items-center gap-2 rounded-full bg-ink px-5">
               <Icon name="plus" size={14} color="#fff" weight="bold" />
               <Text className="text-[15px] font-bold text-white">Add a missing pub</Text>

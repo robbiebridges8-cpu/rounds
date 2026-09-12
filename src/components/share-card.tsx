@@ -78,7 +78,7 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard({ displayNam
       )}
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <Text style={{ fontSize: 28, color: P.inkSoft, fontWeight: '700' }}>Pubs. Mates. Bragging rights.</Text>
+        <Text style={{ fontSize: 28, color: P.inkSoft, fontWeight: '700' }}>The pub map for you and your mates.</Text>
         {inviteCode ? (
           <View style={{ alignItems: 'flex-end' }}>
             <Text style={{ fontSize: 22, color: P.inkSoft, fontWeight: '600' }}>Join me with code</Text>

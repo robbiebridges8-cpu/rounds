@@ -80,7 +80,7 @@ export default function ChallengeScreen() {
   const toggleJoin = () => {
     void Haptics.selectionAsync();
     if (challenge.joined) {
-      Alert.alert('Leave this challenge?', 'Your check-ins stay. Only the badge goes.', [
+      Alert.alert('Leave this challenge?', 'Your check-ins stay.', [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Leave', style: 'destructive', onPress: () => leave.mutate(id) },
       ]);
@@ -178,7 +178,7 @@ export default function ChallengeScreen() {
               <View className="p-5">
                 <Body>
                   {isCreator
-                    ? 'No pubs yet. Add some and this becomes a challenge.'
+                    ? 'No pubs yet.'
                     : 'The creator has not added any pubs yet.'}
                 </Body>
               </View>

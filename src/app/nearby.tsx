@@ -43,7 +43,7 @@ export default function NearbyScreen() {
       ) : null}
 
       {pubs.data && pubs.data.length === 0 ? (
-        <EmptyState icon="mappin.slash" title="Nothing within 1.5 km" body="Unusual, for London." />
+        <EmptyState icon="mappin.slash" title="Nothing within 1.5 km" />
       ) : null}
 
       {pubs.data && pubs.data.length > 0 ? (

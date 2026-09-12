@@ -58,7 +58,7 @@ export default function NewChallengeSheet() {
 
       <View className="items-center gap-3">
         <ChallengeIcon icon={icon} color={CHALLENGE_COLORS[color]} size={88} done />
-        <Body>Pick a look. You add the pubs next.</Body>
+        <Body>Pick a colour and an icon. Add pubs next.</Body>
       </View>
 
       <Field
@@ -74,7 +74,7 @@ export default function NewChallengeSheet() {
         label="The pitch"
         value={description}
         onChangeText={setDescription}
-        placeholder="Optional. One line on why anyone would do this."
+        placeholder="Optional. What it is about."
         maxLength={280}
         multiline
       />

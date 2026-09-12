@@ -46,7 +46,7 @@ export default function FriendsScreen() {
         Alert.alert(
           row.status === 'accepted' ? 'You are now friends' : 'Request sent',
           row.status === 'accepted'
-            ? 'They had already asked you, so that is settled.'
+            ? 'You are now friends.'
             : `They will see it the next time they open ${APP_NAME}.`
         );
       },
@@ -58,7 +58,7 @@ export default function FriendsScreen() {
     if (!code.trim()) return;
     acceptInvite.mutate(code, {
       onSuccess: (inviter) =>
-        Alert.alert('You are now friends', `${inviter.display_name}'s pubs are green on your map.`),
+        Alert.alert('You are now friends', `${inviter.display_name}'s pubs are on your map now.`),
       onError: (error) => Alert.alert('That code did not work', error.message),
     });
   };
@@ -228,7 +228,7 @@ export default function FriendsScreen() {
             <EmptyState
               icon="person.2"
               title="Nobody here yet"
-              body="Send a mate your link. When they join, their pubs go green on your map and the borough race is on.">
+              body="Invite a mate. Their pubs show on your map.">
               <View className="w-full gap-2 pt-4">
                 <Button label="Invite a mate" icon="square.and.arrow.up" onPress={invite} disabled={!inviteCode.data} />
                 {inviteCode.data ? (

@@ -41,7 +41,7 @@ export default function NewListSheet() {
         <Text className="text-ink text-[17px] font-bold">New list</Text>
         <View style={{ width: 52 }} />
       </View>
-      <Body>Your taste, in pub form. Name it, add the pubs, then a line on each. Anyone can follow it.</Body>
+      <Body>Name it, add pubs, then a line on each.</Body>
       <Field label="Name" value={title} onChangeText={setTitle} error={error} placeholder="Best gardens south of the river" maxLength={60} autoFocus />
       <Field label="What it is" value={description} onChangeText={setDescription} placeholder="Optional. One or two lines." maxLength={280} multiline />
       <Button label="Create" onPress={save} loading={create.isPending} />

@@ -105,7 +105,7 @@ export default function FirstPubs() {
           keyboardDismissMode="on-drag">
           <View className="gap-2">
             <Heading>Where have you been?</Heading>
-            <Body>Tick the pubs you already know. They turn gold on your map straight away.</Body>
+            <Body>Tick the pubs you have been to. They go on your map.</Body>
           </View>
 
           <Field

@@ -49,8 +49,8 @@ export function Leaderboard({ rows, metric }: { rows: LeaderboardRow[]; metric: 
       <Card>
         <EmptyState
           icon="trophy"
-          title="A league of one"
-          body="Invite a mate and this becomes a race."
+          title="Just you so far"
+          body="Invite a mate."
         />
       </Card>
     );

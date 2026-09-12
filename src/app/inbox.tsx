@@ -76,7 +76,7 @@ export default function InboxScreen() {
           </Card>
         ) : (
           <Card>
-            <EmptyState icon="tray" title="Nothing yet" body="Cheers, replies and tags from your mates land here." />
+            <EmptyState icon="tray" title="Nothing yet" body="Cheers, replies and tags show up here." />
           </Card>
         )}
       </ScrollView>

@@ -74,7 +74,7 @@ function EditForm({ post, onDone }: { post: Loaded; onDone: () => void }) {
           ) : null}
         </View>
       </View>
-      <Field label="Note" value={note} onChangeText={setNote} placeholder="Anything worth remembering" multiline maxLength={500} style={{ minHeight: 90 }} />
+      <Field label="Note" value={note} onChangeText={setNote} placeholder="Add a note" multiline maxLength={500} style={{ minHeight: 90 }} />
       <Button label="Save" onPress={save} loading={update.isPending} />
       <Pressable onPress={confirmDelete} accessibilityRole="button" className="items-center py-2">
         <Text className="text-danger text-[15px] font-bold">Delete check-in</Text>

@@ -101,7 +101,7 @@ export default function PubScreen() {
     vote.mutate({ tag: slug, value: myVoteFor(slug) === 1 ? 0 : 1 });
   };
   const notAnyMore = (slug: string, label: string) =>
-    Alert.alert(`${label}: not any more?`, 'Say so if it has changed. Nobody will see who said it.', [
+    Alert.alert(`${label}: not any more?`, 'Nobody sees who said it.', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Not any more', style: 'destructive', onPress: () => vote.mutate({ tag: slug, value: -1 }) },
     ]);
@@ -266,7 +266,7 @@ export default function PubScreen() {
             <SectionTitle>Visits</SectionTitle>
             {visits.data && visits.data.length === 0 ? (
               <Card>
-                <EmptyState icon="person.2" title="None of your mates have been" body="Be the first. Check in and it turns blue on the map." />
+                <EmptyState icon="person.2" title="None of your mates have been" body="Be the first to check in." />
               </Card>
             ) : null}
             <View className="gap-3">

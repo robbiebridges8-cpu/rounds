@@ -39,7 +39,7 @@ export default function FeedbackSheet() {
         onSuccess: () => {
           void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           router.back();
-          Alert.alert('Cheers', kind === 'bug' ? 'We will get on it.' : 'Read by a human, every one.');
+          Alert.alert('Sent', 'Thanks.');
         },
         onError: (e) => Alert.alert('Could not send that', e.message),
       },
@@ -55,7 +55,7 @@ export default function FeedbackSheet() {
         <Text className="text-ink text-[17px] font-bold">Tell us</Text>
         <View style={{ width: 52 }} />
       </View>
-      <Body>Broken, confusing, missing, or just an idea. Every one gets read.</Body>
+      <Body>Bugs, ideas, anything you would change.</Body>
 
       <View className="flex-row flex-wrap gap-2">
         {FEEDBACK_KINDS.map((k) => {
@@ -73,7 +73,7 @@ export default function FeedbackSheet() {
         value={message}
         onChangeText={setMessage}
         error={error}
-        placeholder={kind === 'bug' ? 'What were you doing, and what went wrong?' : kind === 'idea' ? 'What would make it better?' : 'Go on'}
+        placeholder={kind === 'bug' ? 'What were you doing, and what went wrong?' : kind === 'idea' ? 'What would make it better?' : 'Write it here'}
         multiline
         autoFocus
         maxLength={2000}
@@ -95,7 +95,7 @@ export default function FeedbackSheet() {
       )}
 
       <Button label="Send" onPress={submit} loading={send.isPending} />
-      <Text className="text-ink-soft text-[12px]">Your phone model, iOS version and which screen you were on are sent with it. Nothing else.</Text>
+      <Text className="text-ink-soft text-[12px]">Your phone model, iOS version and the screen you were on are included.</Text>
     </ScrollView>
   );
 }

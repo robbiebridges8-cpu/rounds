@@ -77,7 +77,7 @@ export default function ResetPassword() {
             <Heading>{step === 'email' ? 'Forgot your password?' : step === 'code' ? 'Check your email' : 'Pick a new password'}</Heading>
             <Body>
               {step === 'email'
-                ? 'We will email you a six-digit code. No links.'
+                ? 'We will email you a six-digit code.'
                 : step === 'code'
                   ? `We sent a code to ${email.trim().toLowerCase()}. It lasts an hour.`
                   : 'Eight characters or more. You will stay signed in.'}

@@ -76,8 +76,6 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
 
   const inner = width - 32;
   const heroHeight = Math.round(width * 1.2);
-  const tagline =
-    visited.size === 0 ? 'Nothing blue yet' : visited.size < 10 ? 'Just getting going' : visited.size < 20 ? 'Proper Londoner' : visited.size < BOROUGH_TOTAL ? 'Frighteningly thorough' : 'The whole city';
 
   return (
     <>
@@ -106,7 +104,6 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
             <Text style={{ fontFamily: fonts.display, fontSize: 64, lineHeight: 66, letterSpacing: -3, color: colors.you }}>{visited.size}</Text>
             <View style={{ paddingBottom: 12 }}>
               <Text style={{ color: colors.ink, fontWeight: '800', fontSize: 14 }}>of {BOROUGH_TOTAL} boroughs</Text>
-              <Text style={{ color: colors.inkSoft, fontSize: 12 }}>{tagline}</Text>
             </View>
           </View>
         </View>
@@ -199,7 +196,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
 
               {pubs.isSuccess && pubs.data.length === 0 ? (
                 <Card>
-                  <EmptyState icon="map" title={isMe ? 'No pubs yet' : `${profile.display_name} has not checked in yet`} body={isMe ? 'Your first check-in turns a borough yellow.' : undefined} />
+                  <EmptyState icon="map" title={isMe ? 'No pubs yet' : `${profile.display_name} has not checked in yet`} body={isMe ? 'Check in somewhere to start your map.' : undefined} />
                 </Card>
               ) : null}
             </>
@@ -216,7 +213,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
               </Card>
             ) : (
               <Card>
-                <EmptyState icon="list.star" title="No pubs yet" body={isMe ? 'Every pub you check in at lands here, best first.' : undefined} />
+                <EmptyState icon="list.star" title="No pubs yet" body={isMe ? 'Pubs you have checked in at, best first.' : undefined} />
               </Card>
             )
           ) : null}

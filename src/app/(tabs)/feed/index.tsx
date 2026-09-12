@@ -114,7 +114,7 @@ export default function FeedScreen() {
               <EmptyState
                 icon="bubble.left.and.bubble.right"
                 title="Nothing here yet"
-                body="Check in somewhere, or invite a mate so their nights out show up here.">
+                body="Check in somewhere, or invite a mate.">
                 <View className="w-full pt-4">
                   <Button label="Find a pub" icon="map" onPress={() => router.push('/')} />
                 </View>

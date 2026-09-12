@@ -276,7 +276,7 @@ export default function CheckinScreen() {
 
             {tagOrder.length > 0 ? (
               <View className="gap-1.5">
-                <Text className="text-[11px] font-bold uppercase tracking-wider text-white" style={{ opacity: 0.7 }}>What&apos;s it got? Optional</Text>
+                <Text className="text-[11px] font-bold uppercase tracking-wider text-white" style={{ opacity: 0.7 }}>What&apos;s it got?</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
                   {tagOrder.map((t) => {
                     const on = picked.has(t.slug);
@@ -295,7 +295,7 @@ export default function CheckinScreen() {
             <TextInput
               value={note}
               onChangeText={setNote}
-              placeholder="A line about it, if you like"
+              placeholder="Add a note"
               placeholderTextColor="rgba(255,255,255,0.55)"
               maxLength={500}
               multiline

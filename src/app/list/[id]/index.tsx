@@ -134,7 +134,7 @@ export default function ListScreen() {
           {pubs.isSuccess && pubs.data.length === 0 ? (
             <Card>
               <View className="p-5">
-                <Body>{isCreator ? 'Empty so far. Add some pubs, then long press one to say why.' : 'Nothing on it yet.'}</Body>
+                <Body>{isCreator ? 'No pubs yet. Add some, then long press one to add a line.' : 'Nothing on it yet.'}</Body>
               </View>
             </Card>
           ) : null}

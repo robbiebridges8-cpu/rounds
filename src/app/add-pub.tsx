@@ -60,7 +60,7 @@ export default function AddPubSheet() {
         <Text className="text-ink text-[17px] font-bold">Add a pub</Text>
         <View style={{ width: 52 }} />
       </View>
-      <Body>Search first, most pubs are already here. If it really is missing, add it from inside it.</Body>
+      <Body>Most pubs are already here, so search first. To add one, stand in it.</Body>
       <Field label="Name" value={name} onChangeText={setName} error={error} placeholder="The Crown" autoFocus maxLength={120} />
       <Field label="Address" value={address} onChangeText={setAddress} placeholder="Optional. Street and postcode." maxLength={200} />
       <View className="flex-row items-center gap-2 rounded-md bg-surface px-4 py-3">

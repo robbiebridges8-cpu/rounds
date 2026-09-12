@@ -18,7 +18,7 @@ export default function ExploreScreen() {
     const go = (which: 'list' | 'quest') => router.push(which === 'list' ? '/list/new' : '/challenge/new');
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
-        { options: ['Cancel', 'New list', 'New quest'], cancelButtonIndex: 0, message: 'A list is your taste. A quest has a finish line and a badge.' },
+        { options: ['Cancel', 'New list', 'New quest'], cancelButtonIndex: 0, message: 'Lists are pubs you rate. Quests have a finish line.' },
         (i) => {
           if (i === 1) go('list');
           if (i === 2) go('quest');
@@ -91,7 +91,7 @@ export default function ExploreScreen() {
           ) : lists.isSuccess ? (
             <Card>
               <View className="gap-3 p-5">
-                <Body>Nobody has made a list yet. Best pubs with a garden. Every pub on the Regent&apos;s Canal. Ones your dad would like. Make the first.</Body>
+                <Body>No lists yet. Make the first.</Body>
                 <Button label="Make a list" icon="plus" onPress={() => router.push('/list/new')} />
               </View>
             </Card>

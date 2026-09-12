@@ -11,7 +11,7 @@ export default function SettingsScreen() {
   const isAdmin = useIsAdmin();
 
   const confirmSignOut = () =>
-    Alert.alert('Sign out?', 'Your check-ins stay put.', [
+    Alert.alert('Sign out?', undefined, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Sign out', style: 'destructive', onPress: () => void signOut() },
     ]);
@@ -41,7 +41,7 @@ export default function SettingsScreen() {
         <View>
           <SectionTitle>About</SectionTitle>
           <Card>
-            <ListRow title="Tell us" subtitle="Broken, confusing, or an idea. A human reads every one." onPress={() => router.push({ pathname: '/feedback', params: { from: 'settings' } })} />
+            <ListRow title="Tell us" subtitle="Bugs, ideas, anything you would change" onPress={() => router.push({ pathname: '/feedback', params: { from: 'settings' } })} />
             <ListRow title="Privacy policy" onPress={() => router.push('/privacy')} last />
           </Card>
         </View>
@@ -61,7 +61,7 @@ export default function SettingsScreen() {
           <Card>
             <ListRow title="Signed in as" subtitle={profile ? `@${profile.username}` : ''} chevron={false} />
             <ListRow title="Sign out" onPress={confirmSignOut} chevron={false} />
-            <ListRow title="Delete account" subtitle="Permanent. Apple insists we offer it, and so do we." onPress={confirmDelete} chevron={false} last />
+            <ListRow title="Delete account" subtitle="Permanent" onPress={confirmDelete} chevron={false} last />
           </Card>
         </View>
       </ScrollView>

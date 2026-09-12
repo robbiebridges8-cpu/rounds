@@ -35,7 +35,7 @@ export function WeekCard({ summary, myId }: { summary: WeeklySummary | null; myI
           <Text className="mt-1 text-[15px] leading-5" style={{ color: 'rgba(255,255,255,0.85)' }}>
             {summary.new_pub_count > 0
               ? `${summary.new_pub_count} ${summary.new_pub_count === 1 ? 'pub' : 'pubs'} nobody had been to before.`
-              : 'All old favourites. No new ground.'}
+              : 'No new pubs this week.'}
           </Text>
 
           <View className="mt-4 gap-2">

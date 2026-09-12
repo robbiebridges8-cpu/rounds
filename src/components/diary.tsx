@@ -15,7 +15,7 @@ export function Diary({ checkins, me }: { checkins: UserCheckin[]; me: boolean }
   if (checkins.length === 0) {
     return (
       <Card>
-        <EmptyState icon="book.closed" title="Nothing in the diary" body={me ? 'Every check-in lands here, by month.' : undefined} />
+        <EmptyState icon="book.closed" title="Nothing in the diary" />
       </Card>
     );
   }
