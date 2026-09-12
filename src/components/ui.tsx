@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, fonts } from '@/theme';
+import { APP_NAME } from '@/lib/brand';
 
 export function Screen({ children }: { children: ReactNode }) {
   return (
@@ -66,7 +67,7 @@ export function Wordmark({ size = 22, color }: { size?: number; color?: string }
     <Text
       style={{ fontFamily: fonts.display, fontSize: size, color: color ?? colors.ink, letterSpacing: -size * 0.04 }}
       allowFontScaling={false}>
-      rounds
+      {APP_NAME.toLowerCase()}
     </Text>
   );
 }

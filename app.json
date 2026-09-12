@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Rounds",
+    "name": "Pub'd",
     "slug": "rounds",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -52,14 +52,14 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Rounds needs your photos so you can add pictures to a pub you have been to.",
-          "cameraPermission": "Rounds uses the camera so you can take a photo while you are in the pub."
+          "photosPermission": "Pub'd needs your photos so you can add pictures to a pub you have been to.",
+          "cameraPermission": "Pub'd uses the camera so you can take a photo while you are in the pub."
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Rounds uses your location to show the pubs near you and to confirm you are at the one you check in to."
+          "locationWhenInUsePermission": "Pub'd uses your location to show the pubs near you and to confirm you are at the one you check in to."
         }
       ],
       "expo-sharing",
@@ -67,7 +67,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Rounds uses the camera so a check-in starts with a photo of where you are."
+          "cameraPermission": "Pub'd uses the camera so a check-in starts with a photo of where you are."
         }
       ],
       [

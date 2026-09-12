@@ -1,6 +1,6 @@
-# Rounds
+# Pub'd
 
-A pub check-in app for London. Log the pubs you go to, turn boroughs blue, see where your mates have been.
+A pub check-in app for London. Called Rounds until 12 September 2026; the repo, the EAS project, the bundle id and the URL scheme keep `rounds`. Log the pubs you go to, turn boroughs blue, see where your mates have been.
 
 This file is the map of what exists as of 9 September 2026. The reasoning behind each choice is in [DECISIONS.md](DECISIONS.md); data licensing in [LICENSING.md](LICENSING.md); the privacy policy in [PRIVACY.md](PRIVACY.md).
 

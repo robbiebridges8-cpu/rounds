@@ -7,6 +7,7 @@ import { formatDistance, plural } from '@/lib/format';
 import { getPosition, type Coords } from '@/lib/location';
 import { useNearbyPubs, type NearbyPub } from '@/lib/pubs';
 import { colors } from '@/theme';
+import { APP_NAME } from '@/lib/brand';
 
 export default function NearbyScreen() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function NearbyScreen() {
         <EmptyState
           icon="location.slash"
           title="Location is off"
-          body="Allow location for Rounds in Settings to see what is within walking distance."
+          body={`Allow location for ${APP_NAME} in Settings to see what is within walking distance.`}
         />
       ) : null}
 

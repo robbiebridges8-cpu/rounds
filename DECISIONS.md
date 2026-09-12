@@ -435,3 +435,13 @@ been, the same glass rimmed coral where a mate has, and an empty grey glass
 where nobody you know has. The beer is one fixed gold on every theme, because
 beer is that colour. The toggle and the dot are gone, as is the prefs store
 that only existed for the toggle.
+
+## The name: Pub'd
+
+Rounds was taken on the App Store. Pub'd won over Pubd because it reads as a
+word, "we got pub'd", and Pubd searches like a typo of PUBG. Apple allows the
+apostrophe in the store name and under the icon. Anywhere an apostrophe
+cannot go, a domain, a handle, the URL scheme, it is `pubd`. The name lives
+in one constant, `APP_NAME`, and the wordmark lowercases it. The repo, the
+EAS project slug and the bundle identifier stay `rounds`, because renaming
+those buys nothing and the bundle id cannot change anyway.

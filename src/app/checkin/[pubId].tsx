@@ -17,6 +17,7 @@ import { inviteLink, useInviteCode } from '@/lib/invites';
 import { offerWeeklyNudge } from '@/lib/notifications';
 import { useConfirmTags, usePub, usePubTagStats, usePubTags } from '@/lib/pubs';
 import { colors, fonts } from '@/theme';
+import { APP_NAME } from '@/lib/brand';
 
 const LABELS: Record<string, string> = {
   '0.5': 'Never again', '1': 'Grim', '1.5': 'Poor', '2': 'Meh', '2.5': 'Fine',
@@ -118,7 +119,7 @@ export default function CheckinScreen() {
     if (!(await SMS.isAvailableAsync())) return;
     await SMS.sendSMSAsync(
       [],
-      `${me.display_name} put you at ${pubName || 'the pub'} on Rounds, the pub map for you and your mates. Claim it: ${inviteLink(inviteCode.data)} (code ${inviteCode.data})`
+      `${me.display_name} put you at ${pubName || 'the pub'} on ${APP_NAME}, the pub map for you and your mates. Claim it: ${inviteLink(inviteCode.data)} (code ${inviteCode.data})`
     );
   };
 
@@ -163,7 +164,7 @@ export default function CheckinScreen() {
             <Icon name="camera.fill" size={40} color="#fff" weight="regular" />
             <Text className="text-center text-[17px] font-bold text-white">A check-in starts with a photo</Text>
             <Text className="text-center text-[14px] text-white" style={{ opacity: 0.75 }}>
-              {permission?.canAskAgain === false ? 'Camera is off for Rounds. Allow it in Settings, or skip the photo.' : 'Allow the camera, or skip the photo.'}
+              {permission?.canAskAgain === false ? `Camera is off for ${APP_NAME}. Allow it in Settings, or skip the photo.` : 'Allow the camera, or skip the photo.'}
             </Text>
             {permission?.canAskAgain !== false ? (
               <Pressable onPress={() => void requestPermission()} className="h-12 items-center justify-center rounded-full bg-white px-6">
@@ -260,7 +261,7 @@ export default function CheckinScreen() {
               <TextInput
                 value={guestName}
                 onChangeText={setGuestName}
-                placeholder="Someone not on Rounds"
+                placeholder={`Someone not on ${APP_NAME}`}
                 placeholderTextColor="rgba(255,255,255,0.55)"
                 returnKeyType="done"
                 onSubmitEditing={addGuest}

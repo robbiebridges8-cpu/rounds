@@ -4,6 +4,7 @@ import * as Linking from 'expo-linking';
 import { Share } from 'react-native';
 
 import { supabase } from '@/lib/supabase';
+import { APP_NAME } from '@/lib/brand';
 
 const PENDING_KEY = 'rounds.pending-invite';
 
@@ -32,7 +33,7 @@ export function inviteLink(code: string): string {
 export async function shareInvite(code: string, displayName: string) {
   const link = inviteLink(code);
   await Share.share({
-    message: `${displayName} wants you on Rounds, the pub map for you and your mates.\n\nTap ${link} or open the app and enter code ${code}.`,
+    message: `${displayName} wants you on ${APP_NAME}, the pub map for you and your mates.\n\nTap ${link} or open the app and enter code ${code}.`,
   });
 }
 

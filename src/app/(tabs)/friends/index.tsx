@@ -18,6 +18,7 @@ import { useAcceptFriend, useFriendships, useRemoveFriend, useRequestFriend } fr
 import { shareInvite, useAcceptInvite, useInviteCode } from '@/lib/invites';
 import { useLeaderboard } from '@/lib/social';
 import { colors } from '@/theme';
+import { APP_NAME } from '@/lib/brand';
 
 export default function FriendsScreen() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function FriendsScreen() {
           row.status === 'accepted' ? 'You are now friends' : 'Request sent',
           row.status === 'accepted'
             ? 'They had already asked you, so that is settled.'
-            : 'They will see it the next time they open Rounds.'
+            : `They will see it the next time they open ${APP_NAME}.`
         );
       },
       onError: (error) => Alert.alert('Could not add friend', error.message),
@@ -89,7 +90,7 @@ export default function FriendsScreen() {
       (index) => {
         if (index === 1) invite();
         if (index === 2) prompt('Enter a code', 'The eight characters from their invite.', enterCode);
-        if (index === 3) prompt('Add by username', 'Their Rounds username.', addByUsername);
+        if (index === 3) prompt('Add by username', `Their ${APP_NAME} username.`, addByUsername);
       }
     );
   };
