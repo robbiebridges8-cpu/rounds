@@ -101,7 +101,7 @@ export function useCreateCheckin() {
         ['user-pubs'],
         ['user-checkins'],
         ['feed'],
-        ['challenges'],
+        ['badges'],
         ['leaderboard'],
         ['my-week'],
         ['my-month'],

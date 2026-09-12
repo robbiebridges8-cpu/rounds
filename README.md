@@ -58,7 +58,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `(auth)/first-pubs` | Tick the pubs you already know, from nearby or search, so the map is never empty |
 | `(tabs)/index` | Apple Maps. Search bar, chips for All / Been / Mates / Not yet, a pint glass per pub (full of beer where you have been, coral-rimmed where a mate has, empty where nobody you know has), a butter card with photos and Check in when you tap one. At city zoom only pubs with any check-ins show |
 | `(tabs)/feed` | The week card, a personal "you this week" line, an overtake card if a mate passed you, then posts as cards with cheers and reply |
-| `(tabs)/challenges` | Explore: Yours first (lists you made or follow, quests you saved), then everyone's lists and quests. Cards say how many pubs you have been to |
+| `(tabs)/challenges` | Explore: lists. Yours first (made or saved), then everyone's. Every card shows your progress; crawls carry a Crawl label |
 | `(tabs)/friends` | Leaderboard with a metric picker (boroughs, pubs, this month, badges), requests, friends, invite |
 | `(tabs)/you` | The poster: the fill-in map on the white ground, cobalt where you have been, your borough count, stats strip, Overview / Pubs / Diary tabs, share and invite |
 | `pub/[id]` | Hero photo with the name over it, rating and who's-been pills, Check in, add to a list, tag votes, lists it is on, visits |
@@ -70,8 +70,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `nearby` | Pubs within 1.5 km by walking distance |
 | `search` | Full-screen name search, with "add a missing pub" when nothing matches |
 | `add-pub` | Add a pub the import missed, placed at your location |
-| `list/[id]`, `list/new`, `list/[id]/add` | A list, creating one (which opens Add pubs straight away), adding pubs. Been pubs read solid, the rest grey; Show on map hands the set to the map |
-| `challenge/[id]`, `challenge/new`, `challenge/[id]/add` | A quest, creating one (which opens Add pubs straight away), adding pubs. Progress shows for everyone; Save pins it to your Explore and earns the badge on completion; Show on map |
+| `list/[id]`, `list/new`, `list/[id]/add` | A list or a crawl: progress, Save (which is what earns the badge on finishing), Share, Show on map, Add pubs. A crawl numbers its stops and shows the walk between them. Creating one opens Add pubs straight away |
 | `inbox` | Notifications: cheers, replies, tags, the Sunday digest |
 | `invite/[code]` | Deep link target. Accepts the invite if signed in, otherwise remembers it through sign-up |
 | `settings` | Tell us (feedback), privacy policy, admin inbox and numbers if you are an admin, sign out, delete account |
@@ -104,9 +103,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 **Digests.** A week card on the feed, a personal weekly line, an on-device overtake card, a monthly recap you can share, and a Sunday notification.
 
-**Quests.** Anyone creates one with a name, icon and colour, and curates its pubs. Anyone joins. Completion is derived from check-ins by trigger and earns a badge on the profile. Seeded with "Every Wetherspoons in London" (104 pubs) and "London classics" (37).
-
-**Lists.** Anyone publishes a list of pubs with a line on each. Anyone follows. A pub page says how many lists it is on.
+**Lists.** One object for taste and for goals. Anyone makes one, adds pubs, and a line on each. Every list shows how many of its pubs you have been to. Save a list and finishing it earns its badge, derived from check-ins by trigger. A crawl is a list with an order: numbered stops, the walk between them, and a Share button that sends the link. Seeded with "Every Wetherspoons in London" (104 pubs) and "London classics" (37), which used to be quests.
 
 **Share cards.** A 1080 px square of your borough map, or last month's recap, rendered off-screen and handed to the share sheet with your invite code on it.
 
@@ -118,9 +115,9 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 ## Database
 
-Twenty migrations. The schema in one paragraph: `profiles` and `friendships` (one row per pair, `are_friends()` is the single visibility rule); `pubs_osm` (the OpenStreetMap import, ODbL, never edited) and `pubs` (our record, with a PostGIS geography column); `checkins`, `checkin_photos`, `checkin_tags`, `checkin_guests`; `cheers` and `checkin_comments`; `pub_tags`, `pub_tag_votes` and `pub_tag_stats`; `pub_photos` (one seeded front photo per pub, with its credit); `pub_stats` (public aggregates kept by trigger); `invite_codes`; `challenges`, `challenge_pubs`, `challenge_members`; `lists`, `list_pubs`, `list_follows`; `notifications` and `push_tokens`; `pub_corrections` and `reports`; `admins` and `app_config`; `feedback`.
+Twenty-two migrations. The schema in one paragraph: `profiles` and `friendships` (one row per pair, `are_friends()` is the single visibility rule); `pubs_osm` (the OpenStreetMap import, ODbL, never edited) and `pubs` (our record, with a PostGIS geography column); `checkins`, `checkin_photos`, `checkin_tags`, `checkin_guests`; `cheers` and `checkin_comments`; `pub_tags`, `pub_tag_votes` and `pub_tag_stats`; `pub_photos` (one seeded front photo per pub, with its credit); `pub_stats` (public aggregates kept by trigger); `invite_codes`; `lists` (with kind, list or crawl), `list_pubs`, `list_follows`, `list_completions`; `notifications` and `push_tokens`; `pub_corrections` and `reports`; `admins` and `app_config`; `feedback`.
 
-Query functions the app calls: `map_pubs`, `nearby_pubs`, `user_pub_map`, `user_stats`, `friends_leaderboard`, `weekly_summary`, `my_week`, `my_month`, `challenge_list`, `challenge_pub_status`, `user_badges`, `list_index`, `list_pub_status`, `pub_lists`, `accept_invite`, `request_friendship`, `admin_stats`, `delete_my_account`.
+Query functions the app calls: `map_pubs`, `nearby_pubs`, `user_pub_map`, `user_stats`, `friends_leaderboard`, `weekly_summary`, `my_week`, `my_month`, `user_badges`, `list_index`, `list_pub_status`, `pub_lists`, `accept_invite`, `request_friendship`, `admin_stats`, `delete_my_account`.
 
 3,593 pubs are loaded, 3,143 of them inside a borough. 2,886 have a front photo from Wikimedia Commons, seeded 11 September 2026.
 

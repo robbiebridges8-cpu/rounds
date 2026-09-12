@@ -1,14 +1,16 @@
 import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Body, Button, Field } from '@/components/ui';
-import { useCreateList } from '@/lib/lists';
+import { useCreateList, type ListKind } from '@/lib/lists';
 
 export default function NewListSheet() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ kind?: string }>();
   const create = useCreateList();
+  const [kind, setKind] = useState<ListKind>(params.kind === 'crawl' ? 'crawl' : 'list');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +22,7 @@ export default function NewListSheet() {
     }
     setError(null);
     create.mutate(
-      { title, description },
+      { title, description, kind },
       {
         onSuccess: (list) => {
           void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -38,11 +40,26 @@ export default function NewListSheet() {
         <Pressable onPress={() => router.back()} hitSlop={8} accessibilityRole="button">
           <Text className="text-ink text-[17px] font-semibold">Cancel</Text>
         </Pressable>
-        <Text className="text-ink text-[17px] font-bold">New list</Text>
+        <Text className="text-ink text-[17px] font-bold">{kind === 'crawl' ? 'New crawl' : 'New list'}</Text>
         <View style={{ width: 52 }} />
       </View>
-      <Body>Name it, add pubs, then a line on each.</Body>
-      <Field label="Name" value={title} onChangeText={setTitle} error={error} placeholder="Best gardens south of the river" maxLength={60} autoFocus />
+      <View className="flex-row gap-2">
+        {(
+          [
+            ['list', 'List'],
+            ['crawl', 'Crawl'],
+          ] as [ListKind, string][]
+        ).map(([key, label]) => {
+          const on = kind === key;
+          return (
+            <Pressable key={key} onPress={() => setKind(key)} accessibilityRole="radio" accessibilityState={{ selected: on }} className={`h-10 flex-1 items-center justify-center rounded-full ${on ? 'bg-ink' : 'bg-surface'}`}>
+              <Text className={`text-[14px] font-bold ${on ? 'text-canvas' : 'text-ink'}`}>{label}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Body>{kind === 'crawl' ? 'Pubs in order, with the walk between them. Share it and everyone can follow along.' : 'Name it, add pubs, then a line on each.'}</Body>
+      <Field label="Name" value={title} onChangeText={setTitle} error={error} placeholder={kind === 'crawl' ? 'Friday in Soho' : 'Best gardens south of the river'} maxLength={60} autoFocus />
       <Field label="What it is" value={description} onChangeText={setDescription} placeholder="Optional. One or two lines." maxLength={280} multiline />
       <Button label="Create" onPress={save} loading={create.isPending} />
     </ScrollView>

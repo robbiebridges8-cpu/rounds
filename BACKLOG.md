@@ -24,7 +24,7 @@ Last updated 11 September 2026. See README.md for what exists.
 | 7 | Friday 6pm nudge: "Where are you tonight?" with the nearest pub one tap away | Medium | High | Small | One well-timed prompt a week is the closest thing to BeReal's mechanic |
 | 8 | Onboarding ends with mates, not pubs: ask for three phone numbers and text them the invite | Medium | High | Medium | Zero friends is the empty state that kills social apps. Skippable but asked |
 | 9 | Share card carries a QR code that opens the app or the App Store | Medium | High | Small | Every story post becomes a door once the store listing exists |
-| 10 | Pub crawls: a route, a night, a group; who made it to which stop; a recap card | Medium | High | Large | One crawl brings in a whole group at once. The biggest growth mechanic on the list |
+| 10 | Crawl recap card and a web preview page for a shared crawl link | Medium | High | Medium | Crawls exist since 12 September as ordered, shareable lists. A page that opens without the app is the next growth step |
 | 11 | Live layer on the map: mates' avatars on the pub they checked into in the last three hours, a strip of who is out | Medium | High | Medium | A reason to open the app at 8pm rather than the morning after |
 | 12 | Prompt for a photo at check-in when a pub has no user photo yet | Medium | Medium | Small | Front photos from Commons cover most pubs now; this fills the rest and freshens the ones that are dated |
 | 13 | Boroughs as a finishable game: progress bar everyone sees, "London Complete" badge, a real reward | Medium | Medium | Medium | Thirty-three is finishable, and the race to finish first is a year of engagement |

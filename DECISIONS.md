@@ -445,3 +445,13 @@ cannot go, a domain, a handle, the URL scheme, it is `pubd`. The name lives
 in one constant, `APP_NAME`, and the wordmark lowercases it. The repo, the
 EAS project slug and the bundle identifier stay `rounds`, because renaming
 those buys nothing and the bundle id cannot change anyway.
+
+## Quests are lists now, and a crawl is a list with an order
+
+Two objects that were nearly the same thing. On 12 September they became one:
+a list shows your progress whether or not you saved it, and finishing a list
+you have saved earns its badge, which is all a quest ever was. The two seeded
+quests moved over with everyone's progress. A crawl is a list whose pubs are
+numbered stops, with the walking time between them and a Share button. No
+going or maybe, no arrivals, no time window, no voting: the route and the
+link. The quest tables, screens and the icon picker are gone.

@@ -45,8 +45,8 @@ Last updated 11 September 2026.
 ## Game
 - [x] 33 boroughs filling in as you check in
 - [x] Leaderboard by boroughs, pubs, this month, badges
-- [x] Quests with progress and badges; two seeded
-- [x] Lists: make, follow, one line per pub, shown on pub pages
+- [x] Lists: make, save, progress on every one, a badge for finishing a saved one; two seeded
+- [x] Crawls: a list with numbered stops, the walk between them, and a share link
 - [x] Weekly summary card, personal week line, overtake card
 - [x] Local Sunday notification
 

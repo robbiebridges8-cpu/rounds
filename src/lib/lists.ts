@@ -1,11 +1,44 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { supabase } from '@/lib/supabase';
+import { colors } from '@/theme';
 import type { FnReturns } from '@/types/database';
 
 export type ListSummary = FnReturns<'list_index'>[number];
 export type ListPub = FnReturns<'list_pub_status'>[number];
 export type PubList = FnReturns<'pub_lists'>[number];
+export type Badge = FnReturns<'user_badges'>[number];
+export type ListKind = 'list' | 'crawl';
+
+const LIST_COLORS: Record<string, string> = { ale: colors.ale, gold: '#E8A400', mate: '#1DB874', stout: colors.stout, danger: colors.danger };
+export const listColor = (key: string) => LIST_COLORS[key] ?? colors.ale;
+
+/** Straight-line distance in metres. */
+export function metresBetween(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const r = 6371000;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * r * Math.asin(Math.sqrt(h));
+}
+
+/** Walking minutes between two pubs: streets are not straight, so a third more than the crow. */
+export function walkMinutes(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  return Math.max(1, Math.round((metresBetween(a, b) * 1.3) / 80));
+}
+
+export function useBadges(userId: string | undefined) {
+  return useQuery({
+    queryKey: ['badges', userId],
+    enabled: Boolean(userId),
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('user_badges', { target: userId! });
+      if (error) throw error;
+      return data;
+    },
+  });
+}
 
 export function useLists() {
   return useQuery({
@@ -62,10 +95,10 @@ async function me() {
 export function useCreateList() {
   const invalidate = useInvalidateLists();
   return useMutation({
-    mutationFn: async (input: { title: string; description: string }) => {
+    mutationFn: async (input: { title: string; description: string; kind: ListKind }) => {
       const { data, error } = await supabase
         .from('lists')
-        .insert({ title: input.title.trim(), description: input.description.trim() || null, creator_id: await me() })
+        .insert({ title: input.title.trim(), description: input.description.trim() || null, creator_id: await me(), kind: input.kind, icon: input.kind === 'crawl' ? 'figure.walk' : 'list.bullet' })
         .select()
         .single();
       if (error) throw error;

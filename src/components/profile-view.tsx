@@ -5,13 +5,13 @@ import { Alert, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BOROUGH_TOTAL, BoroughMap } from '@/components/borough-map';
-import { BadgeRow } from '@/components/challenge-card';
+import { BadgeRow } from '@/components/list-badges';
 import { Diary } from '@/components/diary';
 import { ShareCard, shareCard } from '@/components/share-card';
 import { Avatar, Button, Card, EmptyState, Icon, ListRow, SectionTitle, Stars } from '@/components/ui';
 import { WeeklyBars } from '@/components/weekly-bars';
 import type { Profile } from '@/lib/auth';
-import { useBadges } from '@/lib/challenges';
+import { useBadges } from '@/lib/lists';
 import { photoUrl, useUserCheckins, useUserPubs, useUserStats } from '@/lib/checkins';
 import { plural } from '@/lib/format';
 import { useFrontPhotos } from '@/lib/pubs';

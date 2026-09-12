@@ -29,93 +29,6 @@ export type Database = {
         Relationships: [
         ];
       };
-      challenge_members: {
-        Row: { challenge_id: string; completed_at: string | null; joined_at: string; user_id: string };
-        Insert: { challenge_id: string; completed_at?: string | null; joined_at?: string; user_id: string };
-        Update: { challenge_id?: string; completed_at?: string | null; joined_at?: string; user_id?: string };
-        Relationships: [
-          {
-            foreignKeyName: 'challenge_members_challenge_id_fkey';
-            columns: ['challenge_id'];
-            isOneToOne: false;
-            referencedRelation: 'challenges';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'challenge_members_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      challenge_pubs: {
-        Row: { added_by: string | null; challenge_id: string; created_at: string; pub_id: string };
-        Insert: { added_by?: string | null; challenge_id: string; created_at?: string; pub_id: string };
-        Update: { added_by?: string | null; challenge_id?: string; created_at?: string; pub_id?: string };
-        Relationships: [
-          {
-            foreignKeyName: 'challenge_pubs_added_by_fkey';
-            columns: ['added_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'challenge_pubs_challenge_id_fkey';
-            columns: ['challenge_id'];
-            isOneToOne: false;
-            referencedRelation: 'challenges';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'challenge_pubs_pub_id_fkey';
-            columns: ['pub_id'];
-            isOneToOne: false;
-            referencedRelation: 'pubs';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      challenges: {
-        Row: {
-          color: string;
-          created_at: string;
-          creator_id: string | null;
-          description: string | null;
-          icon: string;
-          id: string;
-          title: string;
-        };
-        Insert: {
-          color?: string;
-          created_at?: string;
-          creator_id?: string | null;
-          description?: string | null;
-          icon?: string;
-          id?: string;
-          title: string;
-        };
-        Update: {
-          color?: string;
-          created_at?: string;
-          creator_id?: string | null;
-          description?: string | null;
-          icon?: string;
-          id?: string;
-          title?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'challenges_creator_id_fkey';
-            columns: ['creator_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
       checkin_comments: {
         Row: { body: string; checkin_id: string; created_at: string; id: string; user_id: string };
         Insert: { body: string; checkin_id: string; created_at?: string; id?: string; user_id: string };
@@ -420,6 +333,27 @@ export type Database = {
           },
         ];
       };
+      list_completions: {
+        Row: { completed_at: string; list_id: string; user_id: string };
+        Insert: { completed_at?: string; list_id: string; user_id: string };
+        Update: { completed_at?: string; list_id?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'list_completions_list_id_fkey';
+            columns: ['list_id'];
+            isOneToOne: false;
+            referencedRelation: 'lists';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'list_completions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       list_follows: {
         Row: { created_at: string; list_id: string; user_id: string };
         Insert: { created_at?: string; list_id: string; user_id: string };
@@ -439,9 +373,9 @@ export type Database = {
         ];
       };
       lists: {
-        Row: { created_at: string; creator_id: string | null; description: string | null; id: string; title: string };
-        Insert: { created_at?: string; creator_id?: string | null; description?: string | null; id?: string; title: string };
-        Update: { created_at?: string; creator_id?: string | null; description?: string | null; id?: string; title?: string };
+        Row: { color: string; created_at: string; creator_id: string | null; description: string | null; icon: string; id: string; kind: string; title: string };
+        Insert: { color?: string; created_at?: string; creator_id?: string | null; description?: string | null; icon?: string; id?: string; kind?: string; title: string };
+        Update: { color?: string; created_at?: string; creator_id?: string | null; description?: string | null; icon?: string; id?: string; kind?: string; title?: string };
         Relationships: [
           { foreignKeyName: 'lists_creator_id_fkey'; columns: ['creator_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] },
         ];
@@ -919,36 +853,6 @@ export type Database = {
       };
       admin_stats: { Args: never; Returns: Json };
       are_friends: { Args: { a: string; b: string }; Returns: boolean };
-      challenge_list: {
-        Args: never;
-        Returns: {
-          color: string;
-          completed_at: string;
-          created_at: string;
-          creator_id: string;
-          creator_name: string;
-          description: string;
-          done_count: number;
-          icon: string;
-          id: string;
-          joined: boolean;
-          member_count: number;
-          pub_count: number;
-          title: string;
-        }[];
-      };
-      challenge_pub_status: {
-        Args: { challenge: string };
-        Returns: {
-          borough: string;
-          done: boolean;
-          friends_done: number;
-          lat: number;
-          lng: number;
-          name: string;
-          pub_id: string;
-        }[];
-      };
       delete_my_account: { Args: never; Returns: undefined };
       friends_leaderboard: {
         Args: never;
@@ -970,13 +874,17 @@ export type Database = {
       list_index: {
         Args: never;
         Returns: {
+          color: string;
+          completed_at: string;
           created_at: string;
           creator_id: string;
           creator_name: string;
           description: string;
           follower_count: number;
           following: boolean;
+          icon: string;
           id: string;
+          kind: string;
           been_count: number;
           pub_count: number;
           sample: string[];
@@ -1069,7 +977,7 @@ export type Database = {
         Returns: { creator_name: string; follower_count: number; id: string; note: string; title: string }[];
       };
       pub_rating_histogram: { Args: { pub: string }; Returns: { n: number; star: number }[] };
-      refresh_challenge_completion: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
+      refresh_list_completion: { Args: { p_list: string; p_user: string }; Returns: undefined };
       refresh_pub_stats: { Args: { p: string }; Returns: undefined };
       request_friendship: {
         Args: { target_username: string };
@@ -1087,7 +995,7 @@ export type Database = {
       user_badges: {
         Args: { target: string };
         Returns: {
-          challenge_id: string;
+          list_id: string;
           color: string;
           completed_at: string;
           icon: string;
