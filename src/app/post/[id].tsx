@@ -67,9 +67,14 @@ export default function PostScreen() {
           title: data.pubs?.name ?? 'Check-in',
           headerRight: mine
             ? () => (
-                <Pressable onPress={confirmDelete} hitSlop={8} accessibilityRole="button" accessibilityLabel="Delete check-in">
-                  <Icon name="trash" size={19} color={colors.danger} />
-                </Pressable>
+                <View className="flex-row items-center gap-5">
+                  <Pressable onPress={() => router.push({ pathname: '/checkin/edit/[id]', params: { id: data.id } })} hitSlop={8} accessibilityRole="button" accessibilityLabel="Edit check-in">
+                    <Icon name="pencil" size={19} color={colors.ink} />
+                  </Pressable>
+                  <Pressable onPress={confirmDelete} hitSlop={8} accessibilityRole="button" accessibilityLabel="Delete check-in">
+                    <Icon name="trash" size={19} color={colors.danger} />
+                  </Pressable>
+                </View>
               )
             : undefined,
         }}

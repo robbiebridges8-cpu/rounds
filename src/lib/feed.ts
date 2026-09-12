@@ -151,6 +151,20 @@ export function useDeleteCheckin() {
   });
 }
 
+/** Change the stars or the note on your own check-in. Everything else stays. */
+export function useUpdateCheckin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, rating, note }: { id: string; rating: number | null; note: string | null }) => {
+      const { error } = await supabase.from('checkins').update({ rating, note }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries();
+    },
+  });
+}
+
 /** "You were here?" A tagged mate adds the visit to their own map. */
 export function useClaimVisit() {
   const queryClient = useQueryClient();

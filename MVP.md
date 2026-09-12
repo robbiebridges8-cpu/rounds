@@ -29,7 +29,7 @@ Last updated 11 September 2026.
 - [x] Optional amenity confirmation at check-in
 - [x] Geofence: verified within 150 m, otherwise counted and marked
 - [x] Tag mates on Rounds; text people who aren't
-- [x] Delete your own check-in
+- [x] Edit the stars or note on your own check-in, or delete it, from the diary or the post
 - [x] Add a visit to your map when a mate tagged you
 
 ## Social
