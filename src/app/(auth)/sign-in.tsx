@@ -2,7 +2,8 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
-import { Button, Field, Screen, Wordmark } from '@/components/ui';
+import { PintGlass } from '@/components/pint';
+import { Button, Field, Screen } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
 import { colors } from '@/theme';
 
@@ -68,7 +69,7 @@ export default function SignIn() {
         <View className="flex-1 justify-center gap-8">
           <View className="items-center gap-4">
             <View className="h-16 w-16 items-center justify-center rounded-full" style={{ backgroundColor: colors.ink }}>
-              <Wordmark size={18} color={colors.canvas} />
+              <PintGlass width={26} level={0.8} rim={colors.canvas} strokeWidth={1.4} />
             </View>
             <Text className="text-ink font-display text-[32px]" style={{ letterSpacing: -0.8 }}>
               Log in or sign up

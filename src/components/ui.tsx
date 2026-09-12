@@ -69,16 +69,19 @@ export function Display({ children, size = 44, color }: { children: ReactNode; s
  */
 export function Wordmark({ size = 22, color }: { size?: number; color?: string }) {
   const ink = color ?? colors.ink;
-  const glass = Math.max(6, size * 0.3);
+  // Unbounded's ascenders are tall: give the line room or the b loses its top.
+  const line = Math.round(size * 1.3);
+  const glass = Math.max(7, size * 0.3);
+  const text = { fontFamily: fonts.display, fontSize: size, lineHeight: line, color: ink, letterSpacing: -size * 0.05 } as const;
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'flex-start' }} accessibilityRole="header" accessibilityLabel={APP_NAME}>
-      <Text style={{ fontFamily: fonts.display, fontSize: size, lineHeight: size * 1.05, color: ink, letterSpacing: -size * 0.06 }} allowFontScaling={false}>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }} accessibilityRole="header" accessibilityLabel={APP_NAME}>
+      <Text style={text} allowFontScaling={false}>
         pub
       </Text>
-      <View style={{ width: glass, height: glass / 0.7, marginHorizontal: size * 0.035, marginTop: size * 0.02, transform: [{ rotate: '12deg' }] }}>
+      <View style={{ height: line, justifyContent: 'center', marginHorizontal: size * 0.04, transform: [{ translateY: -size * 0.16 }, { rotate: '12deg' }] }}>
         <PintGlass width={glass} level={0.75} rim={ink} strokeWidth={1.6} />
       </View>
-      <Text style={{ fontFamily: fonts.display, fontSize: size, lineHeight: size * 1.05, color: ink, letterSpacing: -size * 0.06 }} allowFontScaling={false}>
+      <Text style={text} allowFontScaling={false}>
         d
       </Text>
     </View>
