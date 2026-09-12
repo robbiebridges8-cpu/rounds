@@ -22,8 +22,9 @@ export type FeedPost = Tables<'checkins'> & {
   checkin_comments: Comment[];
 };
 
+// Likes make a second path from a check-in to profiles, so the author link is named.
 const SELECT =
-  '*, profiles(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles(*), comment_likes(user_id)), checkin_tags(*, profiles(*)), checkin_guests(*), checkin_likes(user_id)';
+  '*, profiles!checkins_user_id_fkey(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles!checkin_comments_user_id_fkey(*), comment_likes(user_id)), checkin_tags(*, profiles(*)), checkin_guests(*), checkin_likes(user_id)';
 const PAGE = 20;
 
 /**

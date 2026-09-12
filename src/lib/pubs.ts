@@ -156,7 +156,7 @@ export function usePubVisits(pubId: string | undefined) {
     queryFn: async (): Promise<Visit[]> => {
       const { data, error } = await supabase
         .from('checkins')
-        .select('*, profiles(*), checkin_photos(*)')
+        .select('*, profiles!checkins_user_id_fkey(*), checkin_photos(*)')
         .eq('pub_id', pubId!)
         .order('created_at', { ascending: false })
         .limit(50);
