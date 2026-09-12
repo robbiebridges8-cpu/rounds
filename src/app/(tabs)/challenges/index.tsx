@@ -6,12 +6,14 @@ import { Body, Button, Card, SectionTitle } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { useLists } from '@/lib/lists';
 import { colors } from '@/theme';
+import { usePull } from '@/lib/refresh';
 
 /** Lists. Some are crawls, with an order. Yours first. */
 export default function ExploreScreen() {
   const router = useRouter();
   const { session } = useSession();
   const lists = useLists();
+  const pull = usePull(() => Promise.all([lists.refetch()]));
   const me = session?.user.id;
   const mine = (lists.data ?? []).filter((l) => l.following || l.creator_id === me);
   const others = (lists.data ?? []).filter((l) => !(l.following || l.creator_id === me));
@@ -34,7 +36,7 @@ export default function ExploreScreen() {
         className="flex-1"
         contentInsetAdjustmentBehavior="automatic"
         contentContainerClassName="gap-6 px-4 pb-10 pt-2"
-        refreshControl={<RefreshControl refreshing={lists.isRefetching} onRefresh={() => void lists.refetch()} />}>
+        refreshControl={<RefreshControl refreshing={pull.refreshing} onRefresh={pull.onRefresh} />}>
         {lists.isPending ? (
           <View className="py-10">
             <ActivityIndicator color={colors.ale} />

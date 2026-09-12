@@ -6,6 +6,7 @@ import { Avatar, Card, EmptyState, Icon } from '@/components/ui';
 import { formatWhen } from '@/lib/format';
 import { useInbox, useMarkRead, type InboxItem } from '@/lib/inbox';
 import { colors } from '@/theme';
+import { usePull } from '@/lib/refresh';
 
 const KIND_ICON: Record<string, 'camera.fill' | 'bubble.right.fill' | 'person.fill' | 'calendar' | 'checkmark.seal.fill' | 'heart.fill'> = {
   cheers: 'camera.fill',
@@ -25,6 +26,7 @@ function destination(n: InboxItem): Href {
 export default function InboxScreen() {
   const router = useRouter();
   const inbox = useInbox();
+  const pull = usePull(() => Promise.all([inbox.refetch()]));
   const markRead = useMarkRead();
 
   // Opening the inbox reads everything. Simple, and how mail works.
@@ -40,7 +42,7 @@ export default function InboxScreen() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-4 pb-10 pt-2"
-        refreshControl={<RefreshControl refreshing={inbox.isRefetching} onRefresh={() => void inbox.refetch()} />}>
+        refreshControl={<RefreshControl refreshing={pull.refreshing} onRefresh={pull.onRefresh} />}>
         {inbox.isPending ? (
           <View className="py-10">
             <ActivityIndicator color={colors.ale} />

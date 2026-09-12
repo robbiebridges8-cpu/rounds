@@ -18,6 +18,7 @@ import { useFrontPhotos } from '@/lib/pubs';
 import { shareInvite, useInviteCode } from '@/lib/invites';
 import { useMyMonth } from '@/lib/social';
 import { colors, fonts } from '@/theme';
+import { usePull } from '@/lib/refresh';
 
 type Tab = 'overview' | 'pubs' | 'diary';
 
@@ -46,12 +47,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
 
   const visited = new Set((pubs.data ?? []).map((p) => p.borough).filter((b): b is string => Boolean(b)));
 
-  const refresh = () => {
-    void stats.refetch();
-    void pubs.refetch();
-    void checkins.refetch();
-    void badges.refetch();
-  };
+  const pull = usePull(() => Promise.all([stats.refetch(), pubs.refetch(), checkins.refetch(), badges.refetch()]));
 
   const share = async (which: 'map' | 'month') => {
     setSharing(which);
@@ -83,7 +79,7 @@ export function ProfileView({ profile, isMe }: { profile: Profile; isMe: boolean
         className="flex-1"
         contentInsetAdjustmentBehavior="never"
         contentContainerClassName="pb-10"
-        refreshControl={<RefreshControl refreshing={stats.isRefetching || pubs.isRefetching} onRefresh={refresh} tintColor={colors.ink} />}>
+        refreshControl={<RefreshControl refreshing={pull.refreshing} onRefresh={pull.onRefresh} tintColor={colors.ink} />}>
         {/* The poster */}
         <View style={{ height: heroHeight, backgroundColor: colors.canvas, overflow: 'hidden' }}>
           <View style={{ position: 'absolute', left: -width * 0.08, top: insets.top + 92 }}>

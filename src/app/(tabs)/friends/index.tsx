@@ -19,12 +19,14 @@ import { shareInvite, useAcceptInvite, useInviteCode } from '@/lib/invites';
 import { useLeaderboard } from '@/lib/social';
 import { colors } from '@/theme';
 import { APP_NAME } from '@/lib/brand';
+import { usePull } from '@/lib/refresh';
 
 export default function FriendsScreen() {
   const router = useRouter();
   const { data: me } = useProfile();
   const friendships = useFriendships();
   const leaderboard = useLeaderboard();
+  const pull = usePull(() => Promise.all([friendships.refetch(), leaderboard.refetch()]));
   const inviteCode = useInviteCode();
   const request = useRequestFriend();
   const acceptInvite = useAcceptInvite();
@@ -133,11 +135,8 @@ export default function FriendsScreen() {
         keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl
-            refreshing={friendships.isRefetching || leaderboard.isRefetching}
-            onRefresh={() => {
-              void friendships.refetch();
-              void leaderboard.refetch();
-            }}
+            refreshing={pull.refreshing}
+            onRefresh={pull.onRefresh}
           />
         }>
         <View>

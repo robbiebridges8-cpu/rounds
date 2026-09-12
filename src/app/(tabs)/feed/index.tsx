@@ -11,6 +11,7 @@ import { useFeed, useRemoveCheers, type FeedPost } from '@/lib/feed';
 import { useUnreadCount } from '@/lib/inbox';
 import { useLeaderboard, useMyWeek, useWeeklySummary, type MyWeek } from '@/lib/social';
 import { colors, fonts } from '@/theme';
+import { usePull } from '@/lib/refresh';
 
 export default function FeedScreen() {
   const router = useRouter();
@@ -42,12 +43,7 @@ export default function FeedScreen() {
     router.push({ pathname: '/cheers/[checkinId]', params: { checkinId: post.id } });
   };
 
-  const refresh = () => {
-    void feed.refetch();
-    void week.refetch();
-    void myWeek.refetch();
-    void leaderboard.refetch();
-  };
+  const pull = usePull(() => Promise.all([feed.refetch(), week.refetch(), myWeek.refetch(), leaderboard.refetch()]));
 
   return (
     <>
@@ -71,7 +67,7 @@ export default function FeedScreen() {
         keyExtractor={(post) => post.id}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerClassName="gap-4 px-4 pb-10 pt-2"
-        refreshControl={<RefreshControl refreshing={feed.isRefetching} onRefresh={refresh} />}
+        refreshControl={<RefreshControl refreshing={pull.refreshing} onRefresh={pull.onRefresh} />}
         onEndReachedThreshold={0.6}
         onEndReached={() => {
           if (feed.hasNextPage && !feed.isFetchingNextPage) void feed.fetchNextPage();

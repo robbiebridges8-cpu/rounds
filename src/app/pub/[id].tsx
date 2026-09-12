@@ -13,6 +13,7 @@ import { useAddListPubs, useLists, usePubLists } from '@/lib/lists';
 import { useMyTagVotes, usePub, usePubPhotos, usePubRatingHistogram, usePubTagStats, usePubTags, usePubVisits, useReportPub, useVoteTag, type CorrectionType } from '@/lib/pubs';
 import { openPhotos } from '@/lib/photo-viewer';
 import { colors, fonts } from '@/theme';
+import { usePull } from '@/lib/refresh';
 
 const CORRECTIONS: { label: string; type: CorrectionType }[] = [
   { label: 'It has closed down', type: 'closed' },
@@ -38,6 +39,7 @@ export default function PubScreen() {
   const visits = usePubVisits(id);
   const tags = usePubTags();
   const tagStats = usePubTagStats(id);
+  const pull = usePull(() => Promise.all([pub.refetch(), visits.refetch(), tagStats.refetch(), photos.refetch()]));
   const myVotes = useMyTagVotes(id);
   const vote = useVoteTag(id);
   const report = useReportPub(id);
@@ -130,7 +132,7 @@ export default function PubScreen() {
         className="flex-1"
         contentInsetAdjustmentBehavior="never"
         contentContainerClassName="pb-10"
-        refreshControl={<RefreshControl refreshing={visits.isRefetching} tintColor="#fff" onRefresh={() => { void pub.refetch(); void visits.refetch(); void tagStats.refetch(); void photos.refetch(); }} />}>
+        refreshControl={<RefreshControl refreshing={pull.refreshing} tintColor="#fff" onRefresh={pull.onRefresh} />}>
         {/* Hero */}
         <View style={{ height: heroHeight, backgroundColor: colors.you, overflow: 'hidden' }}>
           {hero ? (

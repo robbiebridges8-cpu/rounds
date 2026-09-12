@@ -8,6 +8,7 @@ import { useIsAdmin } from '@/lib/admin';
 import { feedbackShotUrl, useAdminCorrections, useAdminFeedback, useAdminReports, useSetStatus, type CorrectionRow, type FeedbackRow, type ReportRow } from '@/lib/feedback';
 import { formatWhen } from '@/lib/format';
 import { colors } from '@/theme';
+import { usePull } from '@/lib/refresh';
 
 type Tab = 'feedback' | 'corrections' | 'reports';
 
@@ -28,15 +29,10 @@ export default function AdminInboxScreen() {
   const corrections = useAdminCorrections(enabled);
   const reports = useAdminReports(enabled);
   const setStatus = useSetStatus();
+  const pull = usePull(() => Promise.all([feedback.refetch(), corrections.refetch(), reports.refetch()]));
 
   if (isAdmin.isSuccess && !isAdmin.data) return <EmptyState icon="lock" title="Admins only" />;
 
-  const refreshing = feedback.isRefetching || corrections.isRefetching || reports.isRefetching;
-  const refresh = () => {
-    void feedback.refetch();
-    void corrections.refetch();
-    void reports.refetch();
-  };
 
   const pending = {
     feedback: (feedback.data ?? []).filter((f) => f.status === 'new').length,
@@ -57,7 +53,7 @@ export default function AdminInboxScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Inbox' }} />
-      <ScrollView className="flex-1" contentContainerClassName="gap-4 px-4 pb-10 pt-2" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
+      <ScrollView className="flex-1" contentContainerClassName="gap-4 px-4 pb-10 pt-2" refreshControl={<RefreshControl refreshing={pull.refreshing} onRefresh={pull.onRefresh} />}>
         <View className="flex-row gap-2">
           {(
             [

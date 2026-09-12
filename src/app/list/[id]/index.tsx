@@ -10,6 +10,7 @@ import { APP_NAME } from '@/lib/brand';
 import { useSession } from '@/lib/auth';
 import { listColor, useDeleteList, useFollowList, useListPubs, useLists, useRemoveListPub, useSetListNote, walkMinutes } from '@/lib/lists';
 import { colors, fonts } from '@/theme';
+import { usePull } from '@/lib/refresh';
 
 export default function ListScreen() {
   const { id, add } = useLocalSearchParams<{ id: string; add?: string }>();
@@ -17,6 +18,7 @@ export default function ListScreen() {
   const { session } = useSession();
   const lists = useLists();
   const pubs = useListPubs(id);
+  const pull = usePull(() => Promise.all([pubs.refetch(), lists.refetch()]));
   const follow = useFollowList();
   const setNote = useSetListNote();
   const removePub = useRemoveListPub();
@@ -121,7 +123,7 @@ export default function ListScreen() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="gap-5 px-4 pb-10 pt-2"
-        refreshControl={<RefreshControl refreshing={pubs.isRefetching} onRefresh={() => { void pubs.refetch(); void lists.refetch(); }} />}>
+        refreshControl={<RefreshControl refreshing={pull.refreshing} onRefresh={pull.onRefresh} />}>
         <View className="gap-2">
           {isCrawl ? (
             <View className="self-start rounded-full px-2.5 py-1" style={{ backgroundColor: colors.butter }}>

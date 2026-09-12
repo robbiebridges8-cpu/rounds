@@ -6,6 +6,7 @@ import { Card, EmptyState, ListRow, SectionTitle } from '@/components/ui';
 import { useAdminStats, useIsAdmin } from '@/lib/admin';
 import { useAdminPending } from '@/lib/feedback';
 import { colors, fonts } from '@/theme';
+import { usePull } from '@/lib/refresh';
 
 /** The numbers you show an advertiser or a buyer. Admins only. */
 export default function AdminScreen() {
@@ -13,6 +14,7 @@ export default function AdminScreen() {
   const { width } = useWindowDimensions();
   const isAdmin = useIsAdmin();
   const stats = useAdminStats(Boolean(isAdmin.data));
+  const pull = usePull(() => Promise.all([stats.refetch()]));
   const pending = useAdminPending(Boolean(isAdmin.data));
   const s = stats.data;
 
@@ -26,7 +28,7 @@ export default function AdminScreen() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="gap-5 px-4 pb-10 pt-2"
-        refreshControl={<RefreshControl refreshing={stats.isRefetching} onRefresh={() => void stats.refetch()} />}>
+        refreshControl={<RefreshControl refreshing={pull.refreshing} onRefresh={pull.onRefresh} />}>
         <Card>
           <ListRow
             title="Inbox"
