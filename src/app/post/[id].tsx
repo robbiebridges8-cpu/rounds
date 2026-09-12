@@ -1,5 +1,4 @@
 import { Image } from 'expo-image';
-import * as Haptics from 'expo-haptics';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -7,8 +6,7 @@ import { PostCard } from '@/components/post-card';
 import { Button, EmptyState, Icon, SectionTitle } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
-import { useCheers, useClaimVisit, useDeleteCheckin, usePost, useRemoveCheers } from '@/lib/feed';
-import { pickImage } from '@/lib/images';
+import { useClaimVisit, useDeleteCheckin, usePost, useRemoveCheers } from '@/lib/feed';
 import { colors } from '@/theme';
 
 export default function PostScreen() {
@@ -17,7 +15,6 @@ export default function PostScreen() {
   const { session } = useSession();
   const me = session?.user.id;
   const post = usePost(id);
-  const cheers = useCheers();
   const removeCheers = useRemoveCheers();
   const deleteCheckin = useDeleteCheckin();
   const claimVisit = useClaimVisit();
@@ -41,7 +38,7 @@ export default function PostScreen() {
       { text: 'Delete', style: 'destructive', onPress: () => deleteCheckin.mutate(data.id, { onSuccess: () => router.back() }) },
     ]);
 
-  const sayCheers = async () => {
+  const sayCheers = () => {
     if (data.cheers.some((c) => c.user_id === me)) {
       Alert.alert('Take back your cheers?', undefined, [
         { text: 'Keep it', style: 'cancel' },
@@ -49,15 +46,7 @@ export default function PostScreen() {
       ]);
       return;
     }
-    const photo = await pickImage('camera');
-    if (!photo) return;
-    cheers.mutate(
-      { checkinId: data.id, photo },
-      {
-        onSuccess: () => void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
-        onError: (error) => Alert.alert('Cheers did not send', error.message),
-      }
-    );
+    router.push({ pathname: '/cheers/[checkinId]', params: { checkinId: data.id } });
   };
 
   return (

@@ -109,6 +109,7 @@ function RootNavigator() {
         }}
       />
       <Stack.Screen name="checkin/[pubId]" options={{ presentation: 'fullScreenModal', headerShown: false, animation: 'fade' }} />
+      <Stack.Screen name="cheers/[checkinId]" options={{ presentation: 'fullScreenModal', headerShown: false, animation: 'fade' }} />
       <Stack.Screen name="checkin/edit/[id]" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen
         name="nearby"

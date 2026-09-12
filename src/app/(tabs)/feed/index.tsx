@@ -1,4 +1,3 @@
-import * as Haptics from 'expo-haptics';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
@@ -8,8 +7,7 @@ import { Button, Card, EmptyState, Icon } from '@/components/ui';
 import { WeekCard } from '@/components/week-card';
 import { useSession } from '@/lib/auth';
 import { detectOvertakes, type Overtake } from '@/lib/digest';
-import { useCheers, useFeed, useRemoveCheers, type FeedPost } from '@/lib/feed';
-import { pickImage } from '@/lib/images';
+import { useFeed, useRemoveCheers, type FeedPost } from '@/lib/feed';
 import { useUnreadCount } from '@/lib/inbox';
 import { useLeaderboard, useMyWeek, useWeeklySummary, type MyWeek } from '@/lib/social';
 import { colors, fonts } from '@/theme';
@@ -23,7 +21,6 @@ export default function FeedScreen() {
   const week = useWeeklySummary();
   const myWeek = useMyWeek();
   const leaderboard = useLeaderboard();
-  const cheers = useCheers();
   const removeCheers = useRemoveCheers();
   const [overtakes, setOvertakes] = useState<Overtake[]>([]);
   const unread = useUnreadCount();
@@ -34,7 +31,7 @@ export default function FeedScreen() {
 
   const posts = feed.data?.pages.flat() ?? [];
 
-  const sayCheers = async (post: FeedPost) => {
+  const sayCheers = (post: FeedPost) => {
     if (post.cheers.some((c) => c.user_id === me)) {
       Alert.alert('Take back your cheers?', undefined, [
         { text: 'Keep it', style: 'cancel' },
@@ -42,15 +39,7 @@ export default function FeedScreen() {
       ]);
       return;
     }
-    const photo = await pickImage('camera');
-    if (!photo) return;
-    cheers.mutate(
-      { checkinId: post.id, photo },
-      {
-        onSuccess: () => void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
-        onError: (error) => Alert.alert('Cheers did not send', error.message),
-      }
-    );
+    router.push({ pathname: '/cheers/[checkinId]', params: { checkinId: post.id } });
   };
 
   const refresh = () => {
