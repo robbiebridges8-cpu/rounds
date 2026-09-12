@@ -1,6 +1,6 @@
 # Pub'd
 
-A pub check-in app for London. Called Rounds until 12 September 2026; the repo, the EAS project, the bundle id and the URL scheme keep `rounds`. Log the pubs you go to, turn boroughs blue, see where your mates have been.
+A pub check-in app for London. Called Rounds until 12 September 2026. The bundle identifier keeps `com.robbiebridges.rounds`, because Apple ties an app to it for life; everything else is Pub'd. Log the pubs you go to, turn boroughs blue, see where your mates have been.
 
 This file is the map of what exists as of 9 September 2026. The reasoning behind each choice is in [DECISIONS.md](DECISIONS.md); data licensing in [LICENSING.md](LICENSING.md); the privacy policy in [PRIVACY.md](PRIVACY.md).
 
@@ -30,7 +30,7 @@ Useful scripts:
 
 - **Expo SDK 57**, React Native 0.86, expo-router with typed routes, NativeWind 4 on Tailwind 3.4.
 - **Supabase** in London (eu-west-2): Postgres with PostGIS, row level security on every table, storage buckets for photos, one edge function, pg_cron and pg_net.
-- **EAS** project `@robbiebridges/rounds` (id in app.json). Builds go to TestFlight through `eas build` and `eas submit`; JavaScript changes go out with `eas update` on the `production` channel, runtime version follows the app version. Push is live end to end: the Apple push key is on EAS and a test notification was delivered on 12 September. Native tabs and expo-maps are still one-file changes waiting for a dev build.
+- **EAS** project `@robbiebridges/pubd` (id in app.json). Builds go to TestFlight through `eas build` and `eas submit`; JavaScript changes go out with `eas update` on the `production` channel, runtime version follows the app version. Push is live end to end: the Apple push key is on EAS and a test notification was delivered on 12 September. Native tabs and expo-maps are still one-file changes waiting for a dev build.
 - **Git**: `main` on GitHub at robbiebridges8-cpu/rounds. Every migration is committed under `supabase/migrations/` and applied through the Supabase connection with identical SQL.
 
 ## The look: Signal

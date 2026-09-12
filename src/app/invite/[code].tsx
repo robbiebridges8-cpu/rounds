@@ -10,7 +10,7 @@ import { colors } from '@/theme';
 type Done = { name: string; avatar: string | null };
 
 /**
- * rounds://invite/CODE. Signed in with a profile: accept on the spot. Anything
+ * pubd://invite/CODE. Signed in with a profile: accept on the spot. Anything
  * else: remember the code, let the auth redirect do its thing, and apply it
  * once onboarding finishes.
  */

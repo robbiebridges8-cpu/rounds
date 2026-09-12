@@ -14,7 +14,7 @@ export type NewCheckin = {
   photos: PickedImage[];
   /** Friends who were there. */
   tagIds: string[];
-  /** People who were there but are not on Rounds. */
+  /** People who were there but are not on Pub'd. */
   guests: string[];
 };
 

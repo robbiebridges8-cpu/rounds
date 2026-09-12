@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { LeaderboardRow } from '@/lib/social';
 
-const KEY = 'rounds.leaderboard-snapshot';
+const KEY = 'pubd.leaderboard-snapshot';
 
 type Snapshot = Record<string, number>; // user id -> borough count
 

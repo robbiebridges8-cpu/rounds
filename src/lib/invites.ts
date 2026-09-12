@@ -6,7 +6,7 @@ import { Share } from 'react-native';
 import { supabase } from '@/lib/supabase';
 import { APP_NAME } from '@/lib/brand';
 
-const PENDING_KEY = 'rounds.pending-invite';
+const PENDING_KEY = 'pubd.pending-invite';
 
 /** Your own code. RLS returns exactly one row: yours. */
 export function useInviteCode() {
@@ -23,7 +23,7 @@ export function useInviteCode() {
 
 /**
  * In Expo Go this is an exp:// link to the dev server; in a real build it is
- * rounds://invite/CODE. Universal https links need the Apple account and an
+ * pubd://invite/CODE. Universal https links need the Apple account and an
  * App Store listing, so the message always carries the code as well.
  */
 export function inviteLink(code: string): string {

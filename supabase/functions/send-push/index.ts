@@ -1,4 +1,4 @@
-// Rounds: deliver one notification row as an Expo push.
+// Pub'd: deliver one notification row as an Expo push.
 // Called by the database (pg_net) after a notifications insert. Auth is a
 // shared secret held in app_config, compared here with the service role,
 // so no JWT is needed and nothing but the database can trigger a send.

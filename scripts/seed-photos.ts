@@ -28,7 +28,7 @@ const CACHE_FILE = join(CACHE_DIR, 'commons-photos.json');
 
 const API = 'https://commons.wikimedia.org/w/api.php';
 // Commons asks every client to identify itself. Keep this honest.
-const USER_AGENT = 'Rounds/0.1 (https://github.com/robbiebridges8-cpu/rounds; pub front photos) node';
+const USER_AGENT = 'Pubd/0.1 (https://github.com/robbiebridges8-cpu/pubd; pub front photos) node';
 
 const GEO_RADIUS_M = 70;
 const TEXT_RADIUS_M = 250;

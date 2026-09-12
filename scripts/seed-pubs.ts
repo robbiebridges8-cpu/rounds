@@ -178,7 +178,7 @@ async function main() {
 
   const supabase = createClient<Database>(url, serviceKey, { auth: { persistSession: false } });
 
-  console.log(`\nRounds pub seed  bbox ${bbox.south},${bbox.west},${bbox.north},${bbox.east}\n`);
+  console.log(`\nPub'd pub seed  bbox ${bbox.south},${bbox.west},${bbox.north},${bbox.east}\n`);
 
   const elements = await fetchOverpass(bbox);
   const boroughs = await loadBoroughs();

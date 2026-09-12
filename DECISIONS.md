@@ -442,9 +442,10 @@ Rounds was taken on the App Store. Pub'd won over Pubd because it reads as a
 word, "we got pub'd", and Pubd searches like a typo of PUBG. Apple allows the
 apostrophe in the store name and under the icon. Anywhere an apostrophe
 cannot go, a domain, a handle, the URL scheme, it is `pubd`. The name lives
-in one constant, `APP_NAME`, and the wordmark lowercases it. The repo, the
-EAS project slug and the bundle identifier stay `rounds`, because renaming
-those buys nothing and the bundle id cannot change anyway.
+in one constant, `APP_NAME`, and the wordmark lowercases it. On 12 September
+the repo, folder, EAS project, URL scheme and storage keys became `pubd` too;
+only the bundle identifier stays `com.robbiebridges.rounds`, because Apple
+ties the app to it for life.
 
 ## Quests are lists now, and a crawl is a list with an order
 

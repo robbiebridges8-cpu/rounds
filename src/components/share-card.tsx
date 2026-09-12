@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 
 import { BOROUGH_TOTAL, BoroughMap } from '@/components/borough-map';
+import { Wordmark } from '@/components/ui';
 import type { MyMonth } from '@/lib/social';
 import { fonts, palettes } from '@/theme';
 
@@ -41,7 +42,7 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard({ displayNam
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
         <View style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: P.ink, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontFamily: fonts.display, fontSize: 24, color: '#fff', letterSpacing: -1 }}>rounds</Text>
+          <Wordmark size={24} color="#fff" />
         </View>
         <Text style={{ fontFamily: fonts.display, fontSize: 30, color: P.ink, letterSpacing: -0.5 }}>@{username}</Text>
       </View>

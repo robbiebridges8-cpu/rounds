@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 
 const WEEKLY_ID = 'weekly-summary';
-const ASKED_KEY = 'rounds.weekly-nudge-asked';
+const ASKED_KEY = 'pubd.weekly-nudge-asked';
 
 // Show a notification even while the app is open.
 Notifications.setNotificationHandler({

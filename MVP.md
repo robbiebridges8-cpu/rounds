@@ -29,7 +29,7 @@ Last updated 11 September 2026.
 - [x] Camera-first check-in: photo, stars in halves, who was there, a note
 - [x] Optional amenity confirmation at check-in
 - [x] Geofence: verified within 150 m, otherwise counted and marked
-- [x] Tag mates on Rounds; text people who aren't
+- [x] Tag mates on Pub'd; text people who aren't
 - [x] Edit the stars, note, mates or date on your own check-in, or delete it, from the diary or the post
 - [x] Photos open full screen everywhere
 - [x] Add a visit to your map when a mate tagged you

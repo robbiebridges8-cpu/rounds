@@ -7,7 +7,7 @@ import { applyPalette, paletteVars, palettes, type Scheme } from '@/theme';
 
 export type { Scheme };
 
-const KEY = 'rounds.scheme';
+const KEY = 'pubd.scheme';
 
 type ThemeState = { scheme: Scheme; ready: boolean; setScheme: (s: Scheme) => void };
 
