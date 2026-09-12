@@ -82,7 +82,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 ## Features
 
-**Check-ins.** A pub, a time, an optional rating from 0.5 to 5 in half steps, a note, up to three photos, who was there. Location is read once at check-in; within 150 m it is "verified", further away it still counts and says how far. A device-generated client id makes retries safe.
+**Check-ins.** A pub, a time, an optional rating from 0.5 to 5 in half steps, a note, up to three photos, who was there. Location is read once at check-in; within 150 m it is marked verified in the database, further away it still counts. Distance is stored but not shown. A device-generated client id makes retries safe.
 
 **Tagging.** Mates on Rounds get a notification and a one-tap "add it to my map". People not on Rounds get a name on the post and a text from your phone with your invite link.
 

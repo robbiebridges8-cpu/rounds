@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar, Body, Button, Card, EmptyState, Icon, ListRow, SectionTitle, Stars } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
-import { formatDistance, formatWhen, plural } from '@/lib/format';
+import { formatWhen, plural } from '@/lib/format';
 import { useAddListPubs, useLists, usePubLists } from '@/lib/lists';
 import { useMyTagVotes, usePub, usePubPhotos, usePubRatingHistogram, usePubTagStats, usePubTags, usePubVisits, useReportPub, useVoteTag, type CorrectionType } from '@/lib/pubs';
 import { colors, fonts } from '@/theme';
@@ -282,7 +282,7 @@ export default function PubScreen() {
                           <Text className="text-ink text-[17px] font-bold">{isMe ? 'You' : (who?.display_name ?? 'Someone')}</Text>
                           <Text className="text-ink-soft text-sm">
                             {formatWhen(visit.created_at)}
-                            {!visit.verified && visit.distance_m != null ? ` · logged ${formatDistance(visit.distance_m)} away` : ''}
+
                           </Text>
                         </View>
                         {visit.rating ? <Stars value={visit.rating} size={13} /> : null}

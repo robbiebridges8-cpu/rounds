@@ -7,7 +7,7 @@ import { Alert, Pressable, ScrollView, Text, TextInput, View, useWindowDimension
 import { Avatar, Card, Icon, Stars } from '@/components/ui';
 import { photoUrl } from '@/lib/checkins';
 import { useLikePost, useLikeReply, useReply, type FeedPost } from '@/lib/feed';
-import { formatDistance, formatWhen } from '@/lib/format';
+import { formatWhen } from '@/lib/format';
 import { colors } from '@/theme';
 
 type Props = {
@@ -104,10 +104,6 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
               return <Image key={photo.id} source={{ uri: photoUrl(photo.storage_path) }} style={{ width: w, height: h, borderRadius: 12 }} contentFit="cover" transition={150} />;
             })}
           </ScrollView>
-        ) : null}
-
-        {!post.verified && post.distance_m != null ? (
-          <Text className="text-ink-soft px-4 pt-2 text-[12px]">Logged {formatDistance(post.distance_m)} away</Text>
         ) : null}
 
         {post.cheers.length > 0 ? (
