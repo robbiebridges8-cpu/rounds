@@ -35,7 +35,7 @@ Useful scripts:
 
 ## The look: Signal
 
-Chosen from three mocked directions, then refined from thirty-six per-screen ideas. White ground with colour doing the branding: **cobalt** is you, **coral** is your mates and the stars, **butter** and **mint** are furniture, **ink** is anything you press. Display face is Unbounded; UI text is the system font. Pills, 22 px cards, a hard ink shadow on the map search bar. Light by default, a navy dark mode behind a toggle in Settings.
+Chosen from three mocked directions, then refined from thirty-six per-screen ideas. White ground with colour doing the branding: **cobalt** is you, **coral** is your mates and the stars, **butter** and **mint** are furniture, **ink** is anything you press. Display face is Unbounded; UI text is the system font. Pills, 22 px cards, a hard ink shadow on the map search bar. Light only for now: the navy dark mode and the Pub theme are built but paused until they have had a proper pass, see BACKLOG 22.
 
 Design canvases (view and export):
 
@@ -73,7 +73,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `challenge/[id]`, `challenge/new`, `challenge/[id]/add` | A quest, creating one, adding pubs to it |
 | `inbox` | Notifications: cheers, replies, tags, the Sunday digest |
 | `invite/[code]` | Deep link target. Accepts the invite if signed in, otherwise remembers it through sign-up |
-| `settings` | Look, Tell us (feedback), privacy policy, admin inbox and numbers if you are an admin, sign out, delete account |
+| `settings` | Tell us (feedback), privacy policy, admin inbox and numbers if you are an admin, sign out, delete account |
 | `feedback` | A sheet: bug, idea or something else, a message, an optional screenshot. Device, iOS version and the screen you came from go along automatically |
 | `admin/inbox` | Feedback, pub corrections and reports in one place with a pending count. Tap to open, long press to set a status. Admins only |
 | `privacy` | The policy, rendered from PRIVACY.md |

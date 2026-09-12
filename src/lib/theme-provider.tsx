@@ -25,7 +25,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(KEY)
       .then((saved) => {
-        if (saved === 'dark' || saved === 'light' || saved === 'pub') setSchemeState(saved);
+        // Dark and Pub are paused until they have had a proper pass; see BACKLOG 22.
+        if (saved === 'light') setSchemeState(saved);
       })
       .catch(() => undefined)
       .finally(() => setReady(true));

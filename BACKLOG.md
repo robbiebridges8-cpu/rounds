@@ -41,7 +41,7 @@ Last updated 11 September 2026. See README.md for what exists.
 | 19 | Rate limiting on invite acceptance, cheers uploads and list creation | Medium | Low | Small | Cheap insurance before strangers arrive |
 | 20 | Admin: approve or reject from the numbers page, pending reports count, per-borough growth over time | Low | Medium | Medium | The page an advertiser or buyer sees. Extend as the pitch firms up |
 | 21 | Accessibility pass: VoiceOver labels on every icon button, Dynamic Type on the display face, contrast on butter text | Low | Medium | Small | Apple review notices; users with large text notice sooner |
-| 22 | Dark mode audit: every screen, every card, the share card stays light on purpose | Low | Low | Small | Toggle exists; nobody has looked at every screen in it |
+| 22 | Dark mode audit: every screen, every card, the share card stays light on purpose | Medium | Low | Small | Paused 12 September: the toggle is hidden and saved dark settings are ignored, because it looked wrong. Do the pass with Robbie looking at each screen, then put the toggle back |
 
 ## P2b. User-contributed data. Planned 9 September, parked until there are users.
 

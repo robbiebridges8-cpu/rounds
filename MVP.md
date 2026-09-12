@@ -57,7 +57,7 @@ Last updated 11 September 2026.
 - [x] Friend profiles
 
 ## Housekeeping
-- [x] Settings: dark mode, privacy policy, sign out
+- [x] Settings: privacy policy, sign out. Dark mode built but paused until it has had a proper pass
 - [x] Tell us: in-app feedback with a screenshot, read in the admin inbox
 - [x] Admin inbox: feedback, pub fixes, reports, with statuses
 - [x] Admin numbers page

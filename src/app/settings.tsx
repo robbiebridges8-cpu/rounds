@@ -1,14 +1,12 @@
 import { Stack, useRouter } from 'expo-router';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 
 import { Card, ListRow, SectionTitle } from '@/components/ui';
 import { useIsAdmin } from '@/lib/admin';
 import { deleteAccount, signOut, useProfile } from '@/lib/auth';
-import { useTheme, type Scheme } from '@/lib/theme-provider';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { scheme, setScheme } = useTheme();
   const { data: profile } = useProfile();
   const isAdmin = useIsAdmin();
 
@@ -40,28 +38,6 @@ export default function SettingsScreen() {
     <>
       <Stack.Screen options={{ title: 'Settings' }} />
       <ScrollView className="flex-1" contentContainerClassName="gap-5 px-4 pb-10 pt-2">
-        <View>
-          <SectionTitle>Look</SectionTitle>
-          <Card>
-            <View className="flex-row gap-2 p-3">
-              {(
-                [
-                  ['light', 'Light'],
-                  ['dark', 'Dark'],
-                  ['pub', 'Pub'],
-                ] as [Scheme, string][]
-              ).map(([key, label]) => {
-                const on = scheme === key;
-                return (
-                  <Pressable key={key} onPress={() => setScheme(key)} accessibilityRole="radio" accessibilityState={{ selected: on }} className={`h-10 flex-1 items-center justify-center rounded-full ${on ? 'bg-ink' : 'bg-raised'}`}>
-                    <Text className={`text-[14px] font-bold ${on ? 'text-canvas' : 'text-ink'}`}>{label}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </Card>
-        </View>
-
         <View>
           <SectionTitle>About</SectionTitle>
           <Card>
