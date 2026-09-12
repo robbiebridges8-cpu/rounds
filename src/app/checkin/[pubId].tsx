@@ -157,7 +157,7 @@ export default function CheckinScreen() {
     return (
       <View className="flex-1 bg-black">
         {granted ? (
-          <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing} />
+          <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing} mirror />
         ) : (
           <View className="flex-1 items-center justify-center gap-4 px-8">
             <Icon name="camera.fill" size={40} color="#fff" weight="regular" />
