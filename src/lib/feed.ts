@@ -156,9 +156,19 @@ export function useDeleteCheckin() {
 export function useUpdateCheckin() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, rating, note }: { id: string; rating: number | null; note: string | null }) => {
+    mutationFn: async ({ id, rating, note, tagIds, previousTagIds }: { id: string; rating: number | null; note: string | null; tagIds: string[]; previousTagIds: string[] }) => {
       const { error } = await supabase.from('checkins').update({ rating, note }).eq('id', id);
       if (error) throw error;
+      const added = tagIds.filter((t) => !previousTagIds.includes(t));
+      const removed = previousTagIds.filter((t) => !tagIds.includes(t));
+      if (removed.length) {
+        const { error: e } = await supabase.from('checkin_tags').delete().eq('checkin_id', id).in('user_id', removed);
+        if (e) throw e;
+      }
+      if (added.length) {
+        const { error: e } = await supabase.from('checkin_tags').insert(added.map((user_id) => ({ checkin_id: id, user_id })));
+        if (e) throw e;
+      }
     },
     onSuccess: () => {
       void queryClient.invalidateQueries();

@@ -3,7 +3,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Body, Button, Field, Stars } from '@/components/ui';
+import { Avatar, Body, Button, Field, Stars } from '@/components/ui';
+import { useFriendships } from '@/lib/friends';
 import { useDeleteCheckin, usePost, useUpdateCheckin } from '@/lib/feed';
 import { colors } from '@/theme';
 
@@ -39,12 +40,23 @@ export default function EditCheckinSheet() {
 function EditForm({ post, onDone }: { post: Loaded; onDone: () => void }) {
   const update = useUpdateCheckin();
   const remove = useDeleteCheckin();
+  const friendships = useFriendships();
+  const previousTagIds = post.checkin_tags.map((t) => t.user_id);
   const [rating, setRating] = useState<number | null>(post.rating != null ? Number(post.rating) : null);
   const [note, setNote] = useState(post.note ?? '');
+  const [tagged, setTagged] = useState<Set<string>>(new Set(previousTagIds));
+  const friends = friendships.data?.friends ?? [];
+  const toggleTag = (id: string) =>
+    setTagged((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   const save = () =>
     update.mutate(
-      { id: post.id, rating, note: note.trim() || null },
+      { id: post.id, rating, note: note.trim() || null, tagIds: [...tagged], previousTagIds },
       {
         onSuccess: () => {
           void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -74,6 +86,22 @@ function EditForm({ post, onDone }: { post: Loaded; onDone: () => void }) {
           ) : null}
         </View>
       </View>
+      {friends.length > 0 ? (
+        <View className="gap-2">
+          <Text className="text-ink text-[13px] font-bold uppercase tracking-wider">Who was there</Text>
+          <View className="flex-row flex-wrap gap-2">
+            {friends.map((f) => {
+              const on = tagged.has(f.id);
+              return (
+                <Pressable key={f.id} onPress={() => toggleTag(f.id)} accessibilityRole="checkbox" accessibilityState={{ checked: on }} className="h-10 flex-row items-center gap-2 rounded-full pl-1 pr-3.5" style={{ backgroundColor: on ? colors.ale : colors.raised }}>
+                  <Avatar url={f.avatar_url} name={f.display_name} size={30} />
+                  <Text className="text-[14px] font-bold" style={{ color: on ? '#fff' : colors.ink }}>{f.display_name}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ) : null}
       <Field label="Note" value={note} onChangeText={setNote} placeholder="Add a note" multiline maxLength={500} style={{ minHeight: 90 }} />
       <Button label="Save" onPress={save} loading={update.isPending} />
       <Pressable onPress={confirmDelete} accessibilityRole="button" className="items-center py-2">
