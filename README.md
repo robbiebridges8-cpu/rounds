@@ -23,9 +23,8 @@ Useful scripts:
 | `pnpm build:boroughs` | Regenerate the borough SVG paths from the ONS boundaries |
 | `pnpm build:privacy` | Regenerate the in-app privacy text from PRIVACY.md |
 | `CI=1 npx expo export --platform ios --dev` | Prove the bundle builds. `CI=1` is required or NativeWind's watcher keeps it alive |
-| `npx eas-cli build -p ios --profile production` | Cloud build for TestFlight. Needs the Apple account the first time, for signing |
-| `npx eas-cli submit -p ios --latest` | Send the last build to TestFlight |
-| `npx eas-cli update --channel production --message "..."` | Ship a JavaScript-only change to installed builds without a new build |
+| `pnpm ship` | Push a JavaScript-only change to TestFlight installs. Uses the last commit message. Testers get it on next launch |
+| `pnpm release` | New native build in the cloud, submitted to TestFlight when done. Needed after adding a native library, editing app.json, or an SDK upgrade |
 
 ## Stack
 
