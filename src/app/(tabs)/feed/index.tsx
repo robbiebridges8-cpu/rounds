@@ -55,8 +55,13 @@ export default function FeedScreen() {
               <Pressable onPress={() => router.push('/search')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Search pubs">
                 <Icon name="magnifyingglass" size={20} color={colors.ink} weight="semibold" />
               </Pressable>
-              <Pressable onPress={() => router.push('/inbox')} hitSlop={8} accessibilityRole="button" accessibilityLabel={unread ? `Inbox, ${unread} unread` : 'Inbox'}>
-                <Icon name={unread ? 'bell.badge.fill' : 'bell'} size={20} color={unread ? colors.ale : colors.ink} />
+              <Pressable onPress={() => router.push('/inbox')} hitSlop={8} accessibilityRole="button" accessibilityLabel={unread ? `Inbox, ${unread} unread` : 'Inbox'} className="flex-row items-center">
+                <Icon name={unread ? 'bell.fill' : 'bell'} size={20} color={unread ? colors.ale : colors.ink} />
+                {unread ? (
+                  <View className="-ml-1 -mt-3 h-[18px] min-w-[18px] items-center justify-center rounded-full px-1" style={{ backgroundColor: colors.ale }}>
+                    <Text className="text-[11px] font-bold text-white">{unread > 9 ? '9+' : unread}</Text>
+                  </View>
+                ) : null}
               </Pressable>
             </View>
           ),
@@ -74,6 +79,13 @@ export default function FeedScreen() {
         }}
         ListHeaderComponent={
           <View className="gap-4">
+            {unread > 0 ? (
+              <Pressable onPress={() => router.push('/inbox')} accessibilityRole="button" className="flex-row items-center gap-3 rounded-lg px-4 py-3 active:opacity-90" style={{ backgroundColor: colors.ale }}>
+                <Icon name="bell.fill" size={16} color="#fff" weight="bold" />
+                <Text className="flex-1 text-[15px] font-bold text-white">{`${unread} new for you`}</Text>
+                <Icon name="chevron.right" size={13} color="#fff" weight="bold" />
+              </Pressable>
+            ) : null}
             {overtakes.map((o) => (
               <OvertakeCard key={o.userId} overtake={o} onPress={() => router.push('/friends')} />
             ))}

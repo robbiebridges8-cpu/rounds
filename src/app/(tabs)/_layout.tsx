@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 
 import { Icon } from '@/components/ui';
+import { useUnreadCount } from '@/lib/inbox';
 import { colors } from '@/theme';
 
 /**
@@ -9,6 +10,7 @@ import { colors } from '@/theme';
  * The icons are SF Symbols either way, so swapping later is this file only.
  */
 export default function TabLayout() {
+  const unread = useUnreadCount();
   return (
     <Tabs
       screenOptions={{
@@ -31,6 +33,8 @@ export default function TabLayout() {
         name="feed"
         options={{
           title: 'Feed',
+          tabBarBadge: unread > 0 ? unread : undefined,
+          tabBarBadgeStyle: { backgroundColor: colors.ale, color: '#fff', fontSize: 11, fontWeight: '700' },
           tabBarIcon: ({ color, focused }) => (
             <Icon
               name={focused ? 'bubble.left.and.bubble.right.fill' : 'bubble.left.and.bubble.right'}

@@ -85,6 +85,7 @@ function RootNavigator() {
       <Stack.Screen name="privacy" options={{ title: 'Privacy' }} />
       <Stack.Screen name="admin/index" options={{ title: 'Numbers' }} />
       <Stack.Screen name="admin/inbox" options={{ title: 'Inbox' }} />
+      <Stack.Screen name="likes/[checkinId]" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.6, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen name="edit-profile" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.85, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen name="feedback" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.85, 1], sheetGrabberVisible: true, headerShown: false }} />
       <Stack.Screen name="add-pub" options={{ presentation: 'formSheet', sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true, headerShown: false }} />

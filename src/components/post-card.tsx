@@ -137,10 +137,18 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
             </Text>
           </Pressable>
         ) : null}
-        <Pressable onPress={toggleLike} accessibilityRole="button" accessibilityLabel={liked ? 'Unlike' : 'Like'} className="h-11 flex-row items-center gap-1.5 rounded-full bg-raised px-3.5 active:opacity-80">
-          <Icon name={liked ? 'heart.fill' : 'heart'} size={16} color={liked ? colors.ale : colors.ink} weight="bold" />
-          {post.checkin_likes.length ? <Text className="text-ink text-[14px] font-bold">{post.checkin_likes.length}</Text> : null}
-        </Pressable>
+        <View className="h-11 flex-row items-center rounded-full bg-raised">
+          <Pressable onPress={toggleLike} accessibilityRole="button" accessibilityLabel={liked ? 'Unlike' : 'Like'} className="h-11 flex-row items-center gap-1.5 rounded-full pl-3.5 pr-2 active:opacity-80">
+            <Icon name={liked ? 'heart.fill' : 'heart'} size={16} color={liked ? colors.ale : colors.ink} weight="bold" />
+          </Pressable>
+          {post.checkin_likes.length ? (
+            <Pressable onPress={() => router.push({ pathname: '/likes/[checkinId]', params: { checkinId: post.id } })} hitSlop={6} accessibilityRole="button" accessibilityLabel="See who liked this" className="h-11 items-center justify-center pr-3.5">
+              <Text className="text-ink text-[14px] font-bold">{post.checkin_likes.length}</Text>
+            </Pressable>
+          ) : (
+            <View className="w-2" />
+          )}
+        </View>
         <Pressable onPress={() => setComposing((c) => !c)} accessibilityRole="button" accessibilityLabel="Reply" className="h-11 flex-row items-center gap-1.5 rounded-full bg-raised px-3.5 active:opacity-80">
           <Icon name="bubble.right" size={16} color={colors.ink} weight="bold" />
           {post.checkin_comments.length ? <Text className="text-ink text-[14px] font-bold">{post.checkin_comments.length}</Text> : null}
@@ -163,7 +171,12 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
                   <Text className="text-ink text-[15px] leading-5">
                     <Text className="font-bold">{r.user_id === me ? 'You' : (r.profiles?.display_name ?? 'Someone')}</Text> {r.body}
                   </Text>
-                  <Text className="text-ink-soft text-[11px]">{formatWhen(r.created_at)}</Text>
+                  <View className="flex-row items-center gap-3">
+                    <Text className="text-ink-soft text-[11px]">{formatWhen(r.created_at)}</Text>
+                    <Pressable onPress={() => { setComposing(true); setDraft((d) => (d.trim() ? d : `@${r.profiles?.username ?? ''} `)); }} hitSlop={6} accessibilityRole="button">
+                      <Text className="text-ink-soft text-[11px] font-bold">Reply</Text>
+                    </Pressable>
+                  </View>
                 </View>
                 <Pressable onPress={() => { void Haptics.selectionAsync(); likeReply.mutate({ commentId: r.id, checkinId: post.id, like: !rliked }); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={rliked ? 'Unlike reply' : 'Like reply'} className="flex-row items-center gap-1 pt-0.5">
                   <Icon name={rliked ? 'heart.fill' : 'heart'} size={13} color={rliked ? colors.ale : colors.slate} />

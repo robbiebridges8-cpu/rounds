@@ -15,7 +15,7 @@ export type FeedPost = Tables<'checkins'> & {
   profiles: Profile | null;
   checkin_tags: Tag[];
   checkin_guests: Tables<'checkin_guests'>[];
-  checkin_likes: { user_id: string }[];
+  checkin_likes: { user_id: string; created_at: string; profiles: Pick<Tables<'profiles'>, 'username' | 'display_name' | 'avatar_url'> | null }[];
   pubs: Pick<Tables<'pubs'>, 'id' | 'name' | 'borough' | 'lat' | 'lng'> | null;
   checkin_photos: Tables<'checkin_photos'>[];
   cheers: Cheer[];
@@ -24,7 +24,7 @@ export type FeedPost = Tables<'checkins'> & {
 
 // Likes make a second path from a check-in to profiles, so the author link is named.
 const SELECT =
-  '*, profiles!checkins_user_id_fkey(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles!checkin_comments_user_id_fkey(*), comment_likes(user_id)), checkin_tags(*, profiles(*)), checkin_guests(*), checkin_likes(user_id)';
+  '*, profiles!checkins_user_id_fkey(*), pubs(id, name, borough, lat, lng), checkin_photos(*), cheers(*, profiles(*)), checkin_comments(*, profiles!checkin_comments_user_id_fkey(*), comment_likes(user_id)), checkin_tags(*, profiles(*)), checkin_guests(*), checkin_likes(user_id, created_at, profiles!checkin_likes_user_id_fkey(username, display_name, avatar_url))';
 const PAGE = 20;
 
 /**
