@@ -30,9 +30,9 @@ export type Database = {
         ];
       };
       checkin_comments: {
-        Row: { body: string; checkin_id: string; created_at: string; id: string; user_id: string };
-        Insert: { body: string; checkin_id: string; created_at?: string; id?: string; user_id: string };
-        Update: { body?: string; checkin_id?: string; created_at?: string; id?: string; user_id?: string };
+        Row: { body: string; checkin_id: string; created_at: string; id: string; parent_id: string | null; user_id: string };
+        Insert: { body: string; checkin_id: string; created_at?: string; id?: string; parent_id?: string | null; user_id: string };
+        Update: { body?: string; checkin_id?: string; created_at?: string; id?: string; parent_id?: string | null; user_id?: string };
         Relationships: [
           {
             foreignKeyName: 'checkin_comments_checkin_id_fkey';

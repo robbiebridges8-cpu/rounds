@@ -32,6 +32,7 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
   const likeReply = useLikeReply();
   const reply = useReply();
   const [composing, setComposing] = useState(expanded);
+  const [replyTo, setReplyTo] = useState<FeedPost['checkin_comments'][number] | null>(null);
   const [draft, setDraft] = useState('');
 
   const who = post.profiles;
@@ -39,7 +40,9 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
   const hasPhotos = post.checkin_photos.length > 0;
   const mineCheers = post.cheers.some((c) => c.user_id === me);
   const liked = post.checkin_likes.some((l) => l.user_id === me);
-  const replies = expanded ? post.checkin_comments : post.checkin_comments.slice(-2);
+  const topLevel = post.checkin_comments.filter((c) => !c.parent_id);
+  const childrenOf = (id: string) => post.checkin_comments.filter((c) => c.parent_id === id);
+  const replies = expanded ? topLevel : topLevel.slice(-2);
   const cardWidth = width - 32;
 
   const toggleLike = () => {
@@ -51,10 +54,11 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
     const body = draft.trim();
     if (!body) return;
     reply.mutate(
-      { checkinId: post.id, body },
+      { checkinId: post.id, body, parentId: replyTo?.id ?? null },
       {
         onSuccess: () => {
           setDraft('');
+          setReplyTo(null);
           if (!expanded) setComposing(false);
         },
         onError: (e) => Alert.alert('Reply did not send', e.message),
@@ -157,43 +161,39 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
 
       {replies.length > 0 ? (
         <View className="gap-2 px-4 pb-3">
-          {!expanded && post.checkin_comments.length > 2 ? (
+          {!expanded && topLevel.length > 2 ? (
             <Pressable onPress={onOpen}>
               <Text className="text-ink-soft text-[13px] font-semibold">View all {post.checkin_comments.length} replies</Text>
             </Pressable>
           ) : null}
-          {replies.map((r) => {
-            const rliked = r.comment_likes.some((l) => l.user_id === me);
-            return (
-              <View key={r.id} className="flex-row items-start gap-2">
-                <Avatar url={r.profiles?.avatar_url} name={r.profiles?.display_name ?? '?'} size={24} />
-                <View className="flex-1">
-                  <Text className="text-ink text-[15px] leading-5">
-                    <Text className="font-bold">{r.user_id === me ? 'You' : (r.profiles?.display_name ?? 'Someone')}</Text> {r.body}
-                  </Text>
-                  <View className="flex-row items-center gap-3">
-                    <Text className="text-ink-soft text-[11px]">{formatWhen(r.created_at)}</Text>
-                    <Pressable onPress={() => { setComposing(true); setDraft((d) => (d.trim() ? d : `@${r.profiles?.username ?? ''} `)); }} hitSlop={6} accessibilityRole="button">
-                      <Text className="text-ink-soft text-[11px] font-bold">Reply</Text>
-                    </Pressable>
-                  </View>
+          {replies.map((r) => (
+            <View key={r.id} className="gap-2">
+              <ReplyRow reply={r} me={me} onLike={(like) => likeReply.mutate({ commentId: r.id, checkinId: post.id, like })} onReply={() => { setReplyTo(r); setComposing(true); }} />
+              {childrenOf(r.id).map((c) => (
+                <View key={c.id} className="pl-8">
+                  <ReplyRow reply={c} me={me} onLike={(like) => likeReply.mutate({ commentId: c.id, checkinId: post.id, like })} onReply={() => { setReplyTo(r); setComposing(true); }} />
                 </View>
-                <Pressable onPress={() => { void Haptics.selectionAsync(); likeReply.mutate({ commentId: r.id, checkinId: post.id, like: !rliked }); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={rliked ? 'Unlike reply' : 'Like reply'} className="flex-row items-center gap-1 pt-0.5">
-                  <Icon name={rliked ? 'heart.fill' : 'heart'} size={13} color={rliked ? colors.ale : colors.slate} />
-                  {r.comment_likes.length ? <Text className="text-ink-soft text-[11px] font-bold">{r.comment_likes.length}</Text> : null}
-                </Pressable>
-              </View>
-            );
-          })}
+              ))}
+            </View>
+          ))}
         </View>
       ) : null}
 
       {composing ? (
-        <View className="flex-row items-end gap-2 border-t border-line px-4 py-3">
+        <View className="border-t border-line px-4 py-3">
+          {replyTo ? (
+            <View className="mb-2 flex-row items-center gap-2">
+              <Text className="text-ink-soft text-[12px] font-semibold">Replying to {replyTo.user_id === me ? 'yourself' : (replyTo.profiles?.display_name ?? 'someone')}</Text>
+              <Pressable onPress={() => setReplyTo(null)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Reply to the check-in instead">
+                <Icon name="xmark.circle.fill" size={14} color={colors.slate} />
+              </Pressable>
+            </View>
+          ) : null}
+        <View className="flex-row items-end gap-2">
           <TextInput
             value={draft}
             onChangeText={setDraft}
-            placeholder={`Reply to ${isMe ? 'your check-in' : (who?.display_name ?? 'this')}`}
+            placeholder={replyTo ? 'Your reply' : `Reply to ${isMe ? 'your check-in' : (who?.display_name ?? 'this')}`}
             placeholderTextColor={colors.slate}
             multiline
             maxLength={280}
@@ -204,7 +204,32 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
             <Icon name="arrow.up" size={16} color="#fff" weight="bold" />
           </Pressable>
         </View>
+        </View>
       ) : null}
     </Card>
+  );
+}
+
+function ReplyRow({ reply, me, onLike, onReply }: { reply: FeedPost['checkin_comments'][number]; me: string | undefined; onLike: (like: boolean) => void; onReply: () => void }) {
+  const liked = reply.comment_likes.some((l) => l.user_id === me);
+  return (
+    <View className="flex-row items-start gap-2">
+      <Avatar url={reply.profiles?.avatar_url} name={reply.profiles?.display_name ?? '?'} size={24} />
+      <View className="flex-1">
+        <Text className="text-ink text-[15px] leading-5">
+          <Text className="font-bold">{reply.user_id === me ? 'You' : (reply.profiles?.display_name ?? 'Someone')}</Text> {reply.body}
+        </Text>
+        <View className="flex-row items-center gap-3">
+          <Text className="text-ink-soft text-[11px]">{formatWhen(reply.created_at)}</Text>
+          <Pressable onPress={onReply} hitSlop={6} accessibilityRole="button">
+            <Text className="text-ink-soft text-[11px] font-bold">Reply</Text>
+          </Pressable>
+        </View>
+      </View>
+      <Pressable onPress={() => { void Haptics.selectionAsync(); onLike(!liked); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={liked ? 'Unlike reply' : 'Like reply'} className="flex-row items-center gap-1 pt-0.5">
+        <Icon name={liked ? 'heart.fill' : 'heart'} size={13} color={liked ? colors.ale : colors.slate} />
+        {reply.comment_likes.length ? <Text className="text-ink-soft text-[11px] font-bold">{reply.comment_likes.length}</Text> : null}
+      </Pressable>
+    </View>
   );
 }

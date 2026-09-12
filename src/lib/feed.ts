@@ -115,13 +115,13 @@ export function useRemoveCheers() {
 export function useReply() {
   const invalidate = useInvalidatePost();
   return useMutation({
-    mutationFn: async ({ checkinId, body }: { checkinId: string; body: string }) => {
+    mutationFn: async ({ checkinId, body, parentId }: { checkinId: string; body: string; parentId?: string | null }) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       const { error } = await supabase
         .from('checkin_comments')
-        .insert({ checkin_id: checkinId, user_id: session!.user.id, body: body.trim() });
+        .insert({ checkin_id: checkinId, user_id: session!.user.id, body: body.trim(), parent_id: parentId ?? null });
       if (error) throw error;
     },
     onSuccess: (_, { checkinId }) => invalidate(checkinId),
