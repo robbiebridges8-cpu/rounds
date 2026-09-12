@@ -211,13 +211,20 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
 }
 
 function ReplyRow({ reply, me, onLike, onReply }: { reply: FeedPost['checkin_comments'][number]; me: string | undefined; onLike: (like: boolean) => void; onReply: () => void }) {
+  const router = useRouter();
   const liked = reply.comment_likes.some((l) => l.user_id === me);
+  const mine = reply.user_id === me;
+  const openProfile = () => {
+    if (!mine) router.push({ pathname: '/user/[id]', params: { id: reply.user_id } });
+  };
   return (
     <View className="flex-row items-start gap-2">
-      <Avatar url={reply.profiles?.avatar_url} name={reply.profiles?.display_name ?? '?'} size={24} />
+      <Pressable onPress={openProfile} disabled={mine} accessibilityRole="button" accessibilityLabel={reply.profiles?.display_name ?? 'Profile'}>
+        <Avatar url={reply.profiles?.avatar_url} name={reply.profiles?.display_name ?? '?'} size={24} />
+      </Pressable>
       <View className="flex-1">
         <Text className="text-ink text-[15px] leading-5">
-          <Text className="font-bold">{reply.user_id === me ? 'You' : (reply.profiles?.display_name ?? 'Someone')}</Text> {reply.body}
+          <Text className="font-bold" onPress={mine ? undefined : openProfile}>{mine ? 'You' : (reply.profiles?.display_name ?? 'Someone')}</Text> {reply.body}
         </Text>
         <View className="flex-row items-center gap-3">
           <Text className="text-ink-soft text-[11px]">{formatWhen(reply.created_at)}</Text>
