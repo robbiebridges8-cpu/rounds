@@ -4,15 +4,14 @@ import { Alert, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ui';
-import { colors, fonts } from '@/theme';
-import { APP_NAME } from '@/lib/brand';
+import { Button, Wordmark } from '@/components/ui';
+import { colors } from '@/theme';
 import { savePendingInvite } from '@/lib/invites';
 
 /**
- * The first thing you see. Four big colour shapes, the wordmark in an ink
- * disc, one line of copy, one button. The shapes drift very slowly so the
- * screen feels alive without doing anything.
+ * The first thing you see. Four big colour shapes in the top third, the
+ * wordmark with its pint apostrophe under them, one line, one button. The
+ * shapes drift very slowly so the screen feels alive without doing anything.
  */
 export default function Welcome() {
   const router = useRouter();
@@ -35,7 +34,7 @@ export default function Welcome() {
       },
     ]);
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const t = useSharedValue(0);
 
   useEffect(() => {
@@ -50,42 +49,27 @@ export default function Welcome() {
   const c = drift(8, -10);
   const d = drift(-6, -12);
 
-  const s = width / 390;
+  const s = Math.min(width / 390, height / 844);
+  const top = insets.top;
 
   return (
-    <View className="flex-1" style={{ backgroundColor: palettesLight.surface }}>
-      <View style={{ height: 500 * s, position: 'relative' }}>
-        <Animated.View style={[shape(-60 * s, 40 * s + insets.top, 300 * s, colors.you), a]} />
-        <Animated.View style={[shape(150 * s, 120 * s + insets.top, 260 * s, colors.butter), b]} />
-        <Animated.View style={[shape(40 * s, 300 * s + insets.top, 320 * s, colors.ale, 120 * s, '-12deg'), c]} />
-        <Animated.View style={[shape(250 * s, 330 * s + insets.top, 150 * s, colors.mint), d]} />
-        <View
-          style={{
-            position: 'absolute',
-            left: 96 * s,
-            top: 186 * s + insets.top,
-            width: 180 * s,
-            height: 180 * s,
-            borderRadius: 90 * s,
-            backgroundColor: '#101014',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text style={{ fontFamily: fonts.display, fontSize: 30 * s, color: '#FFFFFF', letterSpacing: -1 }}>{APP_NAME.toLowerCase()}</Text>
-          <Text style={{ fontSize: 11, color: colors.butter, fontWeight: '800', letterSpacing: 2 }}>LONDON</Text>
-        </View>
+    <View className="flex-1" style={{ backgroundColor: '#FFFFFF' }}>
+      {/* The four Signal shapes live in the top third and never reach the words. */}
+      <View style={{ height: 340 * s + top, position: 'relative' }}>
+        <Animated.View style={[shape(-70 * s, 30 * s + top, 250 * s, colors.you), a]} />
+        <Animated.View style={[shape(190 * s, 50 * s + top, 210 * s, colors.butter), b]} />
+        <Animated.View style={[shape(40 * s, 196 * s + top, 260 * s, colors.ale, 90 * s, '-12deg'), c]} />
+        <Animated.View style={[shape(270 * s, 200 * s + top, 120 * s, colors.mint), d]} />
+      </View>
+
+      <View style={{ paddingHorizontal: 26 * s, paddingTop: 8 * s }}>
+        <Wordmark size={96 * s} />
       </View>
 
       <View className="flex-1 justify-end gap-6 px-6" style={{ paddingBottom: insets.bottom + 20 }}>
-        <View className="gap-3">
-          <Text style={{ fontFamily: fonts.display, fontSize: 38, lineHeight: 40, letterSpacing: -1.4, color: '#101014' }}>
-            Pubs.{'\n'}Mates.{'\n'}
-            <Text style={{ color: colors.you }}>London.</Text>
-          </Text>
-          <Text className="text-[16px] leading-6" style={{ color: '#6E6E78' }}>
-            Check in, fill in the boroughs, see where your mates have been.
-          </Text>
-        </View>
+        <Text className="text-[17px] leading-6" style={{ color: '#6E6E78', fontWeight: '500' }}>
+          The pub map for you and your mates.
+        </Text>
         <Button label="Get started" onPress={() => router.push('/sign-in')} />
         <Text className="text-center text-[14px]" style={{ color: '#6E6E78' }}>
           Got an invite code?{' '}
@@ -97,8 +81,6 @@ export default function Welcome() {
     </View>
   );
 }
-
-const palettesLight = { surface: '#FFFFFF' };
 
 function shape(left: number, top: number, size: number, color: string, height?: number, rotate?: string) {
   return {

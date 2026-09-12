@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, fonts } from '@/theme';
 import { APP_NAME } from '@/lib/brand';
+import { PintGlass } from '@/components/pint';
 
 export function Screen({ children }: { children: ReactNode }) {
   return (
@@ -62,13 +63,25 @@ export function Display({ children, size = 44, color }: { children: ReactNode; s
   );
 }
 
+/**
+ * "pub'd" with the apostrophe drawn as a tilted pint. Colour is the ink for
+ * the letters and the glass rim; the beer stays gold.
+ */
 export function Wordmark({ size = 22, color }: { size?: number; color?: string }) {
+  const ink = color ?? colors.ink;
+  const glass = Math.max(6, size * 0.3);
   return (
-    <Text
-      style={{ fontFamily: fonts.display, fontSize: size, color: color ?? colors.ink, letterSpacing: -size * 0.04 }}
-      allowFontScaling={false}>
-      {APP_NAME.toLowerCase()}
-    </Text>
+    <View style={{ flexDirection: 'row', alignItems: 'flex-start' }} accessibilityRole="header" accessibilityLabel={APP_NAME}>
+      <Text style={{ fontFamily: fonts.display, fontSize: size, lineHeight: size * 1.05, color: ink, letterSpacing: -size * 0.06 }} allowFontScaling={false}>
+        pub
+      </Text>
+      <View style={{ width: glass, height: glass / 0.7, marginHorizontal: size * 0.035, marginTop: size * 0.02, transform: [{ rotate: '12deg' }] }}>
+        <PintGlass width={glass} level={0.75} rim={ink} strokeWidth={1.6} />
+      </View>
+      <Text style={{ fontFamily: fonts.display, fontSize: size, lineHeight: size * 1.05, color: ink, letterSpacing: -size * 0.06 }} allowFontScaling={false}>
+        d
+      </Text>
+    </View>
   );
 }
 
