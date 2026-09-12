@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button, Card, Field, Icon } from '@/components/ui';
 import { useAddChallengePubs, useChallengePubs } from '@/lib/challenges';
@@ -36,6 +36,7 @@ export default function AddPubsSheet() {
 
   const toggle = (pubId: string) => {
     void Haptics.selectionAsync();
+    Keyboard.dismiss();
     setPicked((current) => {
       const next = new Set(current);
       if (next.has(pubId)) next.delete(pubId);
@@ -68,7 +69,9 @@ export default function AddPubsSheet() {
             <Text className="text-ale text-[17px]">Cancel</Text>
           </Pressable>
           <Text className="text-ink text-[17px] font-semibold">Add pubs</Text>
-          <View style={{ width: 52 }} />
+          <Pressable onPress={save} disabled={picked.size === 0 || add.isPending} hitSlop={8} accessibilityRole="button" style={{ width: 52, alignItems: 'flex-end', opacity: picked.size ? 1 : 0.35 }}>
+            <Text className="text-ale text-[17px] font-bold">{picked.size ? `Add ${picked.size}` : 'Add'}</Text>
+          </Pressable>
         </View>
 
         <Field
