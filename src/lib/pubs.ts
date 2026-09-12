@@ -183,9 +183,9 @@ function creditFor(row: Pick<Tables<'pub_photos'>, 'author' | 'licence' | 'sourc
 }
 
 /**
- * Photos for a pub page or map card: your and your mates' check-in photos,
- * newest first, then the seeded front photo if there is one. Anyone who has
- * never had a visit still gets the front of the building.
+ * Photos for a pub page or map card: the pub's own front photo first, then
+ * your and your mates' check-in photos, newest first. The pub is the pub;
+ * a night out there is a visit, and shows as one.
  */
 export function usePubPhotos(pubId: string | undefined) {
   return useQuery({
@@ -204,8 +204,8 @@ export function usePubPhotos(pubId: string | undefined) {
       ]);
       if (mine.error) throw mine.error;
       if (front.error) throw front.error;
-      const photos: PubPhoto[] = mine.data.map((row) => ({ uri: photoUrl(row.storage_path), credit: null }));
-      if (front.data) photos.push({ uri: frontPhotoUrl(front.data.storage_path), credit: creditFor(front.data) });
+      const photos: PubPhoto[] = front.data ? [{ uri: frontPhotoUrl(front.data.storage_path), credit: creditFor(front.data) }] : [];
+      for (const row of mine.data) photos.push({ uri: photoUrl(row.storage_path), credit: null });
       return photos;
     },
   });

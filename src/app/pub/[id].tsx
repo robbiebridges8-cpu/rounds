@@ -85,7 +85,9 @@ export default function PubScreen() {
   const { pub: details, stats } = pub.data;
   const mates = new Set(visits.data?.filter((v) => v.user_id !== me).map((v) => v.user_id));
   const been = visits.data?.some((v) => v.user_id === me) ?? false;
-  const hero = photos.data?.[0];
+  // The hero is the pub's own photo. Check-in photos are visits, and sit below.
+  const hero = photos.data?.find((p) => p.credit != null);
+  const visitPhotos = (photos.data ?? []).filter((p) => p.credit == null);
   // With a photo the hero is a picture. Without one it is a short cobalt
   // masthead: no stand-in image, just the name and the pills.
   const heroHeight = hero ? Math.round(width * 0.85) : insets.top + 168;
@@ -173,9 +175,9 @@ export default function PubScreen() {
             </Pressable>
           ) : null}
 
-          {photos.data && photos.data.length > 1 ? (
+          {visitPhotos.length > 0 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-4" contentContainerClassName="gap-2 px-4">
-              {photos.data.slice(1).map((p) => (
+              {visitPhotos.map((p) => (
                 <Image key={p.uri} source={{ uri: p.uri }} style={{ width: 120, height: 120, borderRadius: 14 }} contentFit="cover" transition={150} />
               ))}
             </ScrollView>

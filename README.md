@@ -91,7 +91,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 **Friends.** Requests by username, or an eight-character invite code that creates an accepted friendship on the spot. Invite links carry the code. Everything personal is visible only to accepted friends; pub aggregates are visible to everyone.
 
-**Front photos.** Most pubs start with a photo of the outside, found on Wikimedia Commons by location and name and credited under the hero. The newest check-in photo takes over once there is one. A pub with neither shows a short cobalt masthead, not a stand-in picture.
+**Front photos.** Most pubs have a photo of the outside, found on Wikimedia Commons by location and name and credited under the hero. That photo is the hero; check-in photos are visits and sit in a strip below it and on the visits themselves. A pub with no front photo shows a short cobalt masthead, not a stand-in picture.
 
 **Amenities.** Sixteen public tags in two groups, It's got and Good to know, confirmed by tapping a chip. Seeded from OpenStreetMap where it knows (a chip marked "map"), confirmed at check-in or on the pub page, long press for "not any more". Ratings, notes and photos stay friends-only.
 
