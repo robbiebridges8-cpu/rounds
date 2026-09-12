@@ -143,7 +143,7 @@ export default function PubScreen() {
           <LinearGradient colors={['rgba(0,0,0,0.35)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 70 }} />
           <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.82)']} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 16, paddingTop: 70, paddingBottom: 18, gap: 8 }}>
             <Text style={{ fontSize: 11, fontWeight: '800', letterSpacing: 2, color: colors.butter }}>
-              {[details.borough, details.status === 'unverified' ? 'UNVERIFIED' : null].filter(Boolean).join(' · ').toUpperCase() || 'LONDON'}
+              {(details.borough ?? 'London').toUpperCase()}
             </Text>
             <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 34, letterSpacing: -1.2, color: '#fff' }}>{details.name}</Text>
             <View className="flex-row flex-wrap items-center gap-2">
