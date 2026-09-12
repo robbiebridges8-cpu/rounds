@@ -9,6 +9,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { FeedbackFab } from '@/components/feedback-fab';
 import { SessionProvider, useAuthRedirect, useProfile } from '@/lib/auth';
 import { registerForPush } from '@/lib/inbox';
 import '@/lib/notifications';
@@ -119,6 +120,7 @@ function RootNavigator() {
         }}
       />
     </Stack>
+      <FeedbackFab />
     </>
   );
 }

@@ -111,7 +111,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 
 **Inbox and push.** Every cheers, reply, tag and digest writes a notification row. A database trigger posts the row id to the `send-push` edge function, which looks up the person's Expo tokens and sends. Tokens register once there is an EAS project id; until then the inbox is the whole feature.
 
-**Feedback.** Settings has Tell us. Every submission is a row in `feedback` with the sender, kind, message, screenshot, device and screen. Admins see them in the in-app inbox alongside pub corrections and reports, and can mark each one seen or done. `is_admin()` is the single check behind the admin policies.
+**Feedback.** A small speech-bubble button sits in the bottom-left corner of every signed-in screen while the app is in testing (one flag in `feedback-fab.tsx` turns it off), and Settings has Tell us. Every submission is a row in `feedback` with the sender, kind, message, screenshot, device and screen. Admins see them in the in-app inbox alongside pub corrections and reports, and can mark each one seen or done. `is_admin()` is the single check behind the admin policies.
 
 **Account deletion.** One RPC deletes the auth user and everything cascades. Required by Apple.
 
