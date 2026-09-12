@@ -63,7 +63,6 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
 
   return (
     <Card>
-      <View className="h-2" style={{ backgroundColor: isMe ? colors.you : colors.mates }} />
       <Pressable onPress={onOpen} accessibilityRole="button" disabled={expanded} className={expanded ? '' : 'active:bg-raised'}>
         <View className="flex-row items-center gap-3 px-4 pt-4">
           <Pressable disabled={isMe || !who} onPress={() => who && router.push({ pathname: '/user/[id]', params: { id: who.id } })}>

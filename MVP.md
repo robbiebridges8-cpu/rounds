@@ -61,6 +61,6 @@ Last updated 11 September 2026.
 - [x] Tell us: in-app feedback with a screenshot, read in the admin inbox
 - [x] Admin inbox: feedback, pub fixes, reports, with statuses
 - [x] Admin numbers page
-- [x] Privacy policy, needs a contact email
+- [x] Privacy policy, contact email set
 - [x] Apple Developer membership applied for on the web, 11 September; EAS project and build profiles configured
 - [ ] First TestFlight build, once Apple activates the membership
