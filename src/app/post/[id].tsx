@@ -7,6 +7,7 @@ import { Button, EmptyState, Icon, SectionTitle } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
 import { useClaimVisit, useDeleteCheckin, usePost, useRemoveCheers } from '@/lib/feed';
+import { openPhotos } from '@/lib/photo-viewer';
 import { colors } from '@/theme';
 
 export default function PostScreen() {
@@ -99,8 +100,8 @@ export default function PostScreen() {
             <View>
               <SectionTitle>Cheers</SectionTitle>
               <View className="flex-row flex-wrap gap-3">
-                {data.cheers.map((cheer) => (
-                  <View key={cheer.id} className="w-[31%] gap-1.5">
+                {data.cheers.map((cheer, index) => (
+                  <Pressable key={cheer.id} className="w-[31%] gap-1.5" onPress={() => openPhotos(data.cheers.map((c) => photoUrl(c.photo_path)), index)} accessibilityRole="imagebutton">
                     <Image
                       source={{ uri: photoUrl(cheer.photo_path) }}
                       style={{ width: '100%', aspectRatio: 1, borderRadius: 14 }}
@@ -110,7 +111,7 @@ export default function PostScreen() {
                     <Text className="text-ink-soft text-[12px] font-semibold" numberOfLines={1}>
                       {cheer.user_id === me ? 'You' : (cheer.profiles?.display_name ?? 'Someone')}
                     </Text>
-                  </View>
+                  </Pressable>
                 ))}
               </View>
             </View>

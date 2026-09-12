@@ -1,3 +1,4 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -45,6 +46,7 @@ function EditForm({ post, onDone }: { post: Loaded; onDone: () => void }) {
   const [rating, setRating] = useState<number | null>(post.rating != null ? Number(post.rating) : null);
   const [note, setNote] = useState(post.note ?? '');
   const [tagged, setTagged] = useState<Set<string>>(new Set(previousTagIds));
+  const [when, setWhen] = useState<Date>(new Date(post.created_at));
   const friends = friendships.data?.friends ?? [];
   const toggleTag = (id: string) =>
     setTagged((current) => {
@@ -56,7 +58,7 @@ function EditForm({ post, onDone }: { post: Loaded; onDone: () => void }) {
 
   const save = () =>
     update.mutate(
-      { id: post.id, rating, note: note.trim() || null, tagIds: [...tagged], previousTagIds },
+      { id: post.id, rating, note: note.trim() || null, createdAt: when.toISOString(), tagIds: [...tagged], previousTagIds },
       {
         onSuccess: () => {
           void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -102,6 +104,13 @@ function EditForm({ post, onDone }: { post: Loaded; onDone: () => void }) {
           </View>
         </View>
       ) : null}
+      <View className="gap-2">
+        <Text className="text-ink text-[13px] font-bold uppercase tracking-wider">When</Text>
+        <View className="flex-row items-center justify-between rounded-md bg-surface px-3 py-2">
+          <Text className="text-ink-soft text-[13px]">Went last week? Set the day.</Text>
+          <DateTimePicker value={when} mode="datetime" display="compact" maximumDate={new Date()} minuteInterval={5} onChange={(_, d) => d && setWhen(d)} />
+        </View>
+      </View>
       <Field label="Note" value={note} onChangeText={setNote} placeholder="Add a note" multiline maxLength={500} style={{ minHeight: 90 }} />
       <Button label="Save" onPress={save} loading={update.isPending} />
       <Pressable onPress={confirmDelete} accessibilityRole="button" className="items-center py-2">

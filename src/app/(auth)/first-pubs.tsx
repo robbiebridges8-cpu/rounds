@@ -83,7 +83,7 @@ export default function FirstPubs() {
 
       void queryClient.invalidateQueries();
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.replace('/');
+      router.replace('/get-a-mate');
     } catch (error) {
       Alert.alert('Could not save those', error instanceof Error ? error.message : String(error));
     } finally {

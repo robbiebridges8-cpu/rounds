@@ -59,7 +59,7 @@ export default function SettingsScreen() {
         <View>
           <SectionTitle>Account</SectionTitle>
           <Card>
-            <ListRow title="Signed in as" subtitle={profile ? `@${profile.username}` : ''} chevron={false} />
+            <ListRow title="Edit profile" subtitle={profile ? `${profile.display_name} · @${profile.username}` : ''} onPress={() => router.push('/edit-profile')} />
             <ListRow title="Sign out" onPress={confirmSignOut} chevron={false} />
             <ListRow title="Delete account" subtitle="Permanent" onPress={confirmDelete} chevron={false} last />
           </Card>

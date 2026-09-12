@@ -8,7 +8,8 @@ Last updated 11 September 2026.
 - [x] Welcome screen
 - [x] Sign in and create account with email and password
 - [x] Forgot password by six-digit code
-- [x] Onboarding: username, display name, avatar
+- [x] Onboarding: username, display name, avatar, then one ask to invite a mate
+- [x] Edit profile
 - [x] First pubs: tick the ones you already know
 - [x] Delete account
 
@@ -29,7 +30,8 @@ Last updated 11 September 2026.
 - [x] Optional amenity confirmation at check-in
 - [x] Geofence: verified within 150 m, otherwise counted and marked
 - [x] Tag mates on Rounds; text people who aren't
-- [x] Edit the stars or note on your own check-in, or delete it, from the diary or the post
+- [x] Edit the stars, note, mates or date on your own check-in, or delete it, from the diary or the post
+- [x] Photos open full screen everywhere
 - [x] Add a visit to your map when a mate tagged you
 
 ## Social

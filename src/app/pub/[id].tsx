@@ -11,6 +11,7 @@ import { photoUrl } from '@/lib/checkins';
 import { formatWhen, plural } from '@/lib/format';
 import { useAddListPubs, useLists, usePubLists } from '@/lib/lists';
 import { useMyTagVotes, usePub, usePubPhotos, usePubRatingHistogram, usePubTagStats, usePubTags, usePubVisits, useReportPub, useVoteTag, type CorrectionType } from '@/lib/pubs';
+import { openPhotos } from '@/lib/photo-viewer';
 import { colors, fonts } from '@/theme';
 
 const CORRECTIONS: { label: string; type: CorrectionType }[] = [
@@ -133,7 +134,9 @@ export default function PubScreen() {
         {/* Hero */}
         <View style={{ height: heroHeight, backgroundColor: colors.you, overflow: 'hidden' }}>
           {hero ? (
-            <Image source={{ uri: hero.uri }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} contentFit="cover" transition={200} />
+            <Pressable onPress={() => openPhotos((photos.data ?? []).map((p) => p.uri), 0)} accessibilityRole="imagebutton" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
+              <Image source={{ uri: hero.uri }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} contentFit="cover" transition={200} />
+            </Pressable>
           ) : null}
           <LinearGradient colors={['rgba(0,0,0,0.35)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 70 }} />
           <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.82)']} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 16, paddingTop: 70, paddingBottom: 18, gap: 8 }}>
@@ -177,8 +180,10 @@ export default function PubScreen() {
 
           {visitPhotos.length > 0 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-4" contentContainerClassName="gap-2 px-4">
-              {visitPhotos.map((p) => (
-                <Image key={p.uri} source={{ uri: p.uri }} style={{ width: 120, height: 120, borderRadius: 14 }} contentFit="cover" transition={150} />
+              {visitPhotos.map((p, index) => (
+                <Pressable key={p.uri} onPress={() => openPhotos(visitPhotos.map((v) => v.uri), index)} accessibilityRole="imagebutton">
+                  <Image source={{ uri: p.uri }} style={{ width: 120, height: 120, borderRadius: 14 }} contentFit="cover" transition={150} />
+                </Pressable>
               ))}
             </ScrollView>
           ) : null}
@@ -291,8 +296,10 @@ export default function PubScreen() {
                       {visit.checkin_photos.length > 0 ? (
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                           <View className="flex-row gap-2 pt-1">
-                            {visit.checkin_photos.map((photo) => (
-                              <Image key={photo.id} source={{ uri: photoUrl(photo.storage_path) }} style={{ width: 120, height: 120, borderRadius: 12 }} contentFit="cover" transition={150} />
+                            {visit.checkin_photos.map((photo, index) => (
+                              <Pressable key={photo.id} onPress={() => openPhotos(visit.checkin_photos.map((v) => photoUrl(v.storage_path)), index)} accessibilityRole="imagebutton">
+                                <Image source={{ uri: photoUrl(photo.storage_path) }} style={{ width: 120, height: 120, borderRadius: 12 }} contentFit="cover" transition={150} />
+                              </Pressable>
                             ))}
                           </View>
                         </ScrollView>

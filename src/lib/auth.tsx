@@ -1,10 +1,11 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSegments } from 'expo-router';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
 
 import { supabase } from '@/lib/supabase';
 import type { Tables } from '@/types/database';
+import { uploadImage } from '@/lib/images';
 
 export type Profile = Tables<'profiles'>;
 
@@ -57,6 +58,27 @@ export function useProfile() {
   });
 }
 
+/** Change name, handle or photo. The handle stays unique; 23505 says it is taken. */
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  const { session } = useSession();
+  return useMutation({
+    mutationFn: async (input: { username: string; displayName: string; avatarUri: string | null }) => {
+      const userId = session!.user.id;
+      const patch: { username: string; display_name: string; avatar_url?: string } = { username: input.username, display_name: input.displayName };
+      if (input.avatarUri) {
+        // A new path each time, so the old cached image never shows for a new photo.
+        patch.avatar_url = await uploadImage('avatars', `${userId}/avatar-${Date.now()}.jpg`, { uri: input.avatarUri, width: 512, height: 512 });
+      }
+      const { error } = await supabase.from('profiles').update(patch).eq('id', userId);
+      if (error) throw new Error(error.code === '23505' ? 'That username is taken.' : error.message);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries();
+    },
+  });
+}
+
 /**
  * Three states, one redirect rule: signed out goes to sign-in, signed in
  * without a profile goes to onboarding, everyone else goes to the app.
@@ -84,7 +106,7 @@ export function useAuthRedirect() {
       return;
     }
     // first-pubs is the one auth-group screen you visit with a profile.
-    if (inAuthFlow && !path.includes('first-pubs') && !path.includes('reset')) router.replace('/');
+    if (inAuthFlow && !path.includes('first-pubs') && !path.includes('get-a-mate') && !path.includes('reset')) router.replace('/');
   }, [settled, session, profile.data, segments, router]);
 
   return settled;

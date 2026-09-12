@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pub'd",
     "slug": "rounds",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "rounds",
@@ -75,7 +75,8 @@
         {
           "color": "#2244FF"
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,

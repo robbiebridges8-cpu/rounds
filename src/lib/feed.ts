@@ -156,8 +156,8 @@ export function useDeleteCheckin() {
 export function useUpdateCheckin() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, rating, note, tagIds, previousTagIds }: { id: string; rating: number | null; note: string | null; tagIds: string[]; previousTagIds: string[] }) => {
-      const { error } = await supabase.from('checkins').update({ rating, note }).eq('id', id);
+    mutationFn: async ({ id, rating, note, createdAt, tagIds, previousTagIds }: { id: string; rating: number | null; note: string | null; createdAt: string; tagIds: string[]; previousTagIds: string[] }) => {
+      const { error } = await supabase.from('checkins').update({ rating, note, created_at: createdAt }).eq('id', id);
       if (error) throw error;
       const added = tagIds.filter((t) => !previousTagIds.includes(t));
       const removed = previousTagIds.filter((t) => !tagIds.includes(t));

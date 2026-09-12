@@ -8,6 +8,7 @@ import { Avatar, Card, Icon, Stars } from '@/components/ui';
 import { photoUrl } from '@/lib/checkins';
 import { useLikePost, useLikeReply, useReply, type FeedPost } from '@/lib/feed';
 import { formatWhen } from '@/lib/format';
+import { openPhotos } from '@/lib/photo-viewer';
 import { colors } from '@/theme';
 
 type Props = {
@@ -95,13 +96,17 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
 
         {hasPhotos ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3" contentContainerClassName="gap-2 px-4">
-            {post.checkin_photos.map((photo) => {
+            {post.checkin_photos.map((photo, index) => {
               // The photo keeps its own shape. Only very tall or very wide ones get trimmed.
               const ratio = photo.width && photo.height ? Math.min(1.3, Math.max(0.6, photo.height / photo.width)) : 0.75;
               const single = post.checkin_photos.length === 1;
               const w = single ? cardWidth - 32 : 280 / ratio;
               const h = single ? w * ratio : 280;
-              return <Image key={photo.id} source={{ uri: photoUrl(photo.storage_path) }} style={{ width: w, height: h, borderRadius: 12 }} contentFit="cover" transition={150} />;
+              return (
+                <Pressable key={photo.id} onPress={() => openPhotos(post.checkin_photos.map((p) => photoUrl(p.storage_path)), index)} accessibilityRole="imagebutton">
+                  <Image source={{ uri: photoUrl(photo.storage_path) }} style={{ width: w, height: h, borderRadius: 12 }} contentFit="cover" transition={150} />
+                </Pressable>
+              );
             })}
           </ScrollView>
         ) : null}

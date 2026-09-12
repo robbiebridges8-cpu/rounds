@@ -56,6 +56,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `(auth)/reset` | Forgot password: a six-digit code by email, then a new password. No link to click |
 | `(auth)/onboarding` | Username, display name, optional avatar |
 | `(auth)/first-pubs` | Tick the pubs you already know, from nearby or search, so the map is never empty |
+| `(auth)/get-a-mate` | The last onboarding step: send one person your invite link, or Later |
 | `(tabs)/index` | Apple Maps. Search bar, chips for All / Been / Mates / Not yet, a pint glass per pub (full of beer where you have been, coral-rimmed where a mate has, empty where nobody you know has), a butter card with photos and Check in when you tap one. At city zoom only pubs with any check-ins show |
 | `(tabs)/feed` | The week card, a personal "you this week" line, an overtake card if a mate passed you, then posts as cards with cheers and reply |
 | `(tabs)/challenges` | Explore: lists. Yours first (made or saved), then everyone's. Every card shows your progress; crawls carry a Crawl label |
@@ -65,7 +66,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `cheers/[checkinId]` | Cheers camera: front-facing by default, flip, library, then Send cheers over the photo. Selfies save as the preview shows them |
 | `checkin/[pubId]` | Camera first. Take or pick a photo, or skip, then stars, who was here, a note, laid over the photo |
 | `post/[id]` | One check-in: cheers gallery, replies, a reply box, edit and delete if it is yours, "add it to my map" if you were tagged |
-| `checkin/edit/[id]` | A sheet to change the stars or the note on your own check-in, or delete it. Reached from the post page or by long-pressing a diary row |
+| `checkin/edit/[id]` | A sheet to change the stars, the note, who was there, or when it was, on your own check-in, or delete it. Setting the date is how you log last Saturday |
 | `user/[id]` | A friend's profile, same poster layout |
 | `nearby` | Pubs within 1.5 km by walking distance |
 | `search` | Full-screen name search, with "add a missing pub" when nothing matches |
@@ -73,7 +74,8 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `list/[id]`, `list/new`, `list/[id]/add` | A list or a crawl: progress, Save (which is what earns the badge on finishing), Share, Show on map, Add pubs. A crawl numbers its stops and shows the walk between them. Creating one opens Add pubs straight away |
 | `inbox` | Notifications: cheers, replies, tags, the Sunday digest |
 | `invite/[code]` | Deep link target. Accepts the invite if signed in, otherwise remembers it through sign-up |
-| `settings` | Tell us (feedback), privacy policy, admin inbox and numbers if you are an admin, sign out, delete account |
+| `edit-profile` | Change your display name, username or photo |
+| `settings` | Edit profile, Tell us (feedback), privacy policy, admin inbox and numbers if you are an admin, sign out, delete account |
 | `feedback` | A sheet: bug, idea or something else, a message, an optional screenshot. Device, iOS version and the screen you came from go along automatically |
 | `admin/inbox` | Feedback, pub corrections and reports in one place with a pending count. Tap to open, long press to set a status. Admins only |
 | `privacy` | The policy, rendered from PRIVACY.md |
@@ -84,6 +86,8 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 **Check-ins.** A pub, a time, an optional rating from 0.5 to 5 in half steps, a note, up to three photos, who was there. Location is read once at check-in; within 150 m it is marked verified in the database, further away it still counts. Distance is stored but not shown. A device-generated client id makes retries safe.
 
 **Tagging.** Mates on Rounds get a notification and a one-tap "add it to my map". People not on Rounds get a name on the post and a text from your phone with your invite link.
+
+**Photos.** Tap any photo, on a post, a pub page or a cheers gallery, and it opens full screen with swipe and pinch.
 
 **Cheers.** A photo sent back on a check-in that has a photo. One per person, camera-first. Enforced in the database, not the app.
 
