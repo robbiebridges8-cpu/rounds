@@ -1,5 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import {
   ActionSheetIOS,
   ActivityIndicator,
@@ -28,7 +29,7 @@ import { formatWhen } from '@/lib/format';
 import { colors, fonts } from '@/theme';
 
 export default function ChallengeScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, add } = useLocalSearchParams<{ id: string; add?: string }>();
   const router = useRouter();
   const { session } = useSession();
   const challenges = useChallenges();
@@ -40,6 +41,12 @@ export default function ChallengeScreen() {
 
   const challenge = challenges.data?.find((c) => c.id === id);
   const isCreator = Boolean(challenge?.creator_id && challenge.creator_id === session?.user.id);
+
+  // A new quest opens straight onto Add pubs.
+  useEffect(() => {
+    if (add === '1' && id) router.push({ pathname: '/challenge/[id]/add', params: { id } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [add, id]);
 
   if (challenges.isPending) {
     return (
@@ -77,12 +84,18 @@ export default function ChallengeScreen() {
     }
   };
 
+  const removeAsk = (pubId: string, name: string) =>
+    Alert.alert(`Remove ${name}?`, undefined, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Remove', style: 'destructive', onPress: () => removePub.mutate({ id, pubId }) },
+    ]);
+
   const toggleJoin = () => {
     void Haptics.selectionAsync();
     if (challenge.joined) {
-      Alert.alert('Leave this challenge?', 'Your check-ins stay.', [
+      Alert.alert('Unsave this quest?', 'Your progress stays. It just leaves your Explore.', [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Leave', style: 'destructive', onPress: () => leave.mutate(id) },
+        { text: 'Unsave', style: 'destructive', onPress: () => leave.mutate(id) },
       ]);
     } else {
       join.mutate(id);
@@ -133,7 +146,7 @@ export default function ChallengeScreen() {
             <Text style={{ fontFamily: fonts.display, fontSize: 22, color: '#fff' }}>Badge earned</Text>
             <Text className="text-[13px] text-white/85">Completed {formatWhen(challenge.completed_at)}</Text>
           </View>
-        ) : challenge.joined ? (
+        ) : challenge.pub_count > 0 ? (
           <View className="gap-2 rounded-lg border border-line bg-surface p-4">
             <View className="flex-row items-baseline justify-between">
               <Text style={{ fontFamily: fonts.display, fontSize: 30, color }}>
@@ -151,9 +164,9 @@ export default function ChallengeScreen() {
         <View className="flex-row gap-3">
           <View className="flex-1">
             <Button
-              label={done ? 'Done' : challenge.joined ? 'Leave' : 'Take it on'}
+              label={done ? 'Done' : challenge.joined ? 'Saved' : 'Save'}
               variant={challenge.joined ? 'quiet' : 'primary'}
-              icon={challenge.joined ? undefined : 'flag.fill'}
+              icon={challenge.joined ? 'bookmark.fill' : 'bookmark'}
               onPress={toggleJoin}
               disabled={done}
               loading={join.isPending || leave.isPending}
@@ -170,6 +183,10 @@ export default function ChallengeScreen() {
             </View>
           ) : null}
         </View>
+
+        {list.length > 0 ? (
+          <Button label="Show on map" icon="map" variant="outline" onPress={() => router.push({ pathname: '/(tabs)', params: { pubs: list.map((p) => p.pub_id).join(',') } })} />
+        ) : null}
 
         <View>
           <SectionTitle>Pubs</SectionTitle>
@@ -190,19 +207,6 @@ export default function ChallengeScreen() {
                 <Pressable
                   key={pub.pub_id}
                   onPress={() => router.push({ pathname: '/pub/[id]', params: { id: pub.pub_id } })}
-                  onLongPress={
-                    isCreator
-                      ? () =>
-                          Alert.alert(`Remove ${pub.name}?`, undefined, [
-                            { text: 'Cancel', style: 'cancel' },
-                            {
-                              text: 'Remove',
-                              style: 'destructive',
-                              onPress: () => removePub.mutate({ id, pubId: pub.pub_id }),
-                            },
-                          ])
-                      : undefined
-                  }
                   className="flex-row items-center gap-3 pl-4 active:bg-ale-tint">
                   <Icon
                     name={pub.done ? 'checkmark.circle.fill' : 'circle'}
@@ -215,7 +219,7 @@ export default function ChallengeScreen() {
                     }`}>
                     <View className="flex-1">
                       <Text
-                        className={`text-[17px] ${pub.done ? 'text-ink-soft' : 'text-ink'}`}
+                        className={`text-[17px] font-semibold ${pub.done ? 'text-ink' : 'text-ink-soft'}`}
                         numberOfLines={1}>
                         {pub.name}
                       </Text>
@@ -225,7 +229,13 @@ export default function ChallengeScreen() {
                           .join(' · ')}
                       </Text>
                     </View>
-                    <Icon name="chevron.right" size={14} color={colors.slate} weight="semibold" />
+                    {isCreator ? (
+                      <Pressable onPress={() => removeAsk(pub.pub_id, pub.name)} hitSlop={10} accessibilityRole="button" accessibilityLabel="Remove from quest">
+                        <Icon name="ellipsis" size={16} color={colors.inkSoft} />
+                      </Pressable>
+                    ) : (
+                      <Icon name="chevron.right" size={14} color={colors.slate} weight="semibold" />
+                    )}
                   </View>
                 </Pressable>
               ))}

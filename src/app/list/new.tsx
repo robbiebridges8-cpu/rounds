@@ -25,7 +25,7 @@ export default function NewListSheet() {
         onSuccess: (list) => {
           void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           router.dismiss();
-          router.push({ pathname: '/list/[id]', params: { id: list.id } });
+          router.push({ pathname: '/list/[id]', params: { id: list.id, add: '1' } });
         },
         onError: (e) => Alert.alert('Could not create that', e.message),
       }

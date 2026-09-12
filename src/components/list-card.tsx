@@ -14,7 +14,7 @@ export function ListCard({ list, onPress }: { list: ListSummary; onPress: () => 
             {list.title}
           </Text>
           <Text className="text-ink-soft mt-0.5 text-[13px]" numberOfLines={1}>
-            by {list.creator_name} · {list.pub_count} {list.pub_count === 1 ? 'pub' : 'pubs'}
+            {list.pub_count ? `${list.been_count} of ${list.pub_count} been` : 'No pubs yet'} · by {list.creator_name}
             {list.follower_count ? ` · ${list.follower_count} following` : ''}
           </Text>
         </View>

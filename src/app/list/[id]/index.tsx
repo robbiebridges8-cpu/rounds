@@ -1,5 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { ActionSheetIOS, ActivityIndicator, Alert, Platform, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { Body, Button, Card, EmptyState, Icon, Rating, SectionTitle } from '@/components/ui';
@@ -8,7 +9,7 @@ import { useDeleteList, useFollowList, useListPubs, useLists, useRemoveListPub, 
 import { colors } from '@/theme';
 
 export default function ListScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, add } = useLocalSearchParams<{ id: string; add?: string }>();
   const router = useRouter();
   const { session } = useSession();
   const lists = useLists();
@@ -20,6 +21,12 @@ export default function ListScreen() {
 
   const list = lists.data?.find((l) => l.id === id);
   const isCreator = Boolean(list?.creator_id && list.creator_id === session?.user.id);
+
+  // A new list opens straight onto Add pubs, so it is never born empty.
+  useEffect(() => {
+    if (add === '1' && id) router.push({ pathname: '/list/[id]/add', params: { id } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [add, id]);
 
   if (lists.isPending) {
     return (
@@ -129,12 +136,16 @@ export default function ListScreen() {
           ) : null}
         </View>
 
+        {pubs.data && pubs.data.length > 0 ? (
+          <Button label="Show on map" icon="map" variant="outline" onPress={() => router.push({ pathname: '/(tabs)', params: { pubs: pubs.data.map((p) => p.pub_id).join(',') } })} />
+        ) : null}
+
         <View>
           <SectionTitle>Pubs</SectionTitle>
           {pubs.isSuccess && pubs.data.length === 0 ? (
             <Card>
               <View className="p-5">
-                <Body>{isCreator ? 'No pubs yet. Add some, then long press one to add a line.' : 'Nothing on it yet.'}</Body>
+                <Body>{isCreator ? 'No pubs yet. Add some, then use the dots on a pub to add a line.' : 'Nothing on it yet.'}</Body>
               </View>
             </Card>
           ) : null}
@@ -150,7 +161,7 @@ export default function ListScreen() {
                   <View className={`flex-1 flex-row items-start gap-3 py-3 pr-4 ${index === pubs.data.length - 1 ? '' : 'border-b border-line'}`}>
                     <View className="flex-1 gap-0.5">
                       <View className="flex-row items-center gap-2">
-                        <Text className="text-ink text-[17px] font-semibold" numberOfLines={1}>{pub.name}</Text>
+                        <Text className={`${pub.done ? 'text-ink' : 'text-ink-soft'} text-[17px] font-semibold`} numberOfLines={1}>{pub.name}</Text>
                         {pub.done ? <Icon name="checkmark.circle.fill" size={15} color={colors.you} /> : null}
                       </View>
                       {pub.note ? <Text className="text-ink text-[14px] leading-5">{pub.note}</Text> : null}
@@ -159,7 +170,13 @@ export default function ListScreen() {
                         {pub.avg_rating != null ? <Rating value={pub.avg_rating} size={12} /> : null}
                       </View>
                     </View>
-                    <Icon name="chevron.right" size={13} color={colors.slate} weight="semibold" />
+                    {isCreator ? (
+                      <Pressable onPress={() => pubActions(pub.pub_id, pub.name, pub.note)} hitSlop={10} accessibilityRole="button" accessibilityLabel="Edit or remove">
+                        <Icon name="ellipsis" size={16} color={colors.inkSoft} />
+                      </Pressable>
+                    ) : (
+                      <Icon name="chevron.right" size={13} color={colors.slate} weight="semibold" />
+                    )}
                   </View>
                 </Pressable>
               ))}

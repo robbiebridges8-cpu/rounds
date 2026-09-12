@@ -65,15 +65,14 @@ export function ChallengeCard({ challenge, onPress }: { challenge: Challenge; on
         </View>
         {done ? (
           <Icon name="checkmark.seal.fill" size={24} color={color} />
-        ) : challenge.joined ? (
-          <Text style={{ fontFamily: fonts.display, fontSize: 20, color }}>{pct}%</Text>
         ) : (
-          <Icon name="chevron.right" size={14} color={colors.slate} weight="semibold" />
+          <View className="items-end">
+            <Text style={{ fontFamily: fonts.display, fontSize: 20, color }}>{pct}%</Text>
+            {challenge.joined ? <Icon name="bookmark.fill" size={12} color={colors.you} /> : null}
+          </View>
         )}
       </View>
-      {challenge.joined && !done ? (
-        <ProgressBar value={challenge.done_count} total={challenge.pub_count} color={color} />
-      ) : null}
+      {!done && challenge.pub_count > 0 ? <ProgressBar value={challenge.done_count} total={challenge.pub_count} color={color} /> : null}
     </Pressable>
   );
 }

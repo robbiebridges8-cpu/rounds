@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
 import Svg, { Path, Rect } from 'react-native-svg';
@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, MapButton, Stars } from '@/components/ui';
 import { plural } from '@/lib/format';
 import { LONDON_REGION, getPosition } from '@/lib/location';
-import { useMapPubs, usePubPhotos, type Bounds, type MapPub } from '@/lib/pubs';
+import { useMapPubs, usePubPhotos, usePubsByIds, type Bounds, type MapPub } from '@/lib/pubs';
 import { useTheme } from '@/lib/theme-provider';
 import { colors, fonts } from '@/theme';
 
@@ -46,7 +46,20 @@ export default function MapScreen() {
   const [selected, setSelected] = useState<MapPub | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   // City zoom shows only pubs with life in them; a neighbourhood shows all.
-  const { data: pubs } = useMapPubs(bounds, wide);
+  // A list or quest can hand the map a set of pubs to show on their own.
+  const { pubs: focusParam } = useLocalSearchParams<{ pubs?: string }>();
+  const focusIds = useMemo(() => (focusParam ? focusParam.split(',').filter(Boolean) : []), [focusParam]);
+  const focusing = focusIds.length > 0;
+  const focusPubs = usePubsByIds(focusIds);
+  const { data: pubs } = useMapPubs(bounds, wide && !focusing);
+
+  useEffect(() => {
+    const rows = focusPubs.data;
+    if (!rows || rows.length === 0) return;
+    mapRef.current?.fitToCoordinates(rows.map((r) => ({ latitude: r.lat, longitude: r.lng })), { edgePadding: { top: 140, right: 40, bottom: 220, left: 40 }, animated: true });
+  }, [focusPubs.data]);
+
+  const clearFocus = () => router.setParams({ pubs: undefined });
 
   const locate = async () => {
     const coords = await getPosition();
@@ -59,7 +72,9 @@ export default function MapScreen() {
   }, []);
 
   const current = selected ? (pubs?.find((p) => p.id === selected.id) ?? selected) : null;
-  const shown = pubs?.filter((p) => filter === 'all' || tierOf(p) === filter);
+  const shown = focusing
+    ? (focusPubs.data ?? []).map((r) => pubs?.find((p) => p.id === r.id) ?? ({ id: r.id, name: r.name, lat: r.lat, lng: r.lng, status: 'open', visited_by_me: false, friend_visits: 0, checkin_count: 0, avg_rating: null, friend_avg_rating: null, my_rating: null } as unknown as MapPub))
+    : pubs?.filter((p) => filter === 'all' || tierOf(p) === filter);
   // Unvisited dots are a mid grey, not the palette's pale slate: on Apple's
   // muted map the pale one vanished.
 
@@ -135,7 +150,12 @@ export default function MapScreen() {
               </Pressable>
             );
           })}
-          {wide || (pubs && pubs.length >= 400) ? (
+          {focusing ? (
+            <Pressable onPress={clearFocus} accessibilityRole="button" className="h-9 flex-row items-center gap-1.5 rounded-full px-3" style={{ backgroundColor: colors.butter }}>
+              <Text className="text-[12px] font-bold" style={{ color: '#101014' }}>{`Showing ${focusIds.length} ${focusIds.length === 1 ? 'pub' : 'pubs'}`}</Text>
+              <Icon name="xmark" size={11} color="#101014" weight="bold" />
+            </Pressable>
+          ) : wide || (pubs && pubs.length >= 400) ? (
             <View className="h-9 flex-row items-center gap-1.5 rounded-full bg-surface px-3">
               <Icon name="plus.magnifyingglass" size={12} color={colors.inkSoft} />
               <Text className="text-ink-soft text-[12px] font-semibold">Zoom in for every pub</Text>

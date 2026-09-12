@@ -977,6 +977,7 @@ export type Database = {
           follower_count: number;
           following: boolean;
           id: string;
+          been_count: number;
           pub_count: number;
           sample: string[];
           title: string;
@@ -987,6 +988,8 @@ export type Database = {
         Returns: {
           avg_rating: number;
           borough: string;
+          lat: number;
+          lng: number;
           done: boolean;
           name: string;
           note: string;

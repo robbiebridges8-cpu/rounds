@@ -35,7 +35,7 @@ export default function NewChallengeSheet() {
         onSuccess: (challenge) => {
           void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           router.dismiss();
-          router.push({ pathname: '/challenge/[id]', params: { id: challenge.id } });
+          router.push({ pathname: '/challenge/[id]', params: { id: challenge.id, add: '1' } });
         },
         onError: (e) => Alert.alert('Could not create that', e.message),
       }

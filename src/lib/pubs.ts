@@ -211,6 +211,21 @@ export function usePubPhotos(pubId: string | undefined) {
   });
 }
 
+/** A handful of pubs by id, for showing a list or a quest on the map. */
+export function usePubsByIds(ids: string[]) {
+  const key = [...ids].sort();
+  return useQuery({
+    queryKey: ['pubs-by-ids', key],
+    enabled: key.length > 0,
+    staleTime: 10 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('pubs').select('id, name, lat, lng, borough').in('id', key);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
 /** Front photos for a handful of pubs at once, keyed by pub id. Profile tiles. */
 export function useFrontPhotos(pubIds: string[]) {
   const key = [...pubIds].sort();

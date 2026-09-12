@@ -58,7 +58,7 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `(auth)/first-pubs` | Tick the pubs you already know, from nearby or search, so the map is never empty |
 | `(tabs)/index` | Apple Maps. Search bar, chips for All / Been / Mates / Not yet, a pint glass per pub (full of beer where you have been, coral-rimmed where a mate has, empty where nobody you know has), a butter card with photos and Check in when you tap one. At city zoom only pubs with any check-ins show |
 | `(tabs)/feed` | The week card, a personal "you this week" line, an overtake card if a mate passed you, then posts as cards with cheers and reply |
-| `(tabs)/challenges` | Explore: lists (taste, followable) above quests (finish lines with badges) |
+| `(tabs)/challenges` | Explore: Yours first (lists you made or follow, quests you saved), then everyone's lists and quests. Cards say how many pubs you have been to |
 | `(tabs)/friends` | Leaderboard with a metric picker (boroughs, pubs, this month, badges), requests, friends, invite |
 | `(tabs)/you` | The poster: the fill-in map on the white ground, cobalt where you have been, your borough count, stats strip, Overview / Pubs / Diary tabs, share and invite |
 | `pub/[id]` | Hero photo with the name over it, rating and who's-been pills, Check in, add to a list, tag votes, lists it is on, visits |
@@ -70,8 +70,8 @@ All routes live under `src/app/`. Five tabs: Map, Feed, Explore, Mates, You.
 | `nearby` | Pubs within 1.5 km by walking distance |
 | `search` | Full-screen name search, with "add a missing pub" when nothing matches |
 | `add-pub` | Add a pub the import missed, placed at your location |
-| `list/[id]`, `list/new`, `list/[id]/add` | A list, creating one, adding pubs to it |
-| `challenge/[id]`, `challenge/new`, `challenge/[id]/add` | A quest, creating one, adding pubs to it |
+| `list/[id]`, `list/new`, `list/[id]/add` | A list, creating one (which opens Add pubs straight away), adding pubs. Been pubs read solid, the rest grey; Show on map hands the set to the map |
+| `challenge/[id]`, `challenge/new`, `challenge/[id]/add` | A quest, creating one (which opens Add pubs straight away), adding pubs. Progress shows for everyone; Save pins it to your Explore and earns the badge on completion; Show on map |
 | `inbox` | Notifications: cheers, replies, tags, the Sunday digest |
 | `invite/[code]` | Deep link target. Accepts the invite if signed in, otherwise remembers it through sign-up |
 | `settings` | Tell us (feedback), privacy policy, admin inbox and numbers if you are an admin, sign out, delete account |
