@@ -95,9 +95,14 @@ export function PostCard({ post, me, onOpen, onCheers, expanded = false }: Props
 
         {hasPhotos ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3" contentContainerClassName="gap-2 px-4">
-            {post.checkin_photos.map((photo) => (
-              <Image key={photo.id} source={{ uri: photoUrl(photo.storage_path) }} style={{ width: post.checkin_photos.length === 1 ? cardWidth - 32 : 240, height: post.checkin_photos.length === 1 ? (cardWidth - 32) * 0.72 : 240, borderRadius: 12 }} contentFit="cover" transition={150} />
-            ))}
+            {post.checkin_photos.map((photo) => {
+              // The photo keeps its own shape. Only very tall or very wide ones get trimmed.
+              const ratio = photo.width && photo.height ? Math.min(1.3, Math.max(0.6, photo.height / photo.width)) : 0.75;
+              const single = post.checkin_photos.length === 1;
+              const w = single ? cardWidth - 32 : 280 / ratio;
+              const h = single ? w * ratio : 280;
+              return <Image key={photo.id} source={{ uri: photoUrl(photo.storage_path) }} style={{ width: w, height: h, borderRadius: 12 }} contentFit="cover" transition={150} />;
+            })}
           </ScrollView>
         ) : null}
 
