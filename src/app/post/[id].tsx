@@ -6,7 +6,7 @@ import { PostCard } from '@/components/post-card';
 import { Button, EmptyState, Icon, SectionTitle } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { photoUrl } from '@/lib/checkins';
-import { useClaimVisit, useDeleteCheckin, usePost, useRemoveCheers } from '@/lib/feed';
+import { useClaimVisit, useDeleteCheckin, useMyVisitNear, usePost, useRemoveCheers } from '@/lib/feed';
 import { openPhotos } from '@/lib/photo-viewer';
 import { colors } from '@/theme';
 
@@ -19,6 +19,7 @@ export default function PostScreen() {
   const removeCheers = useRemoveCheers();
   const deleteCheckin = useDeleteCheckin();
   const claimVisit = useClaimVisit();
+  const alreadyThere = useMyVisitNear(post.data?.pubs?.id, post.data?.created_at);
 
   if (post.isPending) {
     return (
@@ -86,12 +87,17 @@ export default function PostScreen() {
             expanded
           />
 
-          {taggedMe && data.pubs ? (
+          {taggedMe && data.pubs && alreadyThere.data === false ? (
             <Button
               label="You were here? Add it to your map"
               icon="mappin.and.ellipse"
               variant="accent"
-              onPress={() => claimVisit.mutate({ pubId: data.pubs!.id }, { onSuccess: () => Alert.alert('Added', 'It is on your map and counts for your boroughs.') })}
+              onPress={() =>
+                claimVisit.mutate(
+                  { pubId: data.pubs!.id, at: data.created_at },
+                  { onSuccess: (r) => Alert.alert(r === 'added' ? 'Added' : 'Already on your map', r === 'added' ? 'It is on your map and counts for your boroughs.' : 'You checked in there that night.') },
+                )
+              }
               loading={claimVisit.isPending}
             />
           ) : null}

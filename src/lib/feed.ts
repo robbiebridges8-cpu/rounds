@@ -3,6 +3,7 @@ import * as Crypto from 'expo-crypto';
 
 import type { Profile } from '@/lib/auth';
 import { compress, uploadImage, type PickedImage } from '@/lib/images';
+import { useSession } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import type { Tables } from '@/types/database';
 
@@ -177,19 +178,55 @@ export function useUpdateCheckin() {
 }
 
 /** "You were here?" A tagged mate adds the visit to their own map. */
+/** Do I already have a check-in at this pub within twelve hours of a moment? */
+export function useMyVisitNear(pubId: string | undefined, at: string | undefined) {
+  const { session } = useSession();
+  const me = session?.user.id;
+  return useQuery({
+    queryKey: ['my-visit-near', pubId, at, me],
+    enabled: Boolean(pubId && at && me),
+    queryFn: async () => {
+      const t = new Date(at!).getTime();
+      const { data, error } = await supabase
+        .from('checkins')
+        .select('id')
+        .eq('user_id', me!)
+        .eq('pub_id', pubId!)
+        .gte('created_at', new Date(t - 12 * 3600_000).toISOString())
+        .lte('created_at', new Date(t + 12 * 3600_000).toISOString())
+        .limit(1);
+      if (error) throw error;
+      return data.length > 0;
+    },
+  });
+}
+
 export function useClaimVisit() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ pubId }: { pubId: string }) => {
+    mutationFn: async ({ pubId, at }: { pubId: string; at: string }) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      const t = new Date(at).getTime();
+      const { data: existing } = await supabase
+        .from('checkins')
+        .select('id')
+        .eq('user_id', session!.user.id)
+        .eq('pub_id', pubId)
+        .gte('created_at', new Date(t - 12 * 3600_000).toISOString())
+        .lte('created_at', new Date(t + 12 * 3600_000).toISOString())
+        .limit(1);
+      if (existing && existing.length > 0) return 'already' as const;
+      // Dated to their night, so it lands on the same day in your diary.
       const { error } = await supabase.from('checkins').insert({
         user_id: session!.user.id,
         pub_id: pubId,
         client_id: Crypto.randomUUID(),
+        created_at: at,
       });
       if (error) throw error;
+      return 'added' as const;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries();
