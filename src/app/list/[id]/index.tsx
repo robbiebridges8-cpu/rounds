@@ -169,11 +169,13 @@ export default function ListScreen() {
               loading={follow.isPending}
             />
           </View>
-          <Button label="Share" icon="square.and.arrow.up" variant="outline" onPress={share} />
-          {isCreator ? (
-            <Button label="Add pubs" icon="plus" variant={list.pub_count === 0 ? 'primary' : 'outline'} onPress={() => router.push({ pathname: '/list/[id]/add', params: { id } })} />
-          ) : null}
+          <View className="flex-1">
+            <Button label="Share" icon="square.and.arrow.up" variant="outline" onPress={share} />
+          </View>
         </View>
+        {isCreator ? (
+          <Button label="Add pubs" icon="plus" variant={list.pub_count === 0 ? 'primary' : 'outline'} onPress={() => router.push({ pathname: '/list/[id]/add', params: { id } })} />
+        ) : null}
 
         {pubs.data && pubs.data.length > 0 ? (
           <Button label="Show on map" icon="map" variant="outline" onPress={() => router.push({ pathname: '/(tabs)', params: { pubs: pubs.data.map((p) => p.pub_id).join(',') } })} />

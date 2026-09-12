@@ -7,10 +7,11 @@ import { formatWhen } from '@/lib/format';
 import { useInbox, useMarkRead, type InboxItem } from '@/lib/inbox';
 import { colors } from '@/theme';
 
-const KIND_ICON: Record<string, 'camera.fill' | 'bubble.right.fill' | 'person.fill' | 'calendar' | 'checkmark.seal.fill'> = {
+const KIND_ICON: Record<string, 'camera.fill' | 'bubble.right.fill' | 'person.fill' | 'calendar' | 'checkmark.seal.fill' | 'heart.fill'> = {
   cheers: 'camera.fill',
   reply: 'bubble.right.fill',
   tag: 'person.fill',
+  like: 'heart.fill',
   digest: 'calendar',
   claim: 'checkmark.seal.fill',
 };
