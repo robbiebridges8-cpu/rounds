@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/ui';
 import { APP_NAME } from '@/lib/brand';
+import { photoUrl } from '@/lib/checkins';
 import { useCheers, usePost } from '@/lib/feed';
 import { pickImage, type PickedImage } from '@/lib/images';
 import { colors } from '@/theme';
@@ -31,6 +32,17 @@ export default function CheersScreen() {
 
   const who = post.data?.profiles?.display_name;
   const label = who ? `Cheers to ${who}` : 'Cheers';
+  const theirs = post.data?.checkin_photos[0];
+
+  // Their photo stays in the corner while you take yours: you are replying to it.
+  const pip = theirs ? (
+    <View pointerEvents="none" className="absolute overflow-hidden rounded-lg" style={{ left: 16, top: insets.top + 52, width: 92, height: 124, borderWidth: 2, borderColor: '#fff', shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } }}>
+      <Image source={{ uri: photoUrl(theirs.storage_path) }} style={{ width: '100%', height: '100%' }} contentFit="cover" />
+      <View className="absolute bottom-0 left-0 right-0 px-1.5 py-1" style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}>
+        <Text className="text-[10px] font-bold text-white" numberOfLines={1}>{who ?? ''}</Text>
+      </View>
+    </View>
+  ) : null;
 
   const snap = async () => {
     if (!cameraRef.current || snapping) return;
@@ -71,6 +83,7 @@ export default function CheersScreen() {
     return (
       <View className="flex-1 bg-black">
         <Image source={{ uri: photo.uri }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} contentFit="cover" />
+        {pip}
         <View className="absolute left-0 right-0 flex-row items-center justify-between px-5" style={{ top: insets.top + 8 }}>
           <Pressable onPress={() => setPhoto(null)} hitSlop={10} accessibilityRole="button">
             <Text className="text-[16px] font-bold text-white">Retake</Text>
@@ -107,6 +120,7 @@ export default function CheersScreen() {
           ) : null}
         </View>
       )}
+      {pip}
 
       <View className="absolute left-0 right-0 flex-row items-center justify-between px-5" style={{ top: insets.top + 8 }}>
         <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button">
